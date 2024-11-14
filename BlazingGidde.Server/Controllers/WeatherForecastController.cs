@@ -1,9 +1,9 @@
-using BlazingGidde.Shared;
+using BlazingGidde.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazingGidde.Server.Controllers
 {
-	[ApiController]
+    [ApiController]
 	[Route("[controller]")]
 	public class WeatherForecastController : ControllerBase
 	{
