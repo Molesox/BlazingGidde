@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text;
+#pragma warning disable CS8603 // Possible null reference return. 
 
 namespace BlazingGidde.Client.Services
 {

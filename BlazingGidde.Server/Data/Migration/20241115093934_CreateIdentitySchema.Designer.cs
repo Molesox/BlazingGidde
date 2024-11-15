@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazingGidde.Server.Data.Migration
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241114152804_CreateIdentitySchema")]
+    [Migration("20241115093934_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {
         /// <inheritdoc />

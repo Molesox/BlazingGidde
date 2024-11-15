@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlazingGidde.Server.Data
 {
-	public class ApplicationDbContext : IdentityDbContext
+	public partial class ApplicationDbContext : IdentityDbContext
 	{
 		public ApplicationDbContext(DbContextOptions options) : base(options)
 		{

@@ -32,7 +32,7 @@ namespace BlazingGidde.Server.Controllers.Identity
 		{
 			var newUser = new IdentityUser { UserName = model.Email, Email = model.Email };
 
-			var result = await _userManager.CreateAsync(newUser, model.Password);
+			var result = await _userManager.CreateAsync(newUser, model.Password!);
 
 			if (!result.Succeeded)
 			{

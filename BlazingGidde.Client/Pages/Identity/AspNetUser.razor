@@ -1,0 +1,94 @@
+﻿@page "/aspnetusers"
+@using BlazingGidde.Client.Services
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@inject AspNetUserManager UserManager
+@attribute [Authorize]
+
+<PageTitle>AspNetUsers</PageTitle>
+
+<h3>AspNetUsers</h3>
+
+@if (_isLoading)
+{
+	<p>Loading...</p>
+}
+else if (_users is null || !_users.Any())
+{
+	<p>No users available.</p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>User Name</th>
+				<th>Email</th>
+				<th>Phone Number</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var user in _users)
+			{
+				<tr>
+					<td>@user.Id</td>
+					<td>@user.UserName</td>
+					<td>@user.Email</td>
+					<td>@user.PhoneNumber</td>
+					<td>
+						<button class="btn btn-primary" @onclick="() => EditUser(user.Id)">Edit</button>
+						<button class="btn btn-danger" @onclick="() => DeleteUser(user.Id)">Delete</button>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private IEnumerable<IdentityUser>? _users;
+	private bool _isLoading = true;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadUsers();
+	}
+
+	private async Task LoadUsers()
+	{
+		_isLoading = true;
+		try
+		{
+			_users = await UserManager.GetAll();
+		}
+		catch (Exception ex)
+		{
+			Console.Error.WriteLine($"Error loading users: {ex.Message}");
+		}
+		finally
+		{
+			_isLoading = false;
+		}
+	}
+
+	private void EditUser(string id)
+	{
+		// Navigate to edit page or implement edit logic
+		Console.WriteLine($"Edit user with ID: {id}");
+	}
+
+	private async Task DeleteUser(string id)
+	{
+		if (await UserManager.Delete(id))
+		{
+			Console.WriteLine($"Deleted user with ID: {id}");
+			await LoadUsers();
+		}
+		else
+		{
+			Console.Error.WriteLine($"Failed to delete user with ID: {id}");
+		}
+	}
+}
