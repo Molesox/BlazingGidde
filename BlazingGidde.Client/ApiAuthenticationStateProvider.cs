@@ -6,11 +6,19 @@ using System.Text.Json;
 
 namespace BlazingGidde.Client
 {
+	/// <summary>
+	/// Provides an implementation of <see cref="AuthenticationStateProvider"/> that uses an API to manage authentication state.
+	/// </summary>
 	public class ApiAuthenticationStateProvider : AuthenticationStateProvider
 	{
 		private readonly HttpClient _httpClient;
 		private readonly ILocalStorageService _localStorage;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ApiAuthenticationStateProvider"/> class.
+		/// </summary>
+		/// <param name="httpClient">The HTTP client used for API requests.</param>
+		/// <param name="localStorage">The local storage service to manage authentication tokens.</param>
 		public ApiAuthenticationStateProvider(HttpClient httpClient,
 			ILocalStorageService localStorage)
 		{
@@ -18,6 +26,10 @@ namespace BlazingGidde.Client
 			_localStorage = localStorage;
 		}
 
+		/// <summary>
+		/// Retrieves the current authentication state, including user claims if authenticated.
+		/// </summary>
+		/// <returns>An <see cref="AuthenticationState"/> representing the current user.</returns>
 		public override async Task<AuthenticationState> GetAuthenticationStateAsync()
 		{
 			// Depending on what this method returns, Authorise or not authorised view will be displayed (among other usages)
@@ -33,6 +45,10 @@ namespace BlazingGidde.Client
 			return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "jwt")));
 		}
 
+		/// <summary>
+		/// Marks the user as authenticated and notifies of the state change.
+		/// </summary>
+		/// <param name="email">The email of the authenticated user.</param>
 		public void MarkUserAsAuthenticated(string email)
 		{
 			var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, email)], "apiauth"));
@@ -41,6 +57,9 @@ namespace BlazingGidde.Client
 			NotifyAuthenticationStateChanged(authState);
 		}
 
+		/// <summary>
+		/// Marks the user as logged out and notifies of the state change.
+		/// </summary>
 		public void MarkUserAsLoggedOut()
 		{
 			var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
@@ -48,6 +67,11 @@ namespace BlazingGidde.Client
 			NotifyAuthenticationStateChanged(authState);
 		}
 
+		/// <summary>
+		/// Parses the claims from a JSON Web Token (JWT).
+		/// </summary>
+		/// <param name="jwt">The JWT string.</param>
+		/// <returns>An enumerable of claims extracted from the token.</returns>
 		private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
 		{
 			var claims = new List<Claim>();
@@ -81,6 +105,11 @@ namespace BlazingGidde.Client
 			return claims;
 		}
 
+		/// <summary>
+		/// Parses a Base64 string, adding any required padding to make it valid.
+		/// </summary>
+		/// <param name="base64">The Base64 string to parse.</param>
+		/// <returns>A byte array of the parsed Base64 string.</returns>
 		private byte[] ParseBase64WithoutPadding(string base64)
 		{
 			switch (base64.Length % 4)

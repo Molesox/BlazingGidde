@@ -8,6 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BlazingGidde.Server.Controllers.Identity
 {
+	/// <summary>
+	/// Controller for handling user login operations.
+	/// </summary>
 	[Route("api/[controller]")]
 	[ApiController]
 	public class LoginController : ControllerBase
@@ -15,6 +18,11 @@ namespace BlazingGidde.Server.Controllers.Identity
 		private readonly IConfiguration _configuration;
 		private readonly SignInManager<IdentityUser> _signInManager;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="LoginController"/> class.
+		/// </summary>
+		/// <param name="configuration">The configuration to retrieve JWT settings.</param>
+		/// <param name="signInManager">The sign-in manager to handle user authentication.</param>
 		public LoginController(IConfiguration configuration,
 			SignInManager<IdentityUser> signInManager)
 		{
@@ -22,6 +30,11 @@ namespace BlazingGidde.Server.Controllers.Identity
 			_signInManager = signInManager;
 		}
 
+		/// <summary>
+		/// Authenticates a user and returns a JWT token if successful.
+		/// </summary>
+		/// <param name="login">The login credentials provided by the user.</param>
+		/// <returns>An <see cref="IActionResult"/> with a success status and token or error details.</returns>
 		[HttpPost]
 		public async Task<IActionResult> Login([FromBody] LoginModel login)
 		{
