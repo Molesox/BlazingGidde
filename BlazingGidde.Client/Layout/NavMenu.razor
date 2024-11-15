@@ -1,50 +1,56 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-	<div class="container-fluid">
-		<a class="navbar-brand" href="">BlazingGidde.Client</a>
-		<button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-			<span class="navbar-toggler-icon"></span>
-		</button>
-	</div>
-</div>
-
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-	<nav class="flex-column">
-		<div class="nav-item px-3">
-			<NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-				<span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-			</NavLink>
-		</div>
-		<div class="nav-item px-3">
-			<NavLink class="nav-link" href="counter">
-				<span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-			</NavLink>
-		</div>
-		<div class="nav-item px-3">
-			<NavLink class="nav-link" href="weather">
-				<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-			</NavLink>
-		</div>
-		<AuthorizeView>
-			<div class="nav-item px-3">
-				<NavLink class="nav-link" href="aspnetusers">
-					<span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Users
-				</NavLink>
-			</div>
-		</AuthorizeView>
-
-	</nav>
-</div>
+﻿ 
+<AuthorizeView>
+	<Authorized>
+		<SfTreeView TValue="MenuItem" FullRowNavigable="true">
+			<TreeViewFieldsSettings TValue="MenuItem" DataSource="@MenuItems"
+			                        Id="Id" ParentID="ParentId"
+			                        Text="Text" HasChildren="HasChildren"
+			                        NavigateUrl="NavigateUrl" IconCss="IconCss">
+			</TreeViewFieldsSettings>
+		</SfTreeView>
+	</Authorized>
+</AuthorizeView>
 
 @code {
-	private bool collapseNavMenu = true;
+	public List<MenuItem> MenuItems { get; set; }
+	public List<MenuItem> AuthenticationItems { get; set; }
 
-	private string? NavMenuCssClass => collapseNavMenu
-		? "collapse"
-		: null;
-
-	private void ToggleNavMenu()
+	protected override void OnInitialized()
 	{
-		collapseNavMenu = !collapseNavMenu;
+
+		MenuItems = new List<MenuItem>
+		{
+			
+			new MenuItem { Id = "1", Text = "Home", NavigateUrl = "", ParentId = null, Expanded = true, IconCss = "e-icons e-home" },
+			new MenuItem { Id = "2", Text = "Counter", NavigateUrl = "counter", ParentId = null, Expanded = true, IconCss = "e-icons e-calculation" },
+			new MenuItem { Id = "3", Text = "Weather", NavigateUrl = "weather", ParentId = null, Expanded = true, IconCss = "e-icons e-nature" },
+		};
+
+		// Add admin menu items dynamically if authorized
+		var isUserAdmin = true;
+		if (isUserAdmin)
+		{
+			MenuItems.Add(new MenuItem { Id = "4", Text = "Admin", ParentId = null, Expanded = true, HasChildren = true });
+			MenuItems.Add(new MenuItem { Id = "5", Text = "Users", NavigateUrl = "aspnetusers", ParentId = "4" });
+		}
+
+	
+		AuthenticationItems = new List<MenuItem>()
+		{
+			new MenuItem { Id = "6", ParentId = null, Expanded = true, NavigateUrl = "login", IconCss = "e-icons e-login" },
+			new MenuItem { Id = "7", ParentId = null, Expanded = true, NavigateUrl = "register", IconCss = "e-icons e-register" }
+		};
+
 	}
 
+	public class MenuItem
+	{
+		public string Id { get; set; }
+		public string ParentId { get; set; }
+		public string Text { get; set; }
+		public string NavigateUrl { get; set; }
+		public bool HasChildren { get; set; }
+		public bool Expanded { get; set; }
+		public string IconCss { get; set; }
+	}
 }

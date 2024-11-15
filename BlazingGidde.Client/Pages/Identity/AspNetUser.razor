@@ -19,35 +19,38 @@ else if (_users is null || !_users.Any())
 }
 else
 {
-	<table class="table">
-		<thead>
-			<tr>
-				<th>ID</th>
-				<th>User Name</th>
-				<th>Email</th>
-				<th>Phone Number</th>
-				<th>Actions</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach (var user in _users)
-			{
-				<tr>
-					<td>@user.Id</td>
-					<td>@user.UserName</td>
-					<td>@user.Email</td>
-					<td>@user.PhoneNumber</td>
-					<td>
-						<button class="btn btn-primary" @onclick="() => EditUser(user.Id)">Edit</button>
-						<button class="btn btn-danger" @onclick="() => DeleteUser(user.Id)">Delete</button>
-					</td>
-				</tr>
-			}
-		</tbody>
-	</table>
+	<SfGrid DataSource="@_users" AllowPaging="true" AllowSorting="true" EditSettings="@gridEditSettings" Toolbar="@(new List<string>() { "Add", "Edit", "Delete" })">
+		<GridColumns>
+			<GridColumn Field="@nameof(IdentityUser.Id)" HeaderText="ID" TextAlign="TextAlign.Left" Width="150" AllowEditing=false></GridColumn>
+			<GridColumn Field="@nameof(IdentityUser.UserName)" HeaderText="User Name" TextAlign="TextAlign.Left" Width="150"></GridColumn>
+			<GridColumn Field="@nameof(IdentityUser.Email)" HeaderText="Email" TextAlign="TextAlign.Left" Width="200"></GridColumn>
+			<GridColumn Field="@nameof(IdentityUser.PhoneNumber)" HeaderText="Phone Number" TextAlign="TextAlign.Left" Width="150"></GridColumn>
+			<GridColumn HeaderText="Manage Users" Width="150">
+				<GridCommandColumns>
+					<GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
+					<GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })"></GridCommandColumn>
+					<GridCommandColumn Type="CommandButtonType.Save" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-update", CssClass = "e-flat" })"></GridCommandColumn>
+					<GridCommandColumn Type="CommandButtonType.Cancel" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-cancel-icon", CssClass = "e-flat" })"></GridCommandColumn>
+				</GridCommandColumns>
+			</GridColumn>
+		</GridColumns>
+ 
+	</SfGrid>
 }
 
 @code {
+
+	private GridEditSettings gridEditSettings = new()
+	{
+		AllowAdding = true,
+		AllowDeleting = true,
+		AllowEditOnDblClick = true,
+		AllowEditing = true,
+		Mode = EditMode.Dialog,
+		ShowConfirmDialog = true,
+		ShowDeleteConfirmDialog = true,
+		
+	};
 	private IEnumerable<IdentityUser>? _users;
 	private bool _isLoading = true;
 
@@ -59,6 +62,7 @@ else
 	private async Task LoadUsers()
 	{
 		_isLoading = true;
+
 		try
 		{
 			_users = await UserManager.GetAll();
@@ -91,4 +95,5 @@ else
 			Console.Error.WriteLine($"Failed to delete user with ID: {id}");
 		}
 	}
+
 }

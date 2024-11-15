@@ -1,19 +1,46 @@
-﻿@using BlazingGidde.Client.Shared
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+	<SfSidebar @ref="sidebarObj"
+	           Type="SidebarType.Auto"
+	           ShowBackdrop="false"
+	           Width="15%"
+	           @bind-IsOpen="SidebarToggle"
+	           MediaQuery="(min-width: 600px)"
+	           Target=".main-content">
+		<ChildContent>
+			<NavMenu/>
+		</ChildContent>
+	</SfSidebar>
 
-    <main>
-	    <div class="top-row px-4">
-		    <LoginDisplay/>
 
-		    <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-	    </div>
+	<SfToolbar >
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+		<ToolbarItems>
+			<ToolbarItem PrefixIcon="e-icons e-menu" 
+			             Align="ItemAlign.Left" 
+			             Text="Menu" OnClick="@ToogleSideBar"
+						 TooltipText="Afficher/Masquer le menu"></ToolbarItem>
+
+		</ToolbarItems>
+	</SfToolbar>
+
+
+	<div class="main-content">
+		<div class="content px-4">
+				@Body
+		</div>
+	</div>
+
+
 </div>
+
+@code {
+	SfSidebar sidebarObj;
+	public bool SidebarToggle = false;
+
+	public void ToogleSideBar()
+	{
+		SidebarToggle = !SidebarToggle;
+	}
+
+}
