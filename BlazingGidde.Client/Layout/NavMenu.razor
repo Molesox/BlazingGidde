@@ -1,46 +1,41 @@
-﻿ 
-<AuthorizeView>
-	<Authorized>
-		<SfTreeView TValue="MenuItem" FullRowNavigable="true">
-			<TreeViewFieldsSettings TValue="MenuItem" DataSource="@MenuItems"
-			                        Id="Id" ParentID="ParentId"
-			                        Text="Text" HasChildren="HasChildren"
-			                        NavigateUrl="NavigateUrl" IconCss="IconCss">
-			</TreeViewFieldsSettings>
-		</SfTreeView>
-	</Authorized>
-</AuthorizeView>
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="tree">
+	<SfTreeView TValue="MenuItem" FullRowNavigable="true">
+		<TreeViewFieldsSettings TValue="MenuItem" DataSource="@MenuItems"
+								Id="Id" ParentID="ParentId"
+								Text="Text" HasChildren="HasChildren"
+								NavigateUrl="NavigateUrl" IconCss="IconCss">
+		</TreeViewFieldsSettings>
+	</SfTreeView>
+</div>
 
 @code {
-	public List<MenuItem> MenuItems { get; set; }
-	public List<MenuItem> AuthenticationItems { get; set; }
+	public List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
+		// Get the current user's authentication state
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
 
-		MenuItems = new List<MenuItem>
-		{
-			
-			new MenuItem { Id = "1", Text = "Home", NavigateUrl = "", ParentId = null, Expanded = true, IconCss = "e-icons e-home" },
-			new MenuItem { Id = "2", Text = "Counter", NavigateUrl = "counter", ParentId = null, Expanded = true, IconCss = "e-icons e-calculation" },
-			new MenuItem { Id = "3", Text = "Weather", NavigateUrl = "weather", ParentId = null, Expanded = true, IconCss = "e-icons e-nature" },
-		};
+		InitializeMenu(user);
+	}
 
-		// Add admin menu items dynamically if authorized
-		var isUserAdmin = true;
-		if (isUserAdmin)
+	private void InitializeMenu(System.Security.Claims.ClaimsPrincipal user)
+	{
+		// Common menu items
+		MenuItems.Add(new MenuItem { Id = "1", Text = "Home", NavigateUrl = "", ParentId = null, Expanded = true, IconCss = "e-icons e-home" });
+		MenuItems.Add(new MenuItem { Id = "2", Text = "Counter", NavigateUrl = "counter", ParentId = null, Expanded = true, IconCss = "e-icons e-calculation" });
+		MenuItems.Add(new MenuItem { Id = "3", Text = "Weather", NavigateUrl = "weather", ParentId = null, Expanded = true, IconCss = "e-icons e-nature" });
+
+		// Role-specific items
+		// if (user.IsInRole("Admin"))
 		{
 			MenuItems.Add(new MenuItem { Id = "4", Text = "Admin", ParentId = null, Expanded = true, HasChildren = true });
 			MenuItems.Add(new MenuItem { Id = "5", Text = "Users", NavigateUrl = "aspnetusers", ParentId = "4" });
 		}
-
-	
-		AuthenticationItems = new List<MenuItem>()
-		{
-			new MenuItem { Id = "6", ParentId = null, Expanded = true, NavigateUrl = "login", IconCss = "e-icons e-login" },
-			new MenuItem { Id = "7", ParentId = null, Expanded = true, NavigateUrl = "register", IconCss = "e-icons e-register" }
-		};
-
 	}
 
 	public class MenuItem

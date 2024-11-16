@@ -4,48 +4,46 @@
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
 
-<h1>Login</h1>
 
-@if (_showErrors)
-{
-	<div class="alert alert-danger" role="alert">
-		<p>@_error</p>
-	</div>
-}
+<SfToast @ref="ToastObj" Timeout="5000" Content="@_error">
+	<ToastPosition X="Right" Y="Bottom"/>
+</SfToast>
 
-<div class="card">
-	<div class="card-body">
-		<h5 class="card-title">Please enter your details</h5>
+
+<SfCard CssClass="login-card">
+	<CardHeader >
+		<h2>Login</h2>
+	</CardHeader>
+	<CardContent>
 		<EditForm Model="_loginModel" OnValidSubmit="HandleLogin">
-			<DataAnnotationsValidator />
-			<ValidationSummary />
+			<DataAnnotationsValidator/>
 
 			<div class="form-group">
-				<label for="email">Email address</label>
-				<InputText Id="email" Class="form-control" @bind-Value="_loginModel.Email" />
-				<ValidationMessage For="@(() => _loginModel.Email)" />
+				<SfTextBox Id="email" Placeholder="Saisissez votre addresse mail" FloatLabelType="FloatLabelType.Always" CssClass="e-outline"
+				           @bind-Value="_loginModel.Email">
+				</SfTextBox>
+				<ValidationMessage For="@(() => _loginModel.Email)"/>
 			</div>
 			<div class="form-group">
-				<label for="password">Password</label>
-				<InputText Id="password" type="password" Class="form-control" @bind-Value="_loginModel.Password" />
-				<ValidationMessage For="@(() => _loginModel.Password)" />
+				<SfTextBox Id="password" Type="InputType.Password" Placeholder="Entrez votre mot de passe" FloatLabelType="FloatLabelType.Always" CssClass="e-outline"
+				           @bind-Value="_loginModel.Password">
+				</SfTextBox>
+				<ValidationMessage For="@(() => _loginModel.Password)"/>
 			</div>
-			<button type="submit" class="btn btn-primary">Submit</button>
+			<SfButton CssClass="e-primary" IsPrimary="true">Entrer</SfButton>
 		</EditForm>
-	</div>
-</div>
+	</CardContent>
+</SfCard>
 
 @code {
-
-	private LoginModel _loginModel = new LoginModel();
-
+	private LoginModel _loginModel = new();
+	private SfToast ToastObj;
 	private bool _showErrors;
 	private string _error = "";
 
+
 	private async Task HandleLogin()
 	{
-		_showErrors = false;
-
 		var result = await AuthService.Login(_loginModel);
 
 		if (result.Successful)
@@ -55,8 +53,47 @@
 		else
 		{
 			_error = result.Error!;
-			_showErrors = true;
+			await InvokeAsync(StateHasChanged);
+
+
+			await ShowErrorToast();
 		}
 	}
 
+	private async Task ShowErrorToast()
+	{
+		await ToastObj.ShowAsync();
+	}
+
+	private void OnRenderToast(object args)
+	{
+		// Add any actions needed after the toast is rendered.
+	}
+
 }
+
+<style>
+	.e-card .e-card-header{
+		justify-content: left;
+	}
+	.login-card {
+		width: 400px; /* Set a specific width for the card */
+		margin: 2rem auto; /* Center the card horizontally and add vertical spacing */
+		padding: 2rem; /* Add padding inside the card for better spacing */
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow for a polished look */
+		border-radius: 8px; /* Round the corners of the card */
+	}
+
+	.form-group {
+		margin-bottom: 1.5rem; /* Adds space between form fields */
+	}
+
+		.form-group:last-child {
+			margin-bottom: 2rem; /* Adjust this value to control spacing between the last form field and the button */
+		}
+
+	.login-card SfButton {
+		margin-top: 1rem; /* Adds space above the button */
+	}
+ 
+</style>

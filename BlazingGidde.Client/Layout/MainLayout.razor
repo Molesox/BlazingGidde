@@ -1,37 +1,60 @@
-﻿@inherits LayoutComponentBase
+﻿@using BlazingGidde.Client.Shared
+@inherits LayoutComponentBase
 <div class="page">
-	<SfSidebar @ref="sidebarObj"
-	           Type="SidebarType.Auto"
-	           ShowBackdrop="false"
-	           Width="15%"
-	           @bind-IsOpen="SidebarToggle"
-	           MediaQuery="(min-width: 600px)"
-	           Target=".main-content">
-		<ChildContent>
-			<NavMenu/>
-		</ChildContent>
-	</SfSidebar>
+	<AuthorizeView>
+		<Authorized>
 
+			<SfSidebar @ref="sidebarObj"
+			           Type="SidebarType.Auto"
+			           ShowBackdrop="false"
+			           Width="15%"
+			           @bind-IsOpen="SidebarToggle"
+			           MediaQuery="(min-width: 600px)"
+			           Target=".main-content">
+				<ChildContent>
+					<NavMenu/>
+				</ChildContent>
+			</SfSidebar>
+		</Authorized>
+	</AuthorizeView>
+	<div id="head">
+		<SfToolbar Height="55px">
 
-	<SfToolbar >
+			<ToolbarItems>
+				<AuthorizeView>
+					<Authorized>
 
-		<ToolbarItems>
-			<ToolbarItem PrefixIcon="e-icons e-menu" 
-			             Align="ItemAlign.Left" 
-			             Text="Menu" OnClick="@ToogleSideBar"
-						 TooltipText="Afficher/Masquer le menu"></ToolbarItem>
+						<ToolbarItem PrefixIcon="e-icons e-menu"
+						             Align="ItemAlign.Left"
+						             Text="Menu" OnClick="@ToogleSideBar"
+						             TooltipText="Afficher/Masquer le menu">
+						</ToolbarItem>
+					</Authorized>
 
-		</ToolbarItems>
-	</SfToolbar>
+				</AuthorizeView>
+				<ToolbarItem Align="ItemAlign.Right">
+					<Template>
+						<LoginDisplay/>
 
+					</Template>
+
+				</ToolbarItem>
+			</ToolbarItems>
+		</SfToolbar>
+	</div>
 
 	<div class="main-content">
-		<div class="content px-4">
-				@Body
+		<div class="content">
+			@Body
 		</div>
 	</div>
 
-
+	<footer class="footer">
+		<div class="footer-content">
+			<span>© 2024 AlpSoft SA. All rights reserved.</span>
+			<span class="version">Version 1.0.0</span>
+		</div>
+	</footer>
 </div>
 
 @code {
@@ -44,3 +67,36 @@
 	}
 
 }
+
+<style>
+	/* Sidebar styles */
+	.e-sidebar {
+		background-color: white;
+	}
+
+	.text-content {
+		font-size: 1.5rem;
+		padding: 3rem;
+	}
+
+	/* Toolbar styles */
+	.e-toolbar {
+		background-color: darkgray !important; /* Ensure the toolbar background is gray */
+		font-size: 16px;
+	}
+
+	.e-toolbar-items {
+		background-color: darkgray !important; /* Ensure the toolbar items background is gray */
+	}
+
+	/* Ensure individual toolbar items inherit the gray background */
+	.e-toolbar-item {
+		background-color: darkgray !important;
+		color: white; /* Optional: Set the text color for contrast */
+	}
+
+	.main > div {
+		padding-left: 0px !important;
+		padding-right: 0px !important;
+	}
+</style>

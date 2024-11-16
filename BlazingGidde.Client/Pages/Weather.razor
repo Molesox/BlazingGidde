@@ -7,17 +7,18 @@
 <h1>Weather</h1>
 
 <p>This component demonstrates fetching data from the server.</p>
-<div style= "height:calc(100vh - 10rem);">
-<SfGrid DataSource="@forecasts" EnableInfiniteScrolling="true" Height="100%"  >
-	<GridInfiniteScrollSettings  EnableCache="true"/>
-	<GridColumns>
-		<GridColumn AutoFit="true" Field="Date" HeaderText="Date" Format="d" Type="ColumnType.DateTime" Width="120"></GridColumn>
-			<GridColumn AutoFit="true"  Field="TemperatureC" HeaderText="Temp. (C)" Width="100"></GridColumn>
-		<GridColumn  AutoFit="true" Field="TemperatureF" HeaderText="Temp. (F)" Width="100"></GridColumn>
-		<GridColumn   Field="Summary" HeaderText="Summary" Width="200"></GridColumn>
-	</GridColumns>
-</SfGrid>
+<div style="height:calc(100vh - 17rem);">
+	<SfGrid DataSource="@forecasts" EnableInfiniteScrolling="true" Height="100%">
+		<GridInfiniteScrollSettings EnableCache="true"/>
+		<GridColumns>
+			<GridColumn AutoFit="true" Field="Date" HeaderText="Date" Format="d" Type="ColumnType.DateTime" Width="120"></GridColumn>
+			<GridColumn AutoFit="true" Field="TemperatureC" HeaderText="Temp. (C)" Width="100"></GridColumn>
+			<GridColumn AutoFit="true" Field="TemperatureF" HeaderText="Temp. (F)" Width="100"></GridColumn>
+			<GridColumn Field="Summary" HeaderText="Summary" Width="200"></GridColumn>
+		</GridColumns>
+	</SfGrid>
 </div>
+
 @code {
 	private WeatherForecast[]? forecasts;
 
@@ -25,4 +26,5 @@
 	{
 		forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
 	}
+
 }

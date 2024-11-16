@@ -1,29 +1,42 @@
+/* General Page Layout */
 .page {
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	height: 100vh; /* Ensures the page takes the full viewport height */
+	height: 100vh; /* Full viewport height */
 }
-.tool
-.content {
-	padding-top: 1.1rem;
-}
+
 .main-content {
-	flex: 1; /* Ensures this div grows to fill the remaining space */
-}
-.e-sidebar {
-	background-color: #f8f8f8;
-	color: black;
+	flex: 1; /* Grows to fill remaining space */
+	background: #f2f2f2; /* Subtle gray background */
+	padding: 1rem;
 }
 
-	.e-sidebar.e-left {
-		top: 55px;
-	}
+/* Footer Styling */
+.footer {
+	background: #3a3a3a; /* Dark gray */
+	color: #cccccc; /* Light gray text */
+	padding: 0.6rem 1rem;
+	text-align: center;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 0.85rem;
+}
 
-	.e-sidebar.e-right {
-		top: 55px;
-	}
+.footer-content {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
 
-.main > div {
-	padding: 0px !important;
+/* Main Content Enhancements */
+.content {
+	height:100%;
+	background: #ffffff; /* White background for content */
+	border: 1px solid #ccc; /* Light gray border */
+	border-radius: 4px; /* Subtle rounded corners */
+	padding: 1rem;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }

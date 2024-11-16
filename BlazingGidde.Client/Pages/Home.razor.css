@@ -1,0 +1,73 @@
+﻿.welcome-container {
+	margin: auto;
+	text-align: center;
+	padding: 2rem;
+	height: auto;
+	width: 60%;
+	background-color: #f9f9f9;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	min-width: 300px; /* Ensures proper size on narrow screens */
+}
+
+.welcome-image {
+	width: 100%; /* Takes full width of the parent container */
+	max-width: 200px; /* Caps the maximum size */
+	height: auto; /* Maintains the aspect ratio */
+	margin-bottom: 1rem;
+	border-radius: 50%;
+}
+
+.welcome-text {
+	font-size: 2rem;
+	color: #333;
+	margin: 0.5rem 0;
+}
+
+.welcome-subtext {
+	font-size: 1rem;
+	color: #666;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+	.welcome-container {
+		width: 80%;
+		padding: 1.5rem;
+	}
+
+	.welcome-text {
+		font-size: 1.8rem;
+	}
+
+	.welcome-subtext {
+		font-size: 0.9rem;
+	}
+
+	.welcome-image {
+		max-width: 150px; /* Shrinks the max width for smaller screens */
+	}
+}
+
+@media (max-width: 480px) {
+	.welcome-container {
+		width: 95%;
+		padding: 1rem;
+	}
+
+	.welcome-text {
+		font-size: 1.5rem;
+	}
+
+	.welcome-subtext {
+		font-size: 0.8rem;
+	}
+
+	.welcome-image {
+		max-width: 120px; /* Shrinks further for very small screens */
+	}
+}

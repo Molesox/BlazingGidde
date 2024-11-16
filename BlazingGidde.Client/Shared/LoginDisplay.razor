@@ -1,10 +1,66 @@
 ﻿<AuthorizeView>
 	<Authorized>
-		Hello, @context.User.Identity.Name!
-		<a href="LogOut">Log out</a>
+		<div class="login-display">
+			<span class="user-greeting">Hello, @context.User.Identity.Name!</span>
+			<SfButton CssClass="e-danger" OnClick="Logout">
+				<span class="material-icons">
+					logout
+				</span>
+				Log out
+			</SfButton>
+		</div>
 	</Authorized>
 	<NotAuthorized>
-		<a href="Register">Register</a>
-		<a href="Login">Log in</a>
+		<div class="login-display">
+			<SfButton CssClass="e-secondary e-outline" OnClick="NavigateToRegister">
+				<span class="material-icons">
+					person
+				</span>
+					S'enregistrer
+			 
+
+			</SfButton>
+			<SfButton CssClass="e-primary" IsPrimary="true"  OnClick="NavigateToLogin">
+				 
+					<span class="material-icons">
+						login
+					</span>
+				  Se connecter
+			 
+			</SfButton>
+		</div>
 	</NotAuthorized>
 </AuthorizeView>
+
+@code {
+	[Inject] NavigationManager NavigationManager { get; set; }
+
+	private void Logout()
+	{
+		NavigationManager.NavigateTo("LogOut", forceLoad: true);
+	}
+
+	private void NavigateToRegister()
+	{
+		NavigationManager.NavigateTo("Register");
+	}
+
+	private void NavigateToLogin()
+	{
+		NavigationManager.NavigateTo("Login");
+	}
+}
+<style>
+	.login-display {
+		display: flex;
+		align-items: center;
+		gap: 1rem; /* Space between elements */
+	}
+
+	.user-greeting {
+		font-size: 1rem;
+		font-weight: bold;
+	}
+
+	 
+</style>
