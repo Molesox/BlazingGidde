@@ -34,7 +34,7 @@ namespace BlazingGidde.Server.Controllers
 					return Ok(new APIListOfEntityResponse<TEntity>()
 					{
 						Success = true,
-						Data = result
+						Items = result
 					});
 				}
 				else
@@ -67,7 +67,7 @@ namespace BlazingGidde.Server.Controllers
 					return Ok(new APIEntityResponse<TEntity>()
 					{
 						Success = true,
-						Data = entity
+						Items = entity
 					});
 				}
 
@@ -96,7 +96,7 @@ namespace BlazingGidde.Server.Controllers
 				return Ok(new APIListOfEntityResponse<TEntity>()
 				{
 					Success = true,
-					Data = result.ToList()
+					Items = result.ToList()
 				});
 			}
 			catch (Exception ex)
@@ -118,7 +118,7 @@ namespace BlazingGidde.Server.Controllers
 				return Ok(new APIListOfEntityResponse<TEntity>()
 				{
 					Success = true,
-					Data = result.ToList()
+					Items = result.ToList()
 				});
 			}
 			catch (Exception ex)
@@ -140,7 +140,7 @@ namespace BlazingGidde.Server.Controllers
 				return Ok(new APIEntityResponse<TEntity>()
 				{
 					Success = true,
-					Data = insertedEntity
+					Items = insertedEntity
 				});
 			}
 			catch (Exception ex)
@@ -162,7 +162,7 @@ namespace BlazingGidde.Server.Controllers
 				return Ok(new APIEntityResponse<TEntity>()
 				{
 					Success = true,
-					Data = updateEntity
+					Items = updateEntity
 				});
 			}
 			catch (Exception ex)
@@ -173,7 +173,7 @@ namespace BlazingGidde.Server.Controllers
 		}
 
 		[HttpDelete("{Id}")]
-		public async Task<ActionResult> Delete([FromRoute] string Id)
+		public async Task<ActionResult<APIEntityResponse<TEntity>>> Delete([FromRoute] string Id)
 		{
 			try
 			{
@@ -183,7 +183,7 @@ namespace BlazingGidde.Server.Controllers
 				if (success)
 				{
 					_logger.LogInformation("Entity with ID: {Id} deleted successfully.", Id);
-					return Ok();
+					return Ok(new APIEntityResponse<TEntity>(){ Success = true });
 				}
 
 				_logger.LogWarning("Entity with ID: {Id} not found for deletion.", Id);

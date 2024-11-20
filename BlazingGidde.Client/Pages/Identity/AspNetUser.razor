@@ -1,99 +1,42 @@
-﻿@page "/aspnetusers"
+﻿@page "/appusers"
 @using BlazingGidde.Client.Services
+@using BlazingGidde.Shared.Models.Identity
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
-@inject AspNetUserManager UserManager
+@using Syncfusion.Blazor.Data
+
 @attribute [Authorize]
 
-<PageTitle>AspNetUsers</PageTitle>
+<PageTitle>Application Users</PageTitle>
 
-<h3>AspNetUsers</h3>
+<h3>Users</h3>
 
-@if (_isLoading)
-{
-	<p>Loading...</p>
-}
-else if (_users is null || !_users.Any())
-{
-	<p>No users available.</p>
-}
-else
-{
-	<SfGrid DataSource="@_users" AllowPaging="true" AllowSorting="true" EditSettings="@gridEditSettings" Toolbar="@(new List<string>() { "Add", "Edit", "Delete" })">
-		<GridColumns>
-			<GridColumn Field="@nameof(IdentityUser.Id)" HeaderText="ID" TextAlign="TextAlign.Left" Width="150" AllowEditing=false></GridColumn>
-			<GridColumn Field="@nameof(IdentityUser.UserName)" HeaderText="User Name" TextAlign="TextAlign.Left" Width="150"></GridColumn>
-			<GridColumn Field="@nameof(IdentityUser.Email)" HeaderText="Email" TextAlign="TextAlign.Left" Width="200"></GridColumn>
-			<GridColumn Field="@nameof(IdentityUser.PhoneNumber)" HeaderText="Phone Number" TextAlign="TextAlign.Left" Width="150"></GridColumn>
-			<GridColumn HeaderText="Manage Users" Width="150">
-				<GridCommandColumns>
-					<GridCommandColumn Type="CommandButtonType.Edit" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-edit", CssClass = "e-flat" })"></GridCommandColumn>
-					<GridCommandColumn Type="CommandButtonType.Delete" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-delete", CssClass = "e-flat" })"></GridCommandColumn>
-					<GridCommandColumn Type="CommandButtonType.Save" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-update", CssClass = "e-flat" })"></GridCommandColumn>
-					<GridCommandColumn Type="CommandButtonType.Cancel" ButtonOption="@(new CommandButtonOptions() { IconCss = "e-icons e-cancel-icon", CssClass = "e-flat" })"></GridCommandColumn>
-				</GridCommandColumns>
-			</GridColumn>
-		</GridColumns>
- 
-	</SfGrid>
-}
+
+    <SfGrid Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="IdentityUser">
+         <GridEvents TValue="IdentityUser" OnActionFailure="ActionFailureHandler"></GridEvents>
+       
+       <SfDataManager Url="AppUsers"  Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
+        <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Dialog"></GridEditSettings>
+
+        <GridColumns>
+            <GridColumn Field="Id" HeaderText="ID" TextAlign="TextAlign.Left" Width="150" IsPrimaryKey="true" AllowEditing="false"></GridColumn>
+            <GridColumn Field="UserName" HeaderText="User Name" TextAlign="TextAlign.Left" Width="150" AllowEditing="true"></GridColumn>
+            <GridColumn Field="Email" HeaderText="Email" TextAlign="TextAlign.Left" Width="200"></GridColumn>
+            <GridColumn Field="PhoneNumber" HeaderText="Phone Number" TextAlign="TextAlign.Left" Width="150"></GridColumn>
+        </GridColumns>
+    </SfGrid>
+
 
 @code {
-
-	private GridEditSettings gridEditSettings = new()
-	{
-		AllowAdding = true,
-		AllowDeleting = true,
-		AllowEditOnDblClick = true,
-		AllowEditing = true,
-		Mode = EditMode.Dialog,
-		ShowConfirmDialog = true,
-		ShowDeleteConfirmDialog = true,
-		
-	};
-	private IEnumerable<IdentityUser>? _users;
-	private bool _isLoading = true;
-
-	protected override async Task OnInitializedAsync()
-	{
-		await LoadUsers();
-	}
-
-	private async Task LoadUsers()
-	{
-		_isLoading = true;
-
-		try
-		{
-			_users = await UserManager.GetAll();
-		}
-		catch (Exception ex)
-		{
-			Console.Error.WriteLine($"Error loading users: {ex.Message}");
-		}
-		finally
-		{
-			_isLoading = false;
-		}
-	}
-
-	private void EditUser(string id)
-	{
-		// Navigate to edit page or implement edit logic
-		Console.WriteLine($"Edit user with ID: {id}");
-	}
-
-	private async Task DeleteUser(string id)
-	{
-		if (await UserManager.Delete(id))
-		{
-			Console.WriteLine($"Deleted user with ID: {id}");
-			await LoadUsers();
-		}
-		else
-		{
-			Console.Error.WriteLine($"Failed to delete user with ID: {id}");
-		}
-	}
-
+    public void ActionFailureHandler(Syncfusion.Blazor.Grids.FailureEventArgs args)
+    {
+        // Log the error message to the console
+        Console.WriteLine("Error occurred: " + args.Error.Message);
+        
+        // Optionally, display an alert to the user
+        // await JsRuntime.InvokeVoidAsync("alert", "An error occurred: " + args.Error.Message);
+        
+        // You can also use a notification service or dialog to show the error message
+    }
 }
+

@@ -20,6 +20,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStatePr
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<AspNetUserManager>();
+builder.Services.AddScoped<AspNetRoleManager>();
 
 builder.Services.AddSyncfusionBlazor();
 

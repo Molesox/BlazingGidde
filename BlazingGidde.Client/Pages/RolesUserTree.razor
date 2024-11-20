@@ -1,0 +1,23 @@
+﻿@using BlazingGidde.Shared.Models.Identity
+@using Syncfusion.Blazor.TreeGrid;
+@inject HttpClient http
+
+<h2>User in roles </h2>
+<SfTreeGrid DataSource="@TreeData" IdMapping="Id" ParentIdMapping="ParentId" TreeColumnIndex="1">
+    <TreeGridColumns>
+        <TreeGridColumn Field="Id" HeaderText="ID" Width="80" TextAlign="Syncfusion.Blazor.Grids.TextAlign.Right"></TreeGridColumn>
+        <TreeGridColumn Field="Name" HeaderText="Name" Width="160"></TreeGridColumn>
+        <TreeGridColumn Field="Email" HeaderText="Email" Width="200"></TreeGridColumn>
+    </TreeGridColumns>
+</SfTreeGrid>
+
+@code{
+    public List<TreeNodeViewModel>? TreeData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        TreeData = await http.GetFromJsonAsync<List<TreeNodeViewModel>>("AppRoles/getroleusertree");
+
+    }
+}

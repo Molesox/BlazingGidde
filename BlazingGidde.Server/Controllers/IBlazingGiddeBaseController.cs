@@ -20,12 +20,14 @@ namespace BlazingGidde.Server.Controllers
 		Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithLinqFilter(LinqQueryFilter<TEntity> linqQueryFilter);
 
 		[HttpPost]
-		Task<ActionResult<APIEntityResponse<TEntity>>> Post(TEntity Entity);
+		Task<ActionResult<APIEntityResponse<TEntity>>> Post([FromBody] TEntity Entity);
 
 		[HttpPut]
-		Task<ActionResult<APIEntityResponse<TEntity>>> Put(TEntity Entity);
+		Task<ActionResult<APIEntityResponse<TEntity>>> Put([FromBody] TEntity Entity);
 
 		[HttpDelete("{Id}")]
-		Task<ActionResult> Delete(string Id);
+		Task<ActionResult<APIEntityResponse<TEntity>>> Delete(string Id);
+
+		
 	}
 }

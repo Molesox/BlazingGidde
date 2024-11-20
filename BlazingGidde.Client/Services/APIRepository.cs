@@ -36,7 +36,7 @@ namespace BlazingGidde.Client.Services
 
 				if (response is not null && response.Success)
 				{
-					return response.Data;
+					return response.Items;
 				}
 
 				return new List<TEntity>();
@@ -65,7 +65,7 @@ namespace BlazingGidde.Client.Services
 
 				if (response is not null && response.Success)
 				{
-					return response.Data;
+					return response.Items;
 				}
 
 				return null;
@@ -92,7 +92,7 @@ namespace BlazingGidde.Client.Services
 
 				if (response is not null && response.Success)
 				{
-					return response.Data;
+					return response.Items;
 				}
 
 				return new List<TEntity>();
@@ -119,7 +119,7 @@ namespace BlazingGidde.Client.Services
 
 				if (response is not null && response.Success)
 				{
-					return response.Data;
+					return response.Items;
 				}
 
 				return new List<TEntity>();
@@ -145,7 +145,7 @@ namespace BlazingGidde.Client.Services
 
 				if (response is not null && response.Success)
 				{
-					return response.Data!;
+					return response.Items!;
 				}
 
 				return null;
@@ -171,7 +171,7 @@ namespace BlazingGidde.Client.Services
 
 				if (response is not null && response.Success)
 				{
-					return response.Data!;
+					return response.Items!;
 				}
 
 				return null;

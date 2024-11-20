@@ -1,6 +1,7 @@
 ﻿//Author: DS
 //Year: 2022
 
+
 namespace BlazingGidde.Shared.API
 {
 	/// <summary>
@@ -25,7 +26,9 @@ namespace BlazingGidde.Shared.API
 		/// Gets or sets the data resulting from a successful API call.
 		/// This will be a list of TEntity type objects.
 		/// </summary>
-		public IEnumerable<TEntity> Data { get; set; } = new List<TEntity>();
+		public IEnumerable<TEntity> Items { get; set; } = new List<TEntity>();
+
+		public int Count { get => Items.Count(); }
 
 		#endregion
 	}

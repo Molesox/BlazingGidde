@@ -24,7 +24,7 @@ namespace BlazingGidde.Shared.API
 		/// <summary>
 		/// Gets or sets the data resulting from a successful API call.
 		/// </summary>
-		public TEntity? Data { get; set; }
+		public TEntity? Items { get; set; }
 
 		#endregion
 	}

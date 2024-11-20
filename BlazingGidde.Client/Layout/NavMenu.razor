@@ -34,7 +34,8 @@
 		// if (user.IsInRole("Admin"))
 		{
 			MenuItems.Add(new MenuItem { Id = "4", Text = "Admin", ParentId = null, Expanded = true, HasChildren = true });
-			MenuItems.Add(new MenuItem { Id = "5", Text = "Users", NavigateUrl = "aspnetusers", ParentId = "4" });
+			MenuItems.Add(new MenuItem { Id = "5", Text = "Users", NavigateUrl = "appusers", ParentId = "4" });
+			MenuItems.Add(new MenuItem { Id = "6", Text = "Roles", NavigateUrl = "approles", ParentId = "4" });
 		}
 	}
 

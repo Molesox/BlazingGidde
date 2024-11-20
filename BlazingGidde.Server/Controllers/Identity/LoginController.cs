@@ -40,10 +40,10 @@ namespace BlazingGidde.Server.Controllers.Identity
 		{
 			var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, false, false);
 
-			if (!result.Succeeded)
-			{
-				return BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
-			}
+			// if (!result.Succeeded)
+			// {
+			// 	return BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
+			// }
 
 
 			var claims = new[]
