@@ -178,7 +178,8 @@ namespace BlazingGidde.Server.Controllers
 			try
 			{
 				_logger.LogInformation("Deleting entity with ID: {Id}", Id);
-				var success = await _repository.Delete(Id);
+
+				var success = await _repository.Delete(int.Parse(Id));
 
 				if (success)
 				{

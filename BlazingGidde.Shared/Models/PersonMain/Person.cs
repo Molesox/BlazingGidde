@@ -120,28 +120,28 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// </summary>
         [ForeignKey("PersonID")]
        
-        public virtual ICollection<Address> Addresses { get; set; }
+        public virtual ICollection<Address>? Addresses { get; set; }
 
         /// <summary>
         /// The collection of Emails associated with this Person.
         /// </summary>
         [ForeignKey("PersonID")]
        
-        public virtual ICollection<Email> Emails { get; set; }
+        public virtual ICollection<Email>? Emails { get; set; }
 
         /// <summary>
         /// The collection of PersonProfiles associated with this Person.
         /// </summary>
         [ForeignKey("PersonID")]
        
-        public virtual ICollection<PersonProfile> PersonProfiles { get; set; }
+        public virtual ICollection<PersonProfile>? PersonProfiles { get; set; }
 
         /// <summary>
         /// The collection of Phones associated with this Person.
         /// </summary>
         [ForeignKey("PersonID")]
        
-        public virtual ICollection<Phone> Phones { get; set; }
+        public virtual ICollection<Phone>? Phones { get; set; }
 
         #endregion
     }

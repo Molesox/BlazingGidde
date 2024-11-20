@@ -10,6 +10,43 @@
 		</TreeViewFieldsSettings>
 	</SfTreeView>
 </div>
+<style>
+
+    .e-treeview .e-list-item.e-hover > .e-text-content .e-list-text {
+        color: #f2f2f2; /* Light gray */
+    }
+
+    .e-treeview .e-list-item.e-active > .e-text-content {
+        background-color: #a2a2a2; /* Medium gray */
+    }
+
+    .e-treeview .e-list-item.e-active > .e-fullrow {
+        background-color: inherit;
+        border: none;
+    }
+
+    .e-treeview .e-list-item.e-active.e-hover > .e-text-content .e-list-text, .e-fullrow {
+        color: #f2f2f2; /* Light gray */
+        border: none;
+        background-color: inherit !important;
+    }
+
+    .e-treeview .e-list-item.e-active > .e-text-content .e-list-text {
+        color: #f2f2f2; /* Light gray */
+    }
+
+ 
+    .e-treeview .e-level-1,
+    .e-treeview .e-level-2,
+    .e-treeview .e-level-3 {
+        background-color: #ffffff; /* Dark gray */
+    }
+
+    .e-treeview .e-list-item.e-hover > .e-fullrow {
+        background-color: inherit;
+        border: none;
+    }
+</style>
 
 @code {
 	public List<MenuItem> MenuItems { get; set; } = new List<MenuItem>();
@@ -27,7 +64,7 @@
 	{
 		// Common menu items
 		MenuItems.Add(new MenuItem { Id = "1", Text = "Home", NavigateUrl = "", ParentId = null, Expanded = true, IconCss = "e-icons e-home" });
-		MenuItems.Add(new MenuItem { Id = "2", Text = "Counter", NavigateUrl = "counter", ParentId = null, Expanded = true, IconCss = "e-icons e-calculation" });
+		MenuItems.Add(new MenuItem { Id = "2", Text = "Person", NavigateUrl = "person", ParentId = null, Expanded = true, IconCss = "e-icons e-calculation" });
 		MenuItems.Add(new MenuItem { Id = "3", Text = "Weather", NavigateUrl = "weather", ParentId = null, Expanded = true, IconCss = "e-icons e-nature" });
 
 		// Role-specific items
