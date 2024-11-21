@@ -18,7 +18,7 @@
 else
 {
     
-    <SfGrid DataSource="@Roles" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="IdentityRole">
+    <SfGrid  EnableAdaptiveUI="true" DataSource="@Roles" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="IdentityRole">
         <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Dialog"></GridEditSettings>
         <GridEvents OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="IdentityRole"></GridEvents>
         <GridColumns>

@@ -1,6 +1,6 @@
 ﻿//Author: DS
 //Year: 2022
-
+// 1
 namespace BlazingGidde.Shared.Repository
 {
 	/// <summary>

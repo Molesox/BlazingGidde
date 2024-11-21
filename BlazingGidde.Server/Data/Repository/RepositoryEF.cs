@@ -1,6 +1,6 @@
 ﻿using BlazingGidde.Shared.Repository;
 using Microsoft.EntityFrameworkCore;
-
+//2
 namespace BlazingGidde.Server.Data.Repository
 {
 	/// <summary>
