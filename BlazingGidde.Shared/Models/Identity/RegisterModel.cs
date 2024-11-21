@@ -21,7 +21,7 @@ namespace BlazingGidde.Shared.Models.Identity
         /// <summary>
         /// Gets or sets the username for the user. This field is required and must not exceed 50 characters.
         /// </summary>
-        [Required]
+      
         [StringLength(50, ErrorMessage = "The {0} must be at most {1} characters long.")]
         [Display(Name = "Username")]
         public string? UserName { get; set; }

@@ -22,9 +22,9 @@ else
         <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Dialog"></GridEditSettings>
         <GridEvents OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="IdentityRole"></GridEvents>
         <GridColumns>
-            <GridColumn Field="Id" HeaderText="ID" TextAlign="TextAlign.Left" Width="150" IsPrimaryKey="true" AllowEditing="false"></GridColumn>
+            <GridColumn Field="Id" HeaderText="ID" TextAlign="TextAlign.Left" Width="150" IsPrimaryKey="true" AllowAdding="false" AllowEditing="false"></GridColumn>
             <GridColumn Field="Name" HeaderText="Role Name" TextAlign="TextAlign.Left" Width="200"></GridColumn>
-            <GridColumn Field="NormalizedName" HeaderText="Normalized Name" TextAlign="TextAlign.Left" Width="200" AllowEditing="false"></GridColumn>
+			<GridColumn Field="NormalizedName" HeaderText="Normalized Name" TextAlign="TextAlign.Left" Width="200" AllowEditing="false" Visible="false"></GridColumn>
             <GridColumn Field="ConcurrencyStamp" HeaderText="Concurrency Stamp" TextAlign="TextAlign.Left" Width="250" AllowEditing="false" Visible="false"></GridColumn>
         </GridColumns>
     </SfGrid>

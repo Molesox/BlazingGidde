@@ -30,7 +30,7 @@ namespace BlazingGidde.Server.Controllers.Identity
 		[HttpPost]
 		public async Task<IActionResult> Post([FromBody] RegisterModel model)
 		{
-			var newUser = new IdentityUser { UserName = model.UserName, Email = model.Email, PhoneNumber=model.PhoneNumber, };
+			var newUser = new IdentityUser { UserName = model.Email, Email = model.Email, PhoneNumber=model.PhoneNumber, };
 
 			var result = await _userManager.CreateAsync(newUser, model.Password!);
 

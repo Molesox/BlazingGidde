@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazingGidde.Server", "BlazingGidde.Server\BlazingGidde.Server.csproj", "{48ACED3D-FB23-4DD6-B3CE-9CB5F3314B6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazingGidde.Server", "BlazingGidde.Server\BlazingGidde.Server.csproj", "{48ACED3D-FB23-4DD6-B3CE-9CB5F3314B6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazingGidde.Shared", "BlazingGidde.Shared\BlazingGidde.Shared.csproj", "{FA872C6D-D134-4545-AEAE-86AB78181525}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazingGidde.Shared", "BlazingGidde.Shared\BlazingGidde.Shared.csproj", "{FA872C6D-D134-4545-AEAE-86AB78181525}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazingGidde.Client", "BlazingGidde.Client\BlazingGidde.Client.csproj", "{5870325F-220A-4BA4-81E8-B3B3033CA473}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazingGidde.Client", "BlazingGidde.Client\BlazingGidde.Client.csproj", "{5870325F-220A-4BA4-81E8-B3B3033CA473}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

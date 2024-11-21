@@ -1,16 +1,17 @@
 ﻿@page "/register"
-@using BlazingGidde.Client.Services
+
+
 @using BlazingGidde.Shared.Models.Identity
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
 
-<SfToast @ref="ToastObj" Timeout="5000" Content="@_error">
+<SfToast @ref="ToastObj" Timeout="5000" Content="@_error" >
 	<ToastPosition X="Right" Y="Bottom" />
 </SfToast>
 
 <SfCard CssClass="register-card">
 	<CardHeader>
-		<h2>S'enregistrer'</h2>
+		<h2>Senregistrer</h2>
 	</CardHeader>
 	<CardContent>
 		<EditForm Model="_registerModel" OnValidSubmit="HandleRegistration">
@@ -36,8 +37,8 @@
 				</SfTextBox>
 				<ValidationMessage For="@(() => _registerModel.ConfirmPassword)" />
 			</div>
+			<SfButton CssClass="e-primary" IsPrimary="true">Entrer</SfButton>
 
-			<SfButton CssClass="e-primary" IsPrimary="true">C'est parti!</SfButton>
 		</EditForm>
 	</CardContent>
 </SfCard>
