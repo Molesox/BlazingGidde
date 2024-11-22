@@ -12,7 +12,7 @@
 <h3>Users</h3>
 
 
-    <SfGrid  EnableAdaptiveUI="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="IdentityUser">
+    <SfGrid    Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="IdentityUser">
          <GridEvents TValue="IdentityUser" OnActionFailure="ActionFailureHandler"></GridEvents>
        
        <SfDataManager Url="AppUsers"  Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>

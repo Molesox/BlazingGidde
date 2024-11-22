@@ -72,22 +72,21 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// Gets or sets the vat number.
         /// </summary>
         [StringLength(20)]
-        public string VatNumber
+        public string? VatNumber
         {
             get; set;
         }
-        string _vatNumber;
+        string? _vatNumber;
 
         /// <summary>
         /// Gets or sets the remarks.
         /// </summary>
         [StringLength(200)]
-       
-        public string Remarks
+        public string? Remarks
         {
             get; set;
         }
-        string _remarks;
+        string? _remarks;
 
         /// <summary>
         /// Gets or sets the annual revenue.
@@ -119,8 +118,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// The collection of Addresses associated with this Person.
         /// </summary>
         [ForeignKey("PersonID")]
-       
-        public virtual ICollection<Address>? Addresses { get; set; }
+        public virtual ICollection<Address>? Addresses { get; set; } = new List<Address>();
 
         /// <summary>
         /// The collection of Emails associated with this Person.
@@ -133,14 +131,12 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// The collection of PersonProfiles associated with this Person.
         /// </summary>
         [ForeignKey("PersonID")]
-       
         public virtual ICollection<PersonProfile>? PersonProfiles { get; set; }
 
         /// <summary>
         /// The collection of Phones associated with this Person.
         /// </summary>
         [ForeignKey("PersonID")]
-       
         public virtual ICollection<Phone>? Phones { get; set; }
 
         #endregion

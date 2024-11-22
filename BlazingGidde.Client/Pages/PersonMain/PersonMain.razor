@@ -2,9 +2,11 @@
 @using BlazingGidde.Client.Services
 
 @using BlazingGidde.Shared.Models.PersonMain
+@using BlazingGidde.Shared.Models.PersonMain.Details
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Syncfusion.Blazor.Data
+@using Syncfusion.Blazor.Lists
 @inject PersonMainManager personManager
 @attribute [Authorize]
 
@@ -12,65 +14,66 @@
 
 <h3>Person</h3>
 
-@if (_isLoading)
-{
-    <p>Loading...</p>
-}
-else
-{
-    
-<SfGrid  EnableAdaptiveUI="true" DataSource="@Persons" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="Person">
-    <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Dialog"></GridEditSettings>
-    <GridEvents OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="Person"></GridEvents>
+<SfToast ID="toast_default" @ref="ToastObj" Title="Error" Content="@ToastContent" Timeout="5000" Icon="e-meeting">
+    <ToastPosition X="@ToastPosition"></ToastPosition>
+</SfToast>
+
+<SfGrid DataSource="@Persons" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })"
+    TValue="Person">
+    <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Dialog">
+
+    </GridEditSettings>
+    <GridEvents OnActionBegin="ActionBeginHandler" OnActionFailure="ActionFailureHandler" TValue="Person"></GridEvents>
+
     <GridColumns>
-        <GridColumn Field="PersonID" HeaderText="ID" TextAlign="TextAlign.Left" Width="150" IsPrimaryKey="true" AllowEditing="false"></GridColumn>
+        <GridColumn Field="PersonID" HeaderText="ID" TextAlign="TextAlign.Left" Width="150" IsPrimaryKey="true"
+            AllowEditing="false"></GridColumn>
         <GridColumn Field="FirstName" HeaderText="First Name" TextAlign="TextAlign.Left" Width="150"></GridColumn>
         <GridColumn Field="LastName" HeaderText="Last Name" TextAlign="TextAlign.Left" Width="150"></GridColumn>
         <GridColumn Field="Culture" HeaderText="Culture" TextAlign="TextAlign.Left" Width="100"></GridColumn>
         <GridColumn Field="Title" HeaderText="Title" TextAlign="TextAlign.Left" Width="100"></GridColumn>
         <GridColumn Field="VatNumber" HeaderText="VAT Number" TextAlign="TextAlign.Left" Width="120"></GridColumn>
-        <GridColumn Field="AnnualRevenue" HeaderText="Annual Revenue" TextAlign="TextAlign.Right" Format="C" Width="150"></GridColumn>
+        <GridColumn Field="AnnualRevenue" HeaderText="Annual Revenue" TextAlign="TextAlign.Right" Format="C"
+            Width="150"></GridColumn>
         <GridColumn Field="Remarks" HeaderText="Remarks" TextAlign="TextAlign.Left" Width="200"></GridColumn>
     </GridColumns>
 </SfGrid>
 
-}
+
 
 @code {
-    private List<Person> Persons { get; set; } = new();
-    private bool _isLoading = true;
 
-    protected override async Task OnInitializedAsync()
+    SfToast ToastObj = new();
+    private string ToastPosition = "Right";
+    private string ToastContent = "Uhmm...";
+
+    private List<Person> Persons { get; set; }
+
+    protected override async void OnInitialized()
     {
-        _isLoading = true;
         Persons = (await personManager.GetAll()).ToList();
-        _isLoading = false;
+        StateHasChanged();
     }
-
-    private async Task ActionBeginHandler(ActionEventArgs<Person> args)
+    public async void ActionFailureHandler(Syncfusion.Blazor.Grids.FailureEventArgs args)
     {
-        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
-        {
-            if (args.Action == "Add")
-            {
-                await personManager.Insert(args.Data);
-            }
-            else
-            {
-                await personManager.Update(args.Data);
-            }
-        }
-        else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
-        {
-            await personManager.Delete(args.Data.PersonID);
-        }
+        await this.ToastObj.ShowAsync();
     }
+    private Boolean Check = false;
 
-    private async Task ActionCompleteHandler(ActionEventArgs<Person> args)
+    public void ActionBeginHandler(ActionEventArgs<Person> args)
     {
-        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save) || args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        if (args.RequestType.ToString() == "Save")
         {
-            Persons = (await personManager.GetAll()).ToList(); // Refresh grid data
+            args.Data.Addresses.Add(new Address()
+            {
+                AddressLine1 = "jdlfn"
+            });
+            personManager.Insert(args.Data);
+            Check = true;
+        }
+        else
+        {
+            Check = false;
         }
     }
 }
