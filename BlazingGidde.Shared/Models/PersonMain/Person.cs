@@ -18,6 +18,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// Gets or sets the person ID.
         /// </summary>
         [Key]
+		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PersonID
         {
             get; set;

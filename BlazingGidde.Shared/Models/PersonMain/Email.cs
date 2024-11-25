@@ -19,7 +19,6 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-       
         public int EmailID
         {
             get; set;

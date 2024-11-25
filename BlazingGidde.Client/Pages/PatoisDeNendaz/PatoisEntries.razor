@@ -1,0 +1,36 @@
+﻿@page "/patois"
+@using BlazingGidde.Shared.Models.Patois
+@using Microsoft.AspNetCore.Identity
+@using Syncfusion.Blazor.Data
+@inject DictionaryManager dictionaryManager
+
+<PageTitle>Dictionnaire</PageTitle>
+
+<h3>Entrées dictionnaire</h3>
+<div style="height:calc(100vh - 17rem);">
+	<SfGrid EnableInfiniteScrolling="true" DataSource="@DicEntries" Height="100%" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="DictionaryEntry">
+		<GridEvents TValue="DictionaryEntry"></GridEvents>
+	
+
+		<GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Dialog"></GridEditSettings>
+	
+		<GridColumns>
+			<GridColumn Field="Id" HeaderText="ID" TextAlign="TextAlign.Left" Width="150" IsPrimaryKey="true" AllowEditing="false"></GridColumn>
+			<GridColumn Field="FrenchWord" HeaderText="French word" TextAlign="TextAlign.Left" Width="150" AllowEditing="true"></GridColumn>
+			<GridColumn Field="DialectWord" HeaderText="Dialect word" TextAlign="TextAlign.Left" Width="200"></GridColumn>
+			<GridColumn Field="FrenchExample" HeaderText="Exemple" TextAlign="TextAlign.Left" Width="150"></GridColumn>
+			<GridColumn Field="DialectExample" HeaderText="Echample" TextAlign="TextAlign.Left" Width="150"></GridColumn>
+		</GridColumns>
+	</SfGrid>
+
+</div>
+@code {
+	public List<DictionaryEntry> DicEntries { get; set; }
+
+	protected override async void OnInitialized()
+	{
+		DicEntries = (await dictionaryManager.GetAll()).ToList();
+
+		StateHasChanged();
+	}
+}

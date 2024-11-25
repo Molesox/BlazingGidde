@@ -1,9 +1,12 @@
-﻿using BlazingGidde.Server.Data.Repository;
+﻿using System.Web.Http;
+using System.Web.Http.OData;
+using BlazingGidde.Server.Data.Repository;
 using BlazingGidde.Shared.API;
 using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Syncfusion.Blazor;
 
 namespace BlazingGidde.Server.Controllers
 {
@@ -20,13 +23,14 @@ namespace BlazingGidde.Server.Controllers
 			_logger = logger;
 		}
 
-		[HttpGet]
+		[Microsoft.AspNetCore.Mvc.HttpGet]
+		[EnableQuery]
 		public async Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetAll()
 		{
 			try
 			{
 				_logger.LogInformation("Fetching all entities.");
-				var result = await _repository.GetAll();
+				var result = _repository.dbSet.AsQueryable();
 
 				if (result is not null)
 				{
@@ -53,7 +57,7 @@ namespace BlazingGidde.Server.Controllers
 			}
 		}
 
-		[HttpGet("{Id}")]
+		[Microsoft.AspNetCore.Mvc.HttpGet("{Id}")]
 		public async Task<ActionResult<APIEntityResponse<TEntity>>> GetById([FromRoute] string Id)
 		{
 			try
@@ -84,8 +88,8 @@ namespace BlazingGidde.Server.Controllers
 			}
 		}
 
-		[HttpPost("getwithfilter")]
-		public async Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithFilter([FromBody] QueryFilter<TEntity> Filter)
+		[Microsoft.AspNetCore.Mvc.HttpPost("getwithfilter")]
+		public async Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithFilter([Microsoft.AspNetCore.Mvc.FromBody] QueryFilter<TEntity> Filter)
 		{
 			try
 			{
@@ -106,8 +110,10 @@ namespace BlazingGidde.Server.Controllers
 			}
 		}
 
-		[HttpPost("getwithLinqfilter")]
-		public async Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithLinqFilter([FromBody] LinqQueryFilter<TEntity> linqQueryFilter)
+
+
+		[Microsoft.AspNetCore.Mvc.HttpPost("getwithLinqfilter")]
+		public async Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithLinqFilter([Microsoft.AspNetCore.Mvc.FromBody] LinqQueryFilter<TEntity> linqQueryFilter)
 		{
 			try
 			{
@@ -128,8 +134,8 @@ namespace BlazingGidde.Server.Controllers
 			}
 		}
 
-		[HttpPost]
-		public async Task<ActionResult<APIEntityResponse<TEntity>>> Post([FromBody] TEntity Entity)
+		[Microsoft.AspNetCore.Mvc.HttpPost]
+		public async Task<ActionResult<APIEntityResponse<TEntity>>> Post([Microsoft.AspNetCore.Mvc.FromBody] TEntity Entity)
 		{
 			try
 			{
@@ -150,8 +156,8 @@ namespace BlazingGidde.Server.Controllers
 			}
 		}
 
-		[HttpPut]
-		public async Task<ActionResult<APIEntityResponse<TEntity>>> Put([FromBody] TEntity Entity)
+		[Microsoft.AspNetCore.Mvc.HttpPut]
+		public async Task<ActionResult<APIEntityResponse<TEntity>>> Put([Microsoft.AspNetCore.Mvc.FromBody] TEntity Entity)
 		{
 			try
 			{
@@ -172,7 +178,7 @@ namespace BlazingGidde.Server.Controllers
 			}
 		}
 
-		[HttpDelete("{Id}")]
+		[Microsoft.AspNetCore.Mvc.HttpDelete("{Id}")]
 		public async Task<ActionResult<APIEntityResponse<TEntity>>> Delete([FromRoute] string Id)
 		{
 			try
@@ -184,7 +190,7 @@ namespace BlazingGidde.Server.Controllers
 				if (success)
 				{
 					_logger.LogInformation("Entity with ID: {Id} deleted successfully.", Id);
-					return Ok(new APIEntityResponse<TEntity>(){ Success = true });
+					return Ok(new APIEntityResponse<TEntity>() { Success = true });
 				}
 
 				_logger.LogWarning("Entity with ID: {Id} not found for deletion.", Id);

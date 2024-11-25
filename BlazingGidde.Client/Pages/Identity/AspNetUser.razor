@@ -1,6 +1,7 @@
 ﻿@page "/appusers"
 @using BlazingGidde.Client.Services
 @using BlazingGidde.Shared.Models.Identity
+@using BlazingGidde.Shared.Models.Patois
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Syncfusion.Blazor.Data
@@ -15,7 +16,7 @@
     <SfGrid  Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="IdentityUser">
          <GridEvents TValue="IdentityUser" OnActionFailure="ActionFailureHandler"></GridEvents>
        
-       <SfDataManager Url="AppUsers"  Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
+        <SfDataManager Url="AppUsers"  Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
         <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Dialog"></GridEditSettings>
 
         <GridColumns>
@@ -28,6 +29,9 @@
 
 
 @code {
+
+
+
     public void ActionFailureHandler(Syncfusion.Blazor.Grids.FailureEventArgs args)
     {
         // Log the error message to the console

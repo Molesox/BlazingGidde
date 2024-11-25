@@ -1,0 +1,82 @@
+﻿@page "/patoislist"
+@using BlazingGidde.Shared.Models.Patois
+@using Microsoft.AspNetCore.Identity
+@using Syncfusion.Blazor.Data
+@using Syncfusion.Blazor.Lists
+@inject DictionaryManager dictionaryManager
+
+<PageTitle>Dictionnaire</PageTitle>
+
+<h3 class="page-title">Entrées du dictionnaire</h3>
+
+<div class="dictionary-list-container">
+	<SfListView EnableVirtualization="true" Height="100%" DataSource="@DicEntries">
+		<ListViewFieldSettings  TValue="DictionaryEntry" Id="Id" Text="FrenchWord" GroupBy="Parent"></ListViewFieldSettings>
+		<ListViewTemplates TValue="DictionaryEntry">
+			<Template>
+				<div class="e-list-wrapper  e-list-multi-line ">
+
+					<div class="e-list-item-header">
+						<span class="word">@context.FrenchWord</span>
+						<span class="dialect">@context.DialectWord</span>
+					</div>
+
+					<div class="e-list-content dictionary-item-content">
+						<p class="example">
+							<strong>Exemple FR :</strong> @context.FrenchExample
+						</p>
+						<p class="example">
+							<strong>Exemple Dialecte :</strong> @context.DialectExample
+						</p>
+					</div>
+				</div>
+			</Template>
+		</ListViewTemplates>
+	</SfListView>
+</div>
+
+<style>
+ 
+
+	.dictionary-list-container {
+		height: calc(100vh - 17rem);
+		padding: 1rem;
+	}
+ 
+
+	.e-list-item-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 0.5rem;
+		font-weight: bold;
+		font-size: 1.2rem;
+	}
+
+	.e-list-item-header .word {
+		color: #007BFF;
+	}
+
+	.e-list-item-header .dialect {
+		color: #28A745;
+	}
+
+	.dictionary-item-content {
+		font-size: 0.95rem;
+		color: #555;
+	}
+
+	.dictionary-item-content .example {
+		margin: 0.5rem 0;
+	}
+</style>
+
+@code {
+	public List<DictionaryEntry> DicEntries { get; set; }
+
+	protected override async void OnInitialized()
+	{
+		DicEntries = (await dictionaryManager.GetAll()).ToList();
+		StateHasChanged();
+	}
+}

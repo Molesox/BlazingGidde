@@ -20,7 +20,6 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-       
         public int PersonTypeID
         {
             get; set;
@@ -63,7 +62,5 @@ namespace BlazingGidde.Shared.Models.PersonMain
 
 
         #endregion
-
-        
     }
 }
