@@ -137,7 +137,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// The collection of Phones associated with this Person.
         /// </summary>
         [ForeignKey("PersonID")]
-        public virtual ICollection<Phone>? Phones { get; set; }
+        public virtual ICollection<Phone>? Phones { get; set; } = new List<Phone>();
 
         #endregion
     }
