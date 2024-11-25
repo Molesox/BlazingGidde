@@ -14,7 +14,7 @@ var connectionString = configuration.GetConnectionString("DefaultConnection");
 
 // Add services to the container.
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
@@ -24,6 +24,8 @@ builder.Services.AddDefaultIdentity<
 	.AddEntityFrameworkStores<ApplicationDbContext>();
 
  builder.Services.AddTransient<RepositoryEF<Person, ApplicationDbContext>>();
+ builder.Services.AddTransient<RepositoryEF<Email, ApplicationDbContext>>();
+ builder.Services.AddTransient<RepositoryEF<Phone, ApplicationDbContext>>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {

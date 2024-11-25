@@ -11,8 +11,8 @@ namespace BlazingGidde.Server.Controllers
 		where TEntity : class
 		where TDataContext : DbContext
 	{
-		private readonly RepositoryEF<TEntity, TDataContext> _repository;
-		private readonly ILogger<BlazingGiddeBaseController<TEntity, TDataContext>> _logger;
+		protected readonly RepositoryEF<TEntity, TDataContext> _repository;
+		protected readonly ILogger<BlazingGiddeBaseController<TEntity, TDataContext>> _logger;
 
 		public BlazingGiddeBaseController(RepositoryEF<TEntity, TDataContext> repository, ILogger<BlazingGiddeBaseController<TEntity, TDataContext>> logger)
 		{
@@ -59,7 +59,7 @@ namespace BlazingGidde.Server.Controllers
 			try
 			{
 				_logger.LogInformation("Fetching entity with ID: {Id}", Id);
-				var entity = await _repository.GetByID(Id);
+				var entity = await _repository.GetByID(int.Parse(Id));
 
 				if (entity is not null)
 				{

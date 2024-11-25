@@ -2,9 +2,12 @@
 @using BlazingGidde.Client.Services
 
 @using BlazingGidde.Shared.Models.PersonMain
+@using BlazingGidde.Shared.Models.PersonMain.Details
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Syncfusion.Blazor.Data
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Lists
 @inject PersonMainManager personManager
 @attribute [Authorize]
 
@@ -12,65 +15,184 @@
 
 <h3>Person</h3>
 
-@if (_isLoading)
-{
-    <p>Loading...</p>
-}
-else
-{
-    
-<SfGrid  EnableAdaptiveUI="true" DataSource="@Persons" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="Person">
-    <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Dialog"></GridEditSettings>
-    <GridEvents OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="Person"></GridEvents>
+<SfToast ID="toast_default" @ref="ToastObj" Title="Error" Content="@ToastContent" Timeout="5000" Icon="e-meeting">
+    <ToastPosition X="@ToastPosition"></ToastPosition>
+</SfToast>
+
+
+<!-- #region -->
+
+<SfGrid @ref="Grid" DataSource="@Persons"
+    Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="Person">
+    <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Dialog">
+        <Template>
+            @{
+                var person = (context as Person);
+            }
+
+            <div class="row" style="padding-top: 20px;">
+                <!-- PersonID -->
+                <div class="form-group col-md-6">
+                    <SfNumericTextBox ID="PersonID" @bind-Value="person.PersonID" Enabled="@Check"
+                    FloatLabelType="FloatLabelType.Always" Placeholder="Person ID"></SfNumericTextBox>
+                </div>
+
+                <!-- FirstName -->
+                <div class="form-group col-md-6">
+                    <SfTextBox ID="FirstName" @bind-Value="person.FirstName" Enabled="@Enabled" Placeholder="First Name"
+                    FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                    <ValidationMessage For="@(() => person.FirstName)" style="color: #dc3545; height: 0px;" />
+                </div>
+
+                <!-- LastName -->
+                <div class="form-group col-md-6">
+                    <SfTextBox ID="LastName" @bind-Value="person.LastName" Enabled="@Enabled" Placeholder="Last Name"
+                    FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                    <ValidationMessage For="@(() => person.LastName)" style="color: #dc3545; height: 0px;" />
+                </div>
+
+                <!-- Title -->
+                <div class="form-group col-md-6">
+                    <SfTextBox ID="Title" @bind-Value="person.Title" Enabled="@Enabled" Placeholder="Title"
+                    FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                    <ValidationMessage For="@(() => person.Title)" style="color: #dc3545; height: 0px;" />
+                </div>
+
+                <!-- Culture -->
+                <div class="form-group col-md-6">
+                    <SfTextBox ID="Culture" @bind-Value="person.Culture" Enabled="@Enabled" Placeholder="Culture"
+                    FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                    <ValidationMessage For="@(() => person.Culture)" style="color: #dc3545; height: 0px;" />
+                </div>
+
+                <!-- VatNumber -->
+                <div class="form-group col-md-6">
+                    <SfTextBox ID="VatNumber" @bind-Value="person.VatNumber" Enabled="@Enabled" Placeholder="VAT Number"
+                    FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                    <ValidationMessage For="@(() => person.VatNumber)" style="color: #dc3545; height: 0px;" />
+                </div>
+
+                <!-- Remarks -->
+                <div class="form-group col-md-6">
+                    <SfTextBox ID="Remarks" @bind-Value="person.Remarks" Enabled="@Enabled" Placeholder="Remarks"
+                    FloatLabelType="FloatLabelType.Always"></SfTextBox>
+                    <ValidationMessage For="@(() => person.Remarks)" style="color: #dc3545; height: 0px;" />
+                </div>
+
+                <!-- AnnualRevenue -->
+                <div class="form-group col-md-6">
+                    <SfNumericTextBox ID="AnnualRevenue" @bind-Value="person.AnnualRevenue" TValue="decimal?"
+                    Enabled="@Enabled" Placeholder="Annual Revenue" FloatLabelType="FloatLabelType.Always">
+                    </SfNumericTextBox>
+                    <ValidationMessage For="@(() => person.AnnualRevenue)" style="color: #dc3545; height: 0px;" />
+                </div>
+            </div>
+            <SfGrid   TValue="Phone"
+            DataSource="@GridData" Query="@(new Query().Where("EmployeeID", "equal", RowIndex))"
+            Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
+                <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Normal">
+
+                </GridEditSettings>
+
+                <GridColumns>
+                <GridColumn Field="PhoneID" HeaderText="ID" TextAlign="TextAlign.Left" Width="150" IsPrimaryKey="true"
+                AllowEditing="false"></GridColumn>
+                 <GridColumn Field="PhoneNumber" HeaderText="Phone number" TextAlign="TextAlign.Left" Width="150"></GridColumn>
+
+                </GridColumns>
+
+            </SfGrid>
+        </Template>
+
+    </GridEditSettings>
+    <GridEvents RowSelected="RowSelecthandler" OnActionBegin="ActionBeginHandler" OnActionFailure="ActionFailureHandler" TValue="Person"></GridEvents>
+                 
+
     <GridColumns>
-        <GridColumn Field="PersonID" HeaderText="ID" TextAlign="TextAlign.Left" Width="150" IsPrimaryKey="true" AllowEditing="false"></GridColumn>
+        <GridColumn Field="PersonID" HeaderText="ID" TextAlign="TextAlign.Left" Width="150" IsPrimaryKey="true"
+        AllowEditing="false"></GridColumn>
         <GridColumn Field="FirstName" HeaderText="First Name" TextAlign="TextAlign.Left" Width="150"></GridColumn>
         <GridColumn Field="LastName" HeaderText="Last Name" TextAlign="TextAlign.Left" Width="150"></GridColumn>
         <GridColumn Field="Culture" HeaderText="Culture" TextAlign="TextAlign.Left" Width="100"></GridColumn>
         <GridColumn Field="Title" HeaderText="Title" TextAlign="TextAlign.Left" Width="100"></GridColumn>
         <GridColumn Field="VatNumber" HeaderText="VAT Number" TextAlign="TextAlign.Left" Width="120"></GridColumn>
-        <GridColumn Field="AnnualRevenue" HeaderText="Annual Revenue" TextAlign="TextAlign.Right" Format="C" Width="150"></GridColumn>
+        <GridColumn Field="AnnualRevenue" HeaderText="Annual Revenue" TextAlign="TextAlign.Right" Format="C"
+        Width="150"></GridColumn>
         <GridColumn Field="Remarks" HeaderText="Remarks" TextAlign="TextAlign.Left" Width="200"></GridColumn>
+        <GridColumn Field="Phones" HeaderText="Phones"  Visible="false" TextAlign="TextAlign.Left" Width="200"></GridColumn>
     </GridColumns>
 </SfGrid>
 
-}
-
 @code {
-    private List<Person> Persons { get; set; } = new();
-    private bool _isLoading = true;
 
-    protected override async Task OnInitializedAsync()
+    SfToast ToastObj = new();
+    SfGrid<Person> Grid;
+    public IEnumerable<Phone> GridData { get; set; }
+    public int? RowIndex { get; set; } = 1003;
+
+    private string ToastPosition = "Right";
+    private string ToastContent = "Uhmm...";
+    public Person SelectedData = new Person();
+    private Boolean Check = false;
+    private Boolean Disabled = true;
+    private Boolean Enabled = true;
+    private List<Person> Persons { get; set; }
+
+    private List<CultureInfo> CultureList { get; set; } = new List<CultureInfo>
+{
+new CultureInfo { CultureCode = "en-US", CultureName = "English (United States)" },
+// Add more cultures as needed
+};
+
+    public class CultureInfo
     {
-        _isLoading = true;
+        public string CultureCode { get; set; }
+        public string CultureName { get; set; }
+    }
+    public async Task RowSelecthandler(RowSelectEventArgs<Person> Args)
+    {
+        RowIndex = Args.Data.PersonID;
+        GridData = await personManager.GetPhonesByPersonId(RowIndex.Value);
+
+    }
+    protected override async void OnInitialized()
+    {
         Persons = (await personManager.GetAll()).ToList();
-        _isLoading = false;
+
+        StateHasChanged();
+    }
+    public async void ActionFailureHandler(Syncfusion.Blazor.Grids.FailureEventArgs args)
+    {
+        await this.ToastObj.ShowAsync();
     }
 
-    private async Task ActionBeginHandler(ActionEventArgs<Person> args)
+    public async Task Save()
     {
-        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        if ((SelectedData.PersonID != null))
         {
-            if (args.Action == "Add")
-            {
-                await personManager.Insert(args.Data);
-            }
-            else
-            {
-                await personManager.Update(args.Data);
-            }
-        }
-        else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
-        {
-            await personManager.Delete(args.Data.PersonID);
+            @* await this.Grid.SetRowDataAsync(SelectedData.OrderID, SelectedData); *@
+            await Cancel();
         }
     }
-
-    private async Task ActionCompleteHandler(ActionEventArgs<Person> args)
+    public async Task Cancel()
     {
-        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save) || args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        @* SelectedData = new OrderDetails() { }; *@
+        await this.Grid.ClearSelectionAsync();
+    }
+    public void ActionBeginHandler(ActionEventArgs<Person> args)
+    {
+        if (args.RequestType.ToString() == "Save")
         {
-            Persons = (await personManager.GetAll()).ToList(); // Refresh grid data
+            args.Data.Addresses.Add(new Address()
+                {
+                    AddressLine1 = "jdlfn"
+                });
+            personManager.Update(args.Data);
+            Check = true;
+        }
+        else
+        {
+            Check = false;
         }
     }
 }
