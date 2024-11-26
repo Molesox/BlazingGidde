@@ -5,15 +5,16 @@
 @inject DictionaryManager dictionaryManager
 
 <PageTitle>Dictionnaire</PageTitle>
-
+@* 
 <h3>Entrées dictionnaire</h3>
 <div style="height:calc(100vh - 17rem);">
-	<SfGrid EnableInfiniteScrolling="true" DataSource="@DicEntries" Height="100%" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="DictionaryEntry">
+	<SfGrid AllowPaging="true" Height="400px" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="DictionaryEntry">
 		<GridEvents TValue="DictionaryEntry"></GridEvents>
-	
+		<GridPageSettings PageSize="220"></GridPageSettings>
+        <SfDataManager   Url="http://localhost:5098/api/Patois" InsertUrl="http://localhost:5098/api/Patois/Insert" UpdateUrl="http://localhost:5098/api/Patois/Update" RemoveUrl="http://localhost:5098/api/Patois/Delete"  Adaptor="Adaptors.UrlAdaptor" ></SfDataManager>
 
 		<GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Dialog"></GridEditSettings>
-	
+
 		<GridColumns>
 			<GridColumn Field="Id" HeaderText="ID" TextAlign="TextAlign.Left" Width="150" IsPrimaryKey="true" AllowEditing="false"></GridColumn>
 			<GridColumn Field="FrenchWord" HeaderText="French word" TextAlign="TextAlign.Left" Width="150" AllowEditing="true"></GridColumn>
@@ -23,14 +24,39 @@
 		</GridColumns>
 	</SfGrid>
 
+</div> *@
+<h3>Entrées dictionnaire</h3>
+
+<div>
+	<ul>
+		@if (dictionaryEntries != null && dictionaryEntries.Any())
+		{
+			@foreach (var entry in dictionaryEntries)
+			{
+				<li>
+					<strong>ID:</strong> @entry.Id <br />
+					<strong>French Word:</strong> @entry.FrenchWord <br />
+					<strong>Dialect Word:</strong> @entry.DialectWord <br />
+					<strong>Example (French):</strong> @entry.FrenchExample <br />
+					<strong>Example (Dialect):</strong> @entry.DialectExample <br />
+				</li>
+				<hr />
+			}
+		}
+		else
+		{
+			<li>No entries available.</li>
+		}
+	</ul>
 </div>
 @code {
-	public List<DictionaryEntry> DicEntries { get; set; }
 
-	protected override async void OnInitialized()
+	private List<DictionaryEntry> dictionaryEntries = new List<DictionaryEntry>();
+	protected override async Task OnInitializedAsync()
 	{
-		DicEntries = (await dictionaryManager.GetAll()).ToList();
-
+		dictionaryEntries = (await dictionaryManager.GetAll()).ToList();
 		StateHasChanged();
+
 	}
+
 }

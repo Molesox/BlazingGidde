@@ -8,17 +8,17 @@ using Syncfusion.Blazor;
 
 namespace BlazingGidde.Server.Controllers.PatoisDeNendaz
 {
-	[Route("[controller]")]
-	[ApiController]
-	[Authorize]
+	  [Route("[Controller]")]
+	[ApiController] 
+	  [Authorize]
 	public class PatoisController : BlazingGiddeBaseController<DictionaryEntry, ApplicationDbContext>
 	{
-		public PatoisController(RepositoryEF<DictionaryEntry, ApplicationDbContext> repository, 
+		public PatoisController(RepositoryEF<DictionaryEntry, ApplicationDbContext> repository,
 			ILogger<BlazingGiddeBaseController<DictionaryEntry, ApplicationDbContext>> logger)
 			: base(repository, logger)
 		{
 		}
 
-		
+		 
 	}
 }

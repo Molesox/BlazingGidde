@@ -9,74 +9,57 @@
 
 <h3 class="page-title">Entrées du dictionnaire</h3>
 
-<div class="dictionary-list-container">
-	<SfListView EnableVirtualization="true" Height="100%" DataSource="@DicEntries">
-		<ListViewFieldSettings  TValue="DictionaryEntry" Id="Id" Text="FrenchWord" GroupBy="Parent"></ListViewFieldSettings>
-		<ListViewTemplates TValue="DictionaryEntry">
-			<Template>
-				<div class="e-list-wrapper  e-list-multi-line ">
+ 
+        <div style="height:calc(100vh - 17rem);">   
+            <SfListView EnableVirtualization="true"    EnablePersistence="true" Height="100%" DataSource="@DicEntries">
+                <ListViewFieldSettings  TValue="DictionaryEntry" Id="Id" Text="FrenchWord" GroupBy="Parent"></ListViewFieldSettings>
+                <ListViewTemplates TValue="DictionaryEntry">
 
-					<div class="e-list-item-header">
-						<span class="word">@context.FrenchWord</span>
-						<span class="dialect">@context.DialectWord</span>
-					</div>
+                    <Template>
+                        <div class="e-list-wrapper e-list-multi-line">
+                            <div>
+                                <span class="e-list-item-header">Français: @context.FrenchWord Patois: @context.DialectWord</span>&nbsp;&nbsp;
 
-					<div class="e-list-content dictionary-item-content">
-						<p class="example">
-							<strong>Exemple FR :</strong> @context.FrenchExample
-						</p>
-						<p class="example">
-							<strong>Exemple Dialecte :</strong> @context.DialectExample
-						</p>
-					</div>
-				</div>
-			</Template>
-		</ListViewTemplates>
-	</SfListView>
-</div>
+                            </div>
+                        
+                            <span class="e-list-content">
+                                
+                                    <strong>Exemple FR :</strong> @context.FrenchExample &nbsp;
+                                    
+                                    <strong>Exemple Dialecte :</strong> @context.DialectExample
+                                    &nbsp;&nbsp;
+                        
+                            </span>
+                        </div>
+                    </Template>
+                </ListViewTemplates>
+            </SfListView>
+        </div>
+
+    
+ 
 
 <style>
  
+    .e-list-item-header {
+		padding:5px;
 
-	.dictionary-list-container {
-		height: calc(100vh - 17rem);
-		padding: 1rem;
-	}
- 
+    }
 
-	.e-list-item-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 0.5rem;
-		font-weight: bold;
-		font-size: 1.2rem;
-	}
-
-	.e-list-item-header .word {
-		color: #007BFF;
-	}
-
-	.e-list-item-header .dialect {
-		color: #28A745;
-	}
-
-	.dictionary-item-content {
-		font-size: 0.95rem;
-		color: #555;
-	}
-
-	.dictionary-item-content .example {
-		margin: 0.5rem 0;
-	}
+    .no-data {
+        font-size: 1.5rem;
+        color: #888;
+        text-align: center;
+        padding: 2rem;
+    }
 </style>
 
 @code {
-	public List<DictionaryEntry> DicEntries { get; set; }
+    public List<DictionaryEntry> DicEntries { get; set; }
 
-	protected override async void OnInitialized()
-	{
-		DicEntries = (await dictionaryManager.GetAll()).ToList();
-		StateHasChanged();
-	}
+    protected override async void OnInitialized()
+    {
+        DicEntries = (await dictionaryManager.GetAll()).ToList();
+        StateHasChanged();
+    }
 }
