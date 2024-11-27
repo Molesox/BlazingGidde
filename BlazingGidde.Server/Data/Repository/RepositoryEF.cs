@@ -74,6 +74,17 @@ namespace BlazingGidde.Server.Data.Repository
 		{
 			return await linqQueryFilter.GetFilteredList(dbSet);
 		}
+		
+
+		/// <summary>
+		/// Retrieves the total count of entities that match the specified LINQ query filter.
+		/// </summary>
+		/// <param name="linqQueryFilter">The LINQ query filter to apply for counting entities.</param>
+		/// <returns>The total number of entities matching the filter.</returns>
+		public virtual async Task<int> GetTotalCount(LinqQueryFilter<TEntity> linqQueryFilter)
+		{
+			return await linqQueryFilter.GetTotalCount(dbSet);
+		}
 
 		/// <summary>
 		/// Retrieves all entities from the repository.

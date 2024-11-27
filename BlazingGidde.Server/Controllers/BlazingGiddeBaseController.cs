@@ -14,9 +14,9 @@ namespace BlazingGidde.Server.Controllers
 		where TDataContext : DbContext
 	{
 		protected readonly RepositoryEF<TEntity, TDataContext> _repository;
-		protected readonly ILogger<BlazingGiddeBaseController<TEntity, TDataContext>> _logger;
+		protected readonly ILogger<BlazingGiddeBaseController<TEntity,TDataContext>> _logger;
 
-		public BlazingGiddeBaseController(RepositoryEF<TEntity, TDataContext> repository, ILogger<BlazingGiddeBaseController<TEntity, TDataContext>> logger)
+		public BlazingGiddeBaseController(RepositoryEF<TEntity, TDataContext> repository, ILogger<BlazingGiddeBaseController<TEntity,TDataContext>> logger)
 		{
 			_repository = repository;
 			_logger = logger;
@@ -129,6 +129,22 @@ namespace BlazingGidde.Server.Controllers
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "An error occurred while fetching entities with LINQ filter.");
+				return StatusCode(500);
+			}
+		}
+
+		[HttpPost("GetTotalCount")]
+		public async Task<ActionResult<int>> GetTotalCount([FromBody] LinqQueryFilter<TEntity> queryFilter)
+		{
+			try{
+
+				var result = await _repository.GetTotalCount(queryFilter);
+				return result;
+
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "An error occurred while fetching total count.");
 				return StatusCode(500);
 			}
 		}

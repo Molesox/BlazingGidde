@@ -102,7 +102,26 @@ namespace BlazingGidde.Client.Services
 				return new List<TEntity>();
 			}
 		}
+	public async Task<int> GetTotalCount(LinqQueryFilter<TEntity> linqQueryFilter)
+		{
+			try
+			{
+				var url = $"{controllerName}/GetTotalCount";
+				var result = await http.PostAsJsonAsync(url, linqQueryFilter);
+				result.EnsureSuccessStatusCode();
 
+				var responseBody = await result.Content.ReadAsStringAsync();
+				var response = JsonSerializer.Deserialize<int>(responseBody, new JsonSerializerOptions
+				{
+					PropertyNameCaseInsensitive = true
+				});
+					return response;
+			}
+			catch (Exception)
+			{
+				return 0;
+			}
+		}
 		public async Task<IEnumerable<TEntity>> Get(QueryFilter<TEntity> queryFilter)
 		{
 			try
