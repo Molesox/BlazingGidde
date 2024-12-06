@@ -1,5 +1,6 @@
 ﻿@page "/approles"
 @using BlazingGidde.Client.Services
+@using BlazingGidde.Client
 
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -18,7 +19,7 @@
 else
 {
     
-    <SfGrid    DataSource="@Roles" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="IdentityRole">
+    @* <SfGrid    DataSource="@Roles" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="IdentityRole">
         <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Dialog"></GridEditSettings>
         <GridEvents OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="IdentityRole"></GridEvents>
         <GridColumns>
@@ -27,19 +28,29 @@ else
 			<GridColumn Field="NormalizedName" HeaderText="Normalized Name" TextAlign="TextAlign.Left" Width="200" AllowEditing="false" Visible="false"></GridColumn>
             <GridColumn Field="ConcurrencyStamp" HeaderText="Concurrency Stamp" TextAlign="TextAlign.Left" Width="250" AllowEditing="false" Visible="false"></GridColumn>
         </GridColumns>
-    </SfGrid>
-    <RolesUserTree></RolesUserTree>
+    </SfGrid> *@
+    <GenericGrid TEntity="IdentityRole" Title="My roles"
+             Repository="@RoleManager"
+             Columns="@myColumns">
+    </GenericGrid>
 }
 
 @code {
     private List<IdentityRole> Roles { get; set; } = new();
     private bool _isLoading = true;
-
+    private List<ColumnDefinition<IdentityRole>> myColumns = new();
+    
     protected override async Task OnInitializedAsync()
     {
         _isLoading = true;
         Roles = (await RoleManager.GetAll()).ToList();
         _isLoading = false;
+         myColumns = new List<ColumnDefinition<IdentityRole>>
+        {
+            new ColumnDefinition<IdentityRole>(x => x.Id, "ID"),
+            new ColumnDefinition<IdentityRole>(x => x.Name, "Name", isEditable: true),
+            new ColumnDefinition<IdentityRole>(x => x.NormalizedName, "NormalizedName", isEditable: true)
+        };
     }
 
     private async Task ActionBeginHandler(ActionEventArgs<IdentityRole> args)
