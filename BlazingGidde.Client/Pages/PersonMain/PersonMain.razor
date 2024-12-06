@@ -90,7 +90,7 @@
 				</div>
 			</div>
 			<SfGrid TValue="Phone"
-			        DataSource="@GridData" Query="@(new Query().Where("EmployeeID", "equal", RowIndex))"
+			        DataSource="@GridData" 
 			        Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
 				<GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Normal">
 

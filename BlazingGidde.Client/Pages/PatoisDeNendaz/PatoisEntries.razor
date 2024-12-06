@@ -94,12 +94,13 @@
 		}
 		else
 		{
-			var queryFilter = new LinqQueryFilter<DictionaryEntry>(null, d => d.OrderBy(dt => dt.FrenchWord))
-				{
-					Skip = request.StartIndex,
-					Take = request.Count,
-				};
-
+		var queryFilter = new LinqQueryFilter<DictionaryEntry>(
+			null,
+			dt => dt.FrenchWord)
+		{
+			Skip = request.StartIndex,
+			Take = request.Count,
+		};
 			var items = await dictionaryManager.Get(queryFilter);
 
 			// Add loaded items to the cached collection
