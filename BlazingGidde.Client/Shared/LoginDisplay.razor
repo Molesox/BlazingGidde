@@ -2,32 +2,28 @@
 	<Authorized>
 		<div class="login-display">
 			<span class="user-greeting">Hello, @context.User.Identity.Name!</span>
-			<SfButton CssClass="e-danger" OnClick="Logout">
+			<button class="btn btn-danger" @onclick="Logout">
 				<span class="material-icons">
 					logout
 				</span>
 				Log out
-			</SfButton>
+			</button>
 		</div>
 	</Authorized>
 	<NotAuthorized>
 		<div class="login-display">
-			<SfButton CssClass="e-secondary e-outline" OnClick="NavigateToRegister">
+			<button class="btn btn-outline-secondary" @onclick="NavigateToRegister">
 				<span class="material-icons">
 					person
 				</span>
-					S'enregistrer
-			 
-
-			</SfButton>
-			<SfButton CssClass="e-primary" IsPrimary="true"  OnClick="NavigateToLogin">
-				 
-					<span class="material-icons">
-						login
-					</span>
-				  Se connecter
-			 
-			</SfButton>
+				S'enregistrer
+			</button>
+			<button class="btn btn-primary" @onclick="NavigateToLogin">
+				<span class="material-icons">
+					login
+				</span>
+				Se connecter
+			</button>
 		</div>
 	</NotAuthorized>
 </AuthorizeView>
@@ -50,17 +46,16 @@
 		NavigationManager.NavigateTo("Login");
 	}
 }
+
 <style>
-	.login-display {
-		display: flex;
-		align-items: center;
-		gap: 1rem; /* Space between elements */
-	}
+    .login-display {
+        display: flex;
+        align-items: center;
+        gap: 1rem; /* Space between elements */
+    }
 
-	.user-greeting {
-		font-size: 1rem;
-		font-weight: bold;
-	}
-
-	 
+    .user-greeting {
+        font-size: 1rem;
+        font-weight: bold;
+    }
 </style>

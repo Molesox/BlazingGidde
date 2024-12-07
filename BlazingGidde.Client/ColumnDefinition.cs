@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 namespace BlazingGidde.Client;
-public partial class ColumnDefinition<TEntity>
+public  class ColumnDefinition<TEntity>
 {
     public string Title { get; set; } = string.Empty;
     public string FieldName { get; set; } = string.Empty;

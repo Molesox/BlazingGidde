@@ -28,6 +28,8 @@ builder.Services.AddDefaultIdentity<
  builder.Services.AddTransient<RepositoryEF<Email, ApplicationDbContext>>();
  builder.Services.AddTransient<RepositoryEF<Phone, ApplicationDbContext>>();
  builder.Services.AddTransient<RepositoryEF<DictionaryEntry, ApplicationDbContext>>();
+ builder.Services.AddTransient<RepositoryUser>();
+ builder.Services.AddTransient<RepositoryRole>();
 
  builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {

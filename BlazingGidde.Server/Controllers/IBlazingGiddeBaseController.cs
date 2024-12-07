@@ -19,6 +19,10 @@ namespace BlazingGidde.Server.Controllers
 		[HttpPost("getwithLinqfilter")]
 		Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithLinqFilter(LinqQueryFilter<TEntity> linqQueryFilter);
 
+		[HttpPost("GetTotalCount")]
+		Task<ActionResult<int>> GetTotalCount(LinqQueryFilter<TEntity> queryFilter);
+
+
 		[HttpPost]
 		Task<ActionResult<APIEntityResponse<TEntity>>> Post([FromBody] TEntity Entity);
 

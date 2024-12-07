@@ -13,10 +13,10 @@ namespace BlazingGidde.Server.Controllers
 		where TEntity : class
 		where TDataContext : DbContext
 	{
-		protected readonly RepositoryEF<TEntity, TDataContext> _repository;
+		protected readonly IRepository<TEntity> _repository;
 		protected readonly ILogger<BlazingGiddeBaseController<TEntity,TDataContext>> _logger;
 
-		public BlazingGiddeBaseController(RepositoryEF<TEntity, TDataContext> repository, ILogger<BlazingGiddeBaseController<TEntity,TDataContext>> logger)
+		public BlazingGiddeBaseController(IRepository<TEntity> repository, ILogger<BlazingGiddeBaseController<TEntity,TDataContext>> logger)
 		{
 			_repository = repository;
 			_logger = logger;
@@ -29,9 +29,9 @@ namespace BlazingGidde.Server.Controllers
 			try
 			{
 				_logger.LogInformation("Fetching all entities.");
-				var result = _repository.dbSet.ToList();
+				var result = (await _repository.GetAll()).ToList();
 
-				if (result is not null)
+				if (result.Any())
 				{
 					_logger.LogInformation("Entities fetched successfully.");
 					return Ok(new APIListOfEntityResponse<TEntity>()
@@ -40,14 +40,12 @@ namespace BlazingGidde.Server.Controllers
 						Items = result
 					});
 				}
-				else
+
+				_logger.LogWarning("No entities found.");
+				return Ok(new APIListOfEntityResponse<TEntity>()
 				{
-					_logger.LogWarning("No entities found.");
-					return Ok(new APIListOfEntityResponse<TEntity>()
-					{
-						Success = false
-					});
-				}
+					Success = false
+				});
 			}
 			catch (Exception ex)
 			{

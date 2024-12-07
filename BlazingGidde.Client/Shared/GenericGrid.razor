@@ -94,7 +94,7 @@
                 {
                     <div class="mb-3">
                         <label class="form-label">@col.Title</label>
-                        <input class="form-control" @bind="@((col.PropertyValueEdit(selectedItem) as BindConverterWrapper<TEntity>).Value)" />
+                        @* <input class="form-control" @bind="@(col.PropertyValueEdit(selectedItem).Value)" /> *@
                     </div>
                 }
             </div>
