@@ -1,102 +1,117 @@
 ﻿@using BlazingGidde.Client.Shared
 @inherits LayoutComponentBase
-<div class="page">
-	<AuthorizeView>
-		<Authorized>
 
-			<SfSidebar @ref="sidebarObj"
-			           Type="SidebarType.Auto"
-			           ShowBackdrop="false"
-			           Width="15%"
-			           @bind-IsOpen="SidebarToggle"
-			           MediaQuery="(min-width: 600px)"
-			           Target=".main-content">
-				<ChildContent>
-					<NavMenu/>
-				</ChildContent>
-			</SfSidebar>
-		</Authorized>
-	</AuthorizeView>
-	<div id="head">
-		<SfToolbar Height="55px">
+<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
+@if (isDark)
+{
+    <style>
+    :root {
+        --bb-sidebar-width: 270px;
+        --bb-sidebar-background-color: var(--bs-dark);
+        --bb-sidebar-top-row-background-color: rgba(var(--bs-white-rgb), 0.1);
+        --bb-sidebar-top-row-border-color: var(--bs-gray-500);
+        --bb-sidebar-title-text-color: var(--bs-white);
+        --bb-sidebar-navbar-toggler-icon-color: var(--bs-white);
+        --bb-sidebar-navbar-toggler-background-color: rgba(var(--bs-white-rgb), 0.1);
+        --bb-sidebar-content-border-color: var(--bs-gray-600);
+        --bb-sidebar-nav-item-text-color: rgba(var(--bs-white-rgb), 0.9);
+        --bb-sidebar-nav-item-text-active-color-rgb: var(--bs-white-rgb);
+        --bb-sidebar-nav-item-text-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.9);
+        --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.9);
+        --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.1);
+        --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.1);
+    }
+    </style>
+}
+else
+{
+    <style>
+    :root {
+        --bb-sidebar-width: 270px;
+        --bb-sidebar-background-color: var(--bs-white);
+        --bb-sidebar-top-row-background-color: var(--bs-gray-100);
+        --bb-sidebar-top-row-border-color: var(--bs-gray-300);
+        --bb-sidebar-title-text-color: var(--bs-body-color);
+        --bb-sidebar-brand-image-width: 28px;
+        --bb-sidebar-brand-image-height: 28px;
+        --bb-sidebar-navbar-toggler-icon-color: var(--bs-body-color);
+        --bb-sidebar-navbar-toggler-background-color: var(--bs-gray-100);
+        --bb-sidebar-content-border-color: var(--bs-gray-300);
+        --bb-sidebar-nav-item-text-color: var(--bs-body-color);
+        --bb-sidebar-nav-item-text-active-color-rgb: var(--bs-body-color-rgb);
+        --bb-sidebar-nav-item-text-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.9);
+        --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.9);
+        --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.08);
+        --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.08);
+    }
+    </style>
+}
 
-			<ToolbarItems>
-				<AuthorizeView>
-					<Authorized>
 
-						<ToolbarItem PrefixIcon="e-icons e-menu"
-						             Align="ItemAlign.Left"
-						             Text="Menu" OnClick="@ToogleSideBar"
-						             TooltipText="Afficher/Masquer le menu">
-						</ToolbarItem>
-					</Authorized>
 
-				</AuthorizeView>
-				<ToolbarItem Align="ItemAlign.Right">
-					<Template>
-						<LoginDisplay/>
+<div class="bb-page">
+    <AuthorizeView>
+        <Sidebar Href="/" @ref="sidebar" ImageSrc="logo-alpsoft.png" Title="Alpcore"
+            DataProvider="SidebarDataProvider" WidthUnit="Unit.Px" />
+    </AuthorizeView>
 
-					</Template>
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-between">
+            <AuthorizeView>
+                <Icon Name="IconName.List" role="button" @onclick="ToggleSidebar" />
+            </AuthorizeView>
+            <div class="d-flex justify-content-end align-items-center">
+                <LoginDisplay />
+                <ThemeSwitcher OnThemeChanged="OnThemeChanged" Position="DropdownMenuPosition.End"
+                    Class="ps-3 ps-lg-2" />
+            </div>
+        </div>
 
-				</ToolbarItem>
-			</ToolbarItems>
-		</SfToolbar>
-	</div>
+        <article class="content px-4">
+            <div class="py-2">@Body</div>
+        </article>
 
-	<div class="main-content">
-		<div class="content">
-			@Body
-		</div>
-	</div>
+        <footer>
+            <span>© 2024 AlpSoft SA. All rights reserved.</span>
+            <span class="version">Version 1.0.0</span>
+        </footer>
+    </main>
 
-	<footer class="footer">
-		<div class="footer-content">
-			<span>© 2024 AlpSoft SA. All rights reserved.</span>
-			<span class="version">Version 1.0.0</span>
-		</div>
-	</footer>
 </div>
 
 @code {
-	SfSidebar sidebarObj;
-	public bool SidebarToggle = false;
+    private IEnumerable<NavItem> navItems = default!;
+    Sidebar sidebar = default!;
 
-	public void ToogleSideBar()
-	{
-		SidebarToggle = !SidebarToggle;
-	}
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+{
+new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
+new NavItem { Id = "2", Href = "/person", IconName = IconName.PersonFill, Text = "Person" },
+new NavItem { Id = "3", Href = "/patois", IconName = IconName.EaselFill, Text = "Patois" },
+new NavItem { Id = "4", Text = "Admin", IconName = IconName.ShieldShaded},
+new NavItem { Id = "5", Href = "/appusers", IconName=IconName.PeopleFill, ParentId = "4", Text = "Users" },
+new NavItem { Id = "6", Href = "/approles",IconName=IconName.PersonFillGear, ParentId = "4", Text = "Roles" }
+};
+
+        return navItems;
+    }
+
+    private void ToggleSidebar() => sidebar.ToggleSidebar();
+    private bool isDark;
+
+    private void OnThemeChanged(string themeName)
+    {
+        isDark = themeName == "dark";
+    }
 
 }
-
-<style>
-	/* Sidebar styles */
-	.e-sidebar {
-		background-color: white;
-	}
-
-	.text-content {
-		font-size: 1.5rem;
-		padding: 3rem;
-	}
-
-	/* Toolbar styles */
-	.e-toolbar {
-		background-color: darkgray !important; /* Ensure the toolbar background is gray */
-		font-size: 16px;
-	}
-
-	.e-toolbar-items {
-		background-color: darkgray !important; /* Ensure the toolbar items background is gray */
-	}
-
-	/* Ensure individual toolbar items inherit the gray background */
-	.e-toolbar-item {
-		background-color: darkgray !important;
-		color: white; /* Optional: Set the text color for contrast */
-	}
-
-	.main > div {
-		padding-left: 0px !important;
-		padding-right: 0px !important;
-	}
-</style>

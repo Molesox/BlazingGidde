@@ -1,46 +1,59 @@
 ﻿@page "/appusers"
 @using BlazingGidde.Client.Services
+@using BlazingGidde.Client.Shared
 @using BlazingGidde.Shared.Models.Identity
 @using BlazingGidde.Shared.Models.Patois
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
-@using Syncfusion.Blazor.Data
+ 
+@inject AspNetUserManager UserManager
 
 @attribute [Authorize]
 
 <PageTitle>Application Users</PageTitle>
+ 
 
-<h3>Users</h3>
-
-
-    <SfGrid  Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })" TValue="IdentityUser">
-         <GridEvents TValue="IdentityUser" OnActionFailure="ActionFailureHandler"></GridEvents>
-       
-        <SfDataManager Url="AppUsers"  Adaptor="Adaptors.WebApiAdaptor"></SfDataManager>
-        <GridEditSettings AllowAdding="true" AllowDeleting="true" AllowEditing="true" Mode="EditMode.Dialog"></GridEditSettings>
-
-        <GridColumns>
-            <GridColumn Field="Id" HeaderText="ID" TextAlign="TextAlign.Left" Width="150" IsPrimaryKey="true" AllowEditing="false"></GridColumn>
-            <GridColumn Field="UserName" HeaderText="User Name" TextAlign="TextAlign.Left" Width="150" AllowEditing="true"></GridColumn>
-            <GridColumn Field="Email" HeaderText="Email" TextAlign="TextAlign.Left" Width="200"></GridColumn>
-            <GridColumn Field="PhoneNumber" HeaderText="Phone Number" TextAlign="TextAlign.Left" Width="150"></GridColumn>
-        </GridColumns>
-    </SfGrid>
-
+    
+    <GenericGrid TEntity="IdentityUser" Title="My Users"
+                Repository="@UserManager"
+                Columns="@myColumns">
+        <EditFormTemplate Context="user">
+              <div class="mb-3">
+            <label class="form-label">User Name</label>
+            <InputText class="form-control" @bind-Value="user.UserName" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <InputText class="form-control" @bind-Value="user.Email" type="email" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Phone Number</label>
+            <InputText class="form-control" @bind-Value="user.PhoneNumber" />
+        </div>
+        <div class="mb-3 form-check">
+            <InputCheckbox class="form-check-input" @bind-Value="user.LockoutEnabled" />
+            <label class="form-check-label">Lockout Enabled</label>
+        </div>
+        <div class="mb-3 form-check">
+            <InputCheckbox class="form-check-input" @bind-Value="user.TwoFactorEnabled" />
+            <label class="form-check-label">Two-Factor Authentication Enabled</label>
+        </div>
+        </EditFormTemplate>
+    </GenericGrid>
 
 @code {
-
-
-
-    public void ActionFailureHandler(Syncfusion.Blazor.Grids.FailureEventArgs args)
+    private List<ColumnDefinition<IdentityUser>> myColumns = new();
+    
+    protected override void OnInitialized()
     {
-        // Log the error message to the console
-        Console.WriteLine("Error occurred: " + args.Error.Message);
-        
-        // Optionally, display an alert to the user
-        // await JsRuntime.InvokeVoidAsync("alert", "An error occurred: " + args.Error.Message);
-        
-        // You can also use a notification service or dialog to show the error message
+        myColumns = new List<ColumnDefinition<IdentityUser>>
+        {
+            new ColumnDefinition<IdentityUser>(x => x.Id, "ID"),
+            new ColumnDefinition<IdentityUser>(x => x.UserName, "User Name", isEditable: true),
+            new ColumnDefinition<IdentityUser>(x => x.Email, "Email", isEditable: true),
+            new ColumnDefinition<IdentityUser>(x => x.PhoneNumber, "Phone Number", isEditable: true),
+            new ColumnDefinition<IdentityUser>(x => x.LockoutEnabled, "Lockout Enabled", isEditable: true),
+            new ColumnDefinition<IdentityUser>(x => x.TwoFactorEnabled, "2FA Enabled", isEditable: true)
+        };
     }
 }
-

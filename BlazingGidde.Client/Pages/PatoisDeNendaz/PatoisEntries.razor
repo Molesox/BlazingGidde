@@ -2,17 +2,17 @@
 @using BlazingGidde.Shared.Models.Patois
 @using BlazingGidde.Shared.Repository;
 @using Microsoft.AspNetCore.Identity
-@using Syncfusion.Blazor.Data
+
 @inject DictionaryManager dictionaryManager
 
 <PageTitle>Dictionnaire</PageTitle>
 
 <style>
 	.scrollable-container {
-		max-height: calc(100vh - 14rem);
-		overflow-y: auto;
-		padding-right: 15px;
-		/* To prevent cutting off content */
+	max-height: 80vh;
+	overflow-y: auto;
+	padding-right: 15px;
+	/* To prevent cutting off content */
 	}
 </style>
 
@@ -27,7 +27,7 @@
 		</div>
 	</div>
 
-	<div class="list-group list-group-flush scrollable-container">
+	<div class="list-group list-group-flush ">
 		<Virtualize ItemsProvider="itemsProvider" Context="entry" ItemSize="100" OverscanCount="100">
 			<div class="list-group-item mb-3 shadow-sm" style="background-color: rgb(224, 224, 224);">
 				<div class="row">
@@ -94,9 +94,9 @@
 		}
 		else
 		{
-		var queryFilter = new LinqQueryFilter<DictionaryEntry>(
-			null,
-			dt => dt.FrenchWord)
+			var queryFilter = new LinqQueryFilter<DictionaryEntry>(
+				null,
+				dt => dt.FrenchWord)
 		{
 			Skip = request.StartIndex,
 			Take = request.Count,
@@ -126,6 +126,8 @@
 			{
 				isFullyLoaded = true;
 			}
+
+
 
 			return new ItemsProviderResult<DictionaryEntry>(items, totalItemCountCache.Value);
 		}

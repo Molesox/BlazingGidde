@@ -20,15 +20,11 @@ namespace BlazingGidde.Shared.Models.PersonMain
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int PhoneID { get; set; }
 
-		private int _phoneID;
-
 		/// <summary>
 		/// Gets or sets the person ID.
 		/// </summary>
 
 		public int PersonID { get; set; }
-
-		private int _personID;
 
 		/// <summary>
 		/// Gets or sets the phone type ID.
@@ -36,16 +32,12 @@ namespace BlazingGidde.Shared.Models.PersonMain
 
 		public int PhoneTypeID { get; set; }
 
-		private int _phoneTypeID;
-
 		/// <summary>
 		/// Gets or sets the phone number.
 		/// </summary>
 		[Required]
 		[StringLength(30)]
-		public string PhoneNumber { get; set; }
-
-		private string _phoneNumber;
+		public string PhoneNumber { get; set; }= string.Empty;
 
 		/// <summary>
 		/// Gets or sets the sort key.
@@ -53,15 +45,11 @@ namespace BlazingGidde.Shared.Models.PersonMain
 
 		public int? SortKey { get; set; }
 
-		private int? _sortKey;
-
 		/// <summary>
 		/// Gets or sets the remarks.
 		/// </summary>
 		[StringLength(200)]
-		public string Remarks { get; set; }
-
-		private string _remarks;
+		public string Remarks { get; set; }= string.Empty;
 
 		/// <summary>
 		/// Gets or sets the is default flag.
@@ -69,19 +57,17 @@ namespace BlazingGidde.Shared.Models.PersonMain
 
 		public bool IsDefault { get; set; }
 
-		private bool _isDefault;
-
 
 		/// <summary>
 		/// The PhoneType associated with this Phone.
 		/// </summary>
-		public virtual PhoneType PhoneType { get; set; }
+		public virtual PhoneType PhoneType { get; set; } = new();
 
 		/// <summary>
 		/// The Person associated with this Phone.
 		/// </summary>
 
-		public virtual Person Person { get; set; }
+		public virtual Person Person { get; set; } = new();
 
 		#endregion
 	}

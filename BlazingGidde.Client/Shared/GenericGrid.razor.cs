@@ -10,6 +10,7 @@ public partial class GenericGrid<TEntity> : ComponentBase where TEntity : class,
     [Parameter] public IRepository<TEntity> Repository { get; set; } = default!;
     [Parameter] public string Title { get; set; } = "Data Grid";
     [Parameter] public List<ColumnDefinition<TEntity>> Columns { get; set; } = new();
+    [Parameter] public RenderFragment<TEntity>? EditFormTemplate { get; set; }
 
     // Paging
     private int pageSize = 10;
@@ -40,6 +41,7 @@ public partial class GenericGrid<TEntity> : ComponentBase where TEntity : class,
     private async Task LoadData()
     {
         var param = BuildQuery();
+
         items = (await Repository.Get(param.Item1)).ToList();
         totalItemCount = await Repository.GetTotalCount(param.Item1);
 
@@ -51,7 +53,7 @@ public partial class GenericGrid<TEntity> : ComponentBase where TEntity : class,
     {
         Expression<Func<TEntity, bool>> filterExp = x => true;
 
-        // Simple example: if searchTerm is not empty, try filtering on first string column
+        // If searchTerm is not empty, try filtering on first string column
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
             var stringColumn = Columns.FirstOrDefault(c => c.Property.PropertyType == typeof(string));
@@ -84,12 +86,11 @@ public partial class GenericGrid<TEntity> : ComponentBase where TEntity : class,
             Skip = (currentPage - 1) * pageSize,
             Take = pageSize,
             OrderByDescending = !sortAscending,
-            // You can specify IncludePropertyNames if needed
         }, 
         filterExp);
     }
 
-    private void SortByColumn(ColumnDefinition<TEntity> column)
+    private async Task SortByColumn(ColumnDefinition<TEntity> column)
     {
         if (sortColumn == column.FieldName)
         {
@@ -100,31 +101,31 @@ public partial class GenericGrid<TEntity> : ComponentBase where TEntity : class,
             sortColumn = column.FieldName;
             sortAscending = true;
         }
-        LoadData();
+        await LoadData();
     }
 
-    private void PrevPage()
+    private async Task PrevPage()
     {
         if (currentPage > 1)
         {
             currentPage--;
-            LoadData();
+            await LoadData();
         }
     }
 
-    private void NextPage()
+    private async Task NextPage()
     {
         if (currentPage < totalPages)
         {
             currentPage++;
-            LoadData();
+            await LoadData();
         }
     }
 
-    private void GoToPage(int page)
+    private async Task GoToPage(int page)
     {
         currentPage = page;
-        LoadData();
+        await LoadData();
     }
 
     private void OpenAddModal()

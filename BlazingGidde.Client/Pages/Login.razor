@@ -4,96 +4,55 @@
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
 
+<div style="display: flex; justify-content: center; align-items: center;">
+    <Card Class="mb-4" Style="width:30rem;">
+        <img class="rounded-top" src="logo-alpsoft.png" alt="placeholder" />
+        <CardBody>
+            <CardTitle>Login</CardTitle>
+            <CardSubTitle Class="mb-2 text-muted">Enter your informations</CardSubTitle>
+            <EditForm Model="_loginModel" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
 
-<SfToast @ref="ToastObj" Timeout="5000" Content="@_error">
-	<ToastPosition X="Right" Y="Bottom"/>
-</SfToast>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <InputText id="email" class="form-control" placeholder="Saisissez votre adresse mail" @bind-Value="_loginModel.Email" Type="email" />
+                    <ValidationMessage For="@(() => _loginModel.Email)" />
+                </div>
 
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <InputText id="password" class="form-control" placeholder="Entrez votre mot de passe" @bind-Value="_loginModel.Password" Type="password" />
+                    <ValidationMessage For="@(() => _loginModel.Password)" />
+                </div>
 
-<SfCard CssClass="login-card">
-	<CardHeader >
-		<h2>Login</h2>
-	</CardHeader>
-	<CardContent>
-		<EditForm Model="_loginModel" OnValidSubmit="HandleLogin">
-			<DataAnnotationsValidator/>
+                <div class="form-check mb-3">
+                    <InputCheckbox id="rememberMe" class="form-check-input" @bind-Value="_loginModel.RememberMe" />
+                    <label for="rememberMe" class="form-check-label">Remember Me</label>
+                </div>
 
-			<div class="form-group">
-				<SfTextBox Id="email" Placeholder="Saisissez votre addresse mail" FloatLabelType="FloatLabelType.Always" CssClass="e-outline"
-				           @bind-Value="_loginModel.Email">
-				</SfTextBox>
-				<ValidationMessage For="@(() => _loginModel.Email)"/>
-			</div>
-			<div class="form-group">
-				<SfTextBox Id="password" Type="InputType.Password" Placeholder="Entrez votre mot de passe" FloatLabelType="FloatLabelType.Always" CssClass="e-outline"
-				           @bind-Value="_loginModel.Password">
-				</SfTextBox>
-				<ValidationMessage For="@(() => _loginModel.Password)"/>
-			</div>
-			<SfButton CssClass="e-primary" IsPrimary="true">Entrer</SfButton>
-		</EditForm>
-	</CardContent>
-</SfCard>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true">Entrer</Button>
+            </EditForm>
+        </CardBody>
+    </Card>
+</div>
 
 @code {
-	private LoginModel _loginModel = new();
-	private SfToast ToastObj;
-	private bool _showErrors;
-	private string _error = "";
+	[Inject] protected ToastService ToastService { get; set; }
 
+    private LoginModel _loginModel = new();
+    private string _error = "";
 
-	private async Task HandleLogin()
-	{
-		var result = await AuthService.Login(_loginModel);
-
-		if (result.Successful)
-		{
-			NavigationManager.NavigateTo("/");
-		}
-		else
-		{
-			_error = result.Error!;
-			await InvokeAsync(StateHasChanged);
-
-
-			await ShowErrorToast();
-		}
-	}
-
-	private async Task ShowErrorToast()
-	{
-		await ToastObj.ShowAsync();
-	}
-
-	private void OnRenderToast(object args)
-	{
-		// Add any actions needed after the toast is rendered.
-	}
-
+    private async Task HandleLogin()
+    {
+        var result = await AuthService.Login(_loginModel);
+        if (result.Successful)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            _error = result.Error!;
+              ToastService.Notify(new(ToastType.Danger, $"Error: {_error}."));
+        }
+    }
 }
-
-<style>
-	.e-card .e-card-header{
-		justify-content: left;
-	}
-	.login-card {
-		width: 400px; /* Set a specific width for the card */
-		margin: 2rem auto; /* Center the card horizontally and add vertical spacing */
-		padding: 2rem; /* Add padding inside the card for better spacing */
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow for a polished look */
-		border-radius: 8px; /* Round the corners of the card */
-	}
-
-	.form-group {
-		margin-bottom: 1.5rem; /* Adds space between form fields */
-	}
-
-		.form-group:last-child {
-			margin-bottom: 2rem; /* Adjust this value to control spacing between the last form field and the button */
-		}
-
-	.login-card SfButton {
-		margin-top: 1rem; /* Adds space above the button */
-	}
- 
-</style>

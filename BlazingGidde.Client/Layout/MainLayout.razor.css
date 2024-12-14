@@ -1,42 +1,31 @@
-/* General Page Layout */
-.page {
-	position: relative;
-	display: flex;
-	flex-direction: column;
+
+
+.bb-page {
+    font-family: 'Raleway';
+    position: relative;
 	height: 100vh; /* Full viewport height */
+
+    display: flex;
+    flex-direction: column;
 }
 
-.main-content {
-	flex: 1; /* Grows to fill remaining space */
-	background: #f2f2f2; /* Subtle gray background */
-	padding: 1rem;
+main {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    position: relative;
 }
 
-/* Footer Styling */
-.footer {
-	background: #3a3a3a; /* Dark gray */
-	color: #cccccc; /* Light gray text */
-	padding: 0.6rem 1rem;
-	text-align: center;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	font-size: 0.85rem;
-}
-
-.footer-content {
-	width: 100%;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-
-/* Main Content Enhancements */
 .content {
 	height:100%;
-	background: #ffffff; /* White background for content */
-	border: 1px solid #ccc; /* Light gray border */
-	border-radius: 4px; /* Subtle rounded corners */
-	padding: 1rem;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+
+}
+
+footer {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    margin-top: auto;
+    border-top: 1px solid #ccc;
 }

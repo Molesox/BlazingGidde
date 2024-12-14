@@ -29,7 +29,7 @@
 </AuthorizeView>
 
 @code {
-	[Inject] NavigationManager NavigationManager { get; set; }
+	[Inject] NavigationManager NavigationManager { get; set; } = null!;
 
 	private void Logout()
 	{

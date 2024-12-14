@@ -19,59 +19,38 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int PersonProfileID
-        {
-            get; set;
-        }
-        int _personProfileID;
+        public int PersonProfileID { get; set; }
 
         /// <summary>
         /// Gets or sets the person ID.
         /// </summary>
        
-        public int PersonID
-        {
-            get; set;
-        }
-        int _personID;
+        public int PersonID { get; set; }
 
         /// <summary>
         /// Gets or sets the photo.
         /// </summary>
        
-        public byte[] Photo
-        {
-            get; set;
-        }
-        byte[] _photo;
+        public byte[]? Photo { get; set; }
 
         /// <summary>
         /// Gets or sets the birth date.
         /// </summary>
         [Column(TypeName = "date")]
        
-        public DateTime? BirthDate
-        {
-            get; set;
-        }
-        DateTime? _birthDate;
+        public DateTime? BirthDate { get; set; }
 
         /// <summary>
         /// Gets or sets the gender.
         /// </summary>
        
-        public int Gender
-        {
-            get; set;
-        }
-        int _gender;
+        public int Gender { get; set; }
 
         /// <summary>
         /// The Person associated with this PersonProfile.
         /// </summary>
-       
-        public virtual Person Person
-        { get; set; }
+
+        public virtual Person Person { get; set; } = new();
 
         #endregion
     }

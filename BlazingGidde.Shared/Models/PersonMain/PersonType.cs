@@ -20,11 +20,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int PersonTypeID
-        {
-            get; set;
-        }
-        int _personTypeID;
+        public int PersonTypeID { get; set; }
 
         /// <summary>
         /// Gets or sets the code.
@@ -32,11 +28,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
         [Required]
         [StringLength(2)]
        
-        public string Code
-        {
-            get; set;
-        }
-        string _code;
+        public string Code { get; set; }= string.Empty;
 
         /// <summary>
         /// Gets or sets the name.
@@ -44,21 +36,13 @@ namespace BlazingGidde.Shared.Models.PersonMain
         [Required]
         [StringLength(30)]
        
-        public string Name
-        {
-            get; set;
-        }
-        string _name;
+        public string Name { get; set; }= string.Empty;
 
         /// <summary>
         /// Gets or sets the sort key.
         /// </summary>
        
-        public int? SortKey
-        {
-            get; set;
-        }
-        int? _sortKey;
+        public int? SortKey { get; set; }
 
 
         #endregion

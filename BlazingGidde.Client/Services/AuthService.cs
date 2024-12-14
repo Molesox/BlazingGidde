@@ -64,12 +64,12 @@ namespace BlazingGidde.Client.Services
 				return loginResult;
 			}
 
-			await _localStorage.SetItemAsync("authToken", loginResult.Token);
+			await _localStorage.SetItemAsync("authToken", loginResult?.Token);
 			((ApiAuthenticationStateProvider)_authenticationStateProvider)
 				.MarkUserAsAuthenticated(loginModel.Email);
 
 			_httpClient.DefaultRequestHeaders.Authorization =
-				new AuthenticationHeaderValue("bearer", loginResult.Token);
+				new AuthenticationHeaderValue("bearer", loginResult?.Token);
 
 			return loginResult;
 		}

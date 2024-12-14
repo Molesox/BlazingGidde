@@ -19,14 +19,14 @@ public class PersonDetails
     [Required]
     [StringLength(20, ErrorMessage = "Culture must be up to 20 characters.")]
     [Display(Name = "Culture", Description = "Culture of the person")]
-    public string Culture { get; set; }
+    public string Culture { get; set; }= string.Empty;
 
     /// <summary>
     /// Gets or sets the title.
     /// </summary>
     [StringLength(80, ErrorMessage = "Title must be up to 80 characters.")]
     [Display(Name = "Title", Description = "Title of the person")]
-    public string Title { get; set; }
+    public string Title { get; set; }= string.Empty;
 
     /// <summary>
     /// Gets or sets the last name.
@@ -34,7 +34,7 @@ public class PersonDetails
     [StringLength(80, ErrorMessage = "Last name must be up to 80 characters.")]
     [Required(ErrorMessage = "Last name is required.")]
     [Display(Name = "Last Name", Description = "Last name of the person")]
-    public string LastName { get; set; }
+    public string LastName { get; set; }= string.Empty;
 
     /// <summary>
     /// Gets or sets the first name.
@@ -42,7 +42,7 @@ public class PersonDetails
     [StringLength(80, ErrorMessage = "First name must be up to 80 characters.")]
     [Required(ErrorMessage = "First name is required.")]
     [Display(Name = "First Name", Description = "First name of the person")]
-    public string FirstName { get; set; }
+    public string FirstName { get; set; }= string.Empty;
 
     /// <summary>
     /// Gets or sets the VAT number.

@@ -19,85 +19,51 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// </summary>
         [Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int PersonID
-        {
-            get; set;
-        }
-        int _personID;
+        public int PersonID { get; set; }
 
         /// <summary>
         /// Gets or sets the culture.
         /// </summary>
         [Required]
         [StringLength(20)]
-       
-        public string Culture
-        {
-            get; set;
-        }
-        string _culture;
+        public string Culture { get; set; }= string.Empty;
 
 
         /// <summary>
         /// Gets or sets the title.
         /// </summary>
         [StringLength(80)]
-       
-        public string Title
-        {
-            get; set;
-        }
-        string _title;
+        public string Title { get; set; }= string.Empty;
 
         /// <summary>
         /// Gets or sets the last name.
         /// </summary>
         [StringLength(80)]
-        public string LastName
-        {
-            get; set;
-        }
-        string _lastName;
+        public string LastName { get; set; }= string.Empty;
 
         /// <summary>
         /// Gets or sets the first name.
         /// </summary>
         [StringLength(80)]
-        public string FirstName
-        {
-            get; set;
-        }
-        string _firstName;
+        public string FirstName { get; set; }= string.Empty;
 
         /// <summary>
         /// Gets or sets the vat number.
         /// </summary>
         [StringLength(20)]
-        public string? VatNumber
-        {
-            get; set;
-        }
-        string? _vatNumber;
+        public string? VatNumber { get; set; }
 
         /// <summary>
         /// Gets or sets the remarks.
         /// </summary>
         [StringLength(200)]
-        public string? Remarks
-        {
-            get; set;
-        }
-        string? _remarks;
+        public string? Remarks { get; set; }
 
         /// <summary>
         /// Gets or sets the annual revenue.
         /// </summary>
-       
-        public decimal? AnnualRevenue
-        {
-            get; set;
-        }
-        decimal? _annualRevenue;
+
+        public decimal? AnnualRevenue { get; set; }
 
         /// <summary>
         /// Gets the full name, 
@@ -125,14 +91,14 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// The collection of Emails associated with this Person.
         /// </summary>
         [ForeignKey("PersonID")]
-       
-        public virtual ICollection<Email>? Emails { get; set; }
+
+        public virtual ICollection<Email>? Emails { get; set; } = new List<Email>();
 
         /// <summary>
         /// The collection of PersonProfiles associated with this Person.
         /// </summary>
         [ForeignKey("PersonID")]
-        public virtual ICollection<PersonProfile>? PersonProfiles { get; set; }
+        public virtual ICollection<PersonProfile>? PersonProfiles { get; set; } = new List<PersonProfile>();
 
         /// <summary>
         /// The collection of Phones associated with this Person.

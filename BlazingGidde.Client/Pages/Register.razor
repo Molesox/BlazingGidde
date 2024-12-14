@@ -1,97 +1,65 @@
 ﻿@page "/register"
 
-
 @using BlazingGidde.Shared.Models.Identity
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
 
-<SfToast @ref="ToastObj" Timeout="5000" Content="@_error" >
-	<ToastPosition X="Right" Y="Bottom" />
-</SfToast>
+<div style="display: flex; justify-content: center; align-items: center;">
+    <Card Class="mb-4" Style="width:30rem;">
+        <img class="rounded-top" src="logo-alpsoft.png" alt="placeholder" />
+        <CardBody>
+            <CardTitle>Register</CardTitle>
+            <CardSubTitle Class="mb-2 text-muted">Create your account</CardSubTitle>
+            <EditForm Model="_registerModel" OnValidSubmit="HandleRegistration">
+                <DataAnnotationsValidator />
 
-<SfCard CssClass="register-card">
-	<CardHeader>
-		<h2>Senregistrer</h2>
-	</CardHeader>
-	<CardContent>
-		<EditForm Model="_registerModel" OnValidSubmit="HandleRegistration">
-			<DataAnnotationsValidator />
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <InputText id="email" class="form-control" placeholder="Enter your email address" @bind-Value="_registerModel.Email" Type="email" />
+                    <ValidationMessage For="@(() => _registerModel.Email)" />
+                </div>
 
-			<div class="form-group">
-				<SfTextBox Id="email" Placeholder="Saisissez votre adresse mail" FloatLabelType="FloatLabelType.Always" CssClass="e-outline"
-						   @bind-Value="_registerModel.Email">
-				</SfTextBox>
-				<ValidationMessage For="@(() => _registerModel.Email)" />
-			</div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <InputText id="password" class="form-control" placeholder="Enter a password" @bind-Value="_registerModel.Password" Type="password" />
+                    <ValidationMessage For="@(() => _registerModel.Password)" />
+                </div>
 
-			<div class="form-group">
-				<SfTextBox Id="password" Type="InputType.Password" Placeholder="Saisissez un mot de passe" FloatLabelType="FloatLabelType.Always" CssClass="e-outline"
-						   @bind-Value="_registerModel.Password">
-				</SfTextBox>
-				<ValidationMessage For="@(() => _registerModel.Password)" />
-			</div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <InputText id="confirmPassword" class="form-control" placeholder="Confirm your password" @bind-Value="_registerModel.ConfirmPassword" Type="password" />
+                    <ValidationMessage For="@(() => _registerModel.ConfirmPassword)" />
+                </div>
 
-			<div class="form-group">
-				<SfTextBox Id="confirm-password" Type="InputType.Password" Placeholder="Confirmez votre mot de passe" FloatLabelType="FloatLabelType.Always" CssClass="e-outline"
-						   @bind-Value="_registerModel.ConfirmPassword">
-				</SfTextBox>
-				<ValidationMessage For="@(() => _registerModel.ConfirmPassword)" />
-			</div>
-			<SfButton CssClass="e-primary" IsPrimary="true">Entrer</SfButton>
-
-		</EditForm>
-	</CardContent>
-</SfCard>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true">Register</Button>
+            </EditForm>
+        </CardBody>
+    </Card>
+</div>
 
 @code {
-	private RegisterModel _registerModel = new();
-	private SfToast ToastObj;
-	private string _error = "";
+	[Inject] protected ToastService ToastService { get; set; }
 
-	private async Task HandleRegistration()
-	{
-		var result = await AuthService.Register(_registerModel);
+    private RegisterModel _registerModel = new();
+    private string _error = "";
 
-		if (result.Successful)
-		{
-			NavigationManager.NavigateTo("/login");
-		}
-		else
-		{
-			_error = string.Join("<br>", result.Errors);
-			await InvokeAsync(StateHasChanged);
-			await ShowErrorToast();
-		}
-	}
+    private async Task HandleRegistration()
+    {
+        var result = await AuthService.Register(_registerModel);
 
-	private async Task ShowErrorToast()
-	{
-		await ToastObj.ShowAsync();
-	}
+        if (result.Successful)
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            if (result.Errors is not null){
+				                _error = string.Join("<br>", result.Errors);
+			            ToastService.Notify(new(ToastType.Danger, $"Error: {_error}."));
+			}
+
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
 }
-
-<style>
-	.e-card .e-card-header {
-		justify-content: left;
-	}
-
-	.register-card {
-		width: 400px;
-		margin: 2rem auto;
-		padding: 2rem;
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-		border-radius: 8px;
-	}
-
-	.form-group {
-		margin-bottom: 1.5rem;
-	}
-
-		.form-group:last-child {
-			margin-bottom: 2rem;
-		}
-
-	.register-card SfButton {
-		margin-top: 1rem;
-	}
-</style>

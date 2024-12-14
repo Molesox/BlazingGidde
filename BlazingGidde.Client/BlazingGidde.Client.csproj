@@ -14,19 +14,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="blazor.Bootstrap" Version="3.2.0" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.11" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.10" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
 		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.0.11" />
-		<PackageReference Include="Syncfusion.Blazor.Calendars" Version="27.2.2" />
-		<PackageReference Include="Syncfusion.Blazor.Grid" Version="27.2.2" />
-		<PackageReference Include="Syncfusion.Blazor.TreeGrid" Version="27.2.2" />
-		<PackageReference Include="Syncfusion.Blazor.Notifications" Version="27.2.2" />
-		<PackageReference Include="Syncfusion.Blazor.Themes" Version="27.2.2" />
-		<PackageReference Include="Syncfusion.Blazor.Cards" Version="27.2.2" />
-
 		<PackageReference Include="System.Net.Http.Json" Version="8.0.1" />
 	</ItemGroup>
 

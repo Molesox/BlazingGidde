@@ -4,7 +4,6 @@ using BlazingGidde.Shared.Models.Patois;
 using BlazingGidde.Shared.Models.PersonMain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Syncfusion.Blazor;
 
 namespace BlazingGidde.Server.Controllers.PatoisDeNendaz
 {
