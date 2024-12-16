@@ -79,7 +79,10 @@ namespace BlazingGidde.Shared.Models.PersonMain
         [NotMapped]
         public string FullNameInv =>$"{LastName.ToUpper()}, {FirstName}";
 
-
+        /// <summary>
+        /// Gets or sets the skip application user property.
+        /// </summary>
+        public ApplicationUserBase? ApplicationUser { get; set; }
 
         /// <summary>
         /// The collection of Addresses associated with this Person.

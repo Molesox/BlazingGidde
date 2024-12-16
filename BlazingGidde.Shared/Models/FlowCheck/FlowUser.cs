@@ -1,9 +1,6 @@
-using System;
-using Microsoft.AspNetCore.Identity;
-
 namespace BlazingGidde.Shared.Models.FlowCheck;
 
-public class FlowUser : IdentityUser
+public class FlowUser : ApplicationUserBase
 {
     public List<Section> Sections { get; set; } = new List<Section>();
 
