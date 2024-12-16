@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using BlazingGidde.Shared.Models.PersonMain;
 using Microsoft.AspNetCore.Identity;
 
@@ -10,7 +11,8 @@ namespace BlazingGidde.Shared.Models;
 /// </summary>
 public class ApplicationUserBase : IdentityUser, ISupportTimeStamp
 {
-    public Person? Person { get; set; }
+
+    public Person Person { get; set; } = new();
 
     #region Auditables
 

@@ -1,11 +1,13 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlazingGidde.Shared.Models.FlowCheck;
 
 /// <summary>
 /// Represents a specific timestamped instance of a TemplateType.
 /// </summary>
+[Table("TemplateKind", Schema ="FlowCheck")]
 public class TemplateKind : ModelBase
 {
     /// <summary>
@@ -22,7 +24,7 @@ public class TemplateKind : ModelBase
     /// <summary>
     /// The parent TemplateType.
     /// </summary>
-    public required TemplateType TemplateType { get; set; }
+    public TemplateType TemplateType { get; set; } = new();
 
     /// <summary>
     /// Gets ors sets the iteration of the template kind. (nb of editions)
@@ -33,4 +35,10 @@ public class TemplateKind : ModelBase
     /// The skip property of associated filled Templates.
     /// </summary>
     public ICollection<Template> Templates { get; set; } = new List<Template>();
+
+    /// <summary>
+    /// Gets or sets the skip property of associated custom template items.
+    /// </summary>
+     public ICollection<CustomTemplateItem> CustomTemplateItems { get; set; } = new List<CustomTemplateItem>();
+
 }

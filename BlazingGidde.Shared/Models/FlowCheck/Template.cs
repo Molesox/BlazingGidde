@@ -1,11 +1,13 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlazingGidde.Shared.Models.FlowCheck;
 
 /// <summary>
 /// Represents a record of a certain TemplateKind.
 /// </summary>
+[Table("Template", Schema ="FlowCheck")]
 public class Template : ModelBase
 {
     

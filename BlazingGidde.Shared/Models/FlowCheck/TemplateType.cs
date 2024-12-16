@@ -1,8 +1,9 @@
-using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlazingGidde.Shared.Models.FlowCheck;
 
+[Table("TemplateType", Schema ="FlowCheck")]
 public class TemplateType : ModelBase
 {
     /// <summary>

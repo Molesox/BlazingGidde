@@ -10,7 +10,6 @@ namespace BlazingGidde.Shared.Models.PersonMain
     /// The Address model class.
     /// </summary>
     [Table("Address", Schema = "Person")]
-
     public partial class Address
     {
         #region Properties

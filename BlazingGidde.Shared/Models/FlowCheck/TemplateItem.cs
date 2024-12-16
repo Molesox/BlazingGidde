@@ -1,8 +1,11 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace BlazingGidde.Shared.Models.FlowCheck;
 
 /// <summary>
 /// Get or sets the control step.
 /// </summary>
+[Table("TemplateItem", Schema ="FlowCheck")]
 public class TemplateItem : ModelBase
 {   
         /// <summary>
@@ -17,7 +20,7 @@ public class TemplateItem : ModelBase
         /// <summary>
         /// Gets or sets the parent template.
         /// </summary>
-        public required Template Template { get; set; }
+        public Template Template { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the possible related incidency.

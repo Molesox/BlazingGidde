@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BlazingGidde.Server.Data.Migration
+namespace BlazingGidde.Server.Data
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241125104932_Patois")]
-    partial class Patois
+    [Migration("20241216195945_initialDbCreate")]
+    partial class initialDbCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,230 @@ namespace BlazingGidde.Server.Data.Migration
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.CustomTemplateItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TemplateKindId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TemplateKindId");
+
+                    b.ToTable("CustomTemplateItem", "FlowCheck");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.Incidency", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CorrectiveActions")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsMaintenancAdvised")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsQualityAdvised")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Signature")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TemplateId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TemplateId");
+
+                    b.ToTable("Incidency", "FlowCheck");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.Template", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateUser")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("FlowUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("TemplateKindId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FlowUserId");
+
+                    b.HasIndex("TemplateKindId");
+
+                    b.ToTable("Template", "FlowCheck");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateUser")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int?>("IncidencyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Line")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("Success")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Traceability")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IncidencyId");
+
+                    b.HasIndex("TemplateId");
+
+                    b.ToTable("TemplateItem", "FlowCheck");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateKind", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateUser")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("DefaultItemCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TemplateTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TemplateTypeId");
+
+                    b.ToTable("TemplateKind", "FlowCheck");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Code")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateUser")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ImgUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TemplateType", "FlowCheck");
+                });
+
             modelBuilder.Entity("BlazingGidde.Shared.Models.Patois.DictionaryEntry", b =>
                 {
                     b.Property<int>("Id")
@@ -34,34 +258,28 @@ namespace BlazingGidde.Server.Data.Migration
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AudioId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedVisa")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("DialectExample")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("DialectWord")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("FrenchExample")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("FrenchWord")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -73,7 +291,6 @@ namespace BlazingGidde.Server.Data.Migration
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UpdatedVisa")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -263,6 +480,9 @@ namespace BlazingGidde.Server.Data.Migration
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)");
 
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(80)
@@ -282,6 +502,10 @@ namespace BlazingGidde.Server.Data.Migration
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("PersonID");
+
+                    b.HasIndex("Id")
+                        .IsUnique()
+                        .HasFilter("[Id] IS NOT NULL");
 
                     b.ToTable("Person", "Person");
                 });
@@ -304,7 +528,6 @@ namespace BlazingGidde.Server.Data.Migration
                         .HasColumnType("int");
 
                     b.Property<byte[]>("Photo")
-                        .IsRequired()
                         .HasColumnType("varbinary(max)");
 
                     b.HasKey("PersonProfileID");
@@ -520,6 +743,8 @@ namespace BlazingGidde.Server.Data.Migration
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -607,6 +832,96 @@ namespace BlazingGidde.Server.Data.Migration
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BlazingGidde.Shared.Models.ApplicationUserBase", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreateUser")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdateUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.ToTable("ApplicationUserBase");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.FlowUser", b =>
+                {
+                    b.HasBaseType("BlazingGidde.Shared.Models.ApplicationUserBase");
+
+                    b.ToTable("FlowUser", "FlowCheck");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.CustomTemplateItem", b =>
+                {
+                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.TemplateKind", "TemplateKind")
+                        .WithMany("CustomTemplateItems")
+                        .HasForeignKey("TemplateKindId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TemplateKind");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.Incidency", b =>
+                {
+                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.Template", "Template")
+                        .WithMany()
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Template");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.Template", b =>
+                {
+                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.FlowUser", null)
+                        .WithMany("Templates")
+                        .HasForeignKey("FlowUserId");
+
+                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.TemplateKind", null)
+                        .WithMany("Templates")
+                        .HasForeignKey("TemplateKindId");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateItem", b =>
+                {
+                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.Incidency", "Incidency")
+                        .WithMany()
+                        .HasForeignKey("IncidencyId");
+
+                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.Template", "Template")
+                        .WithMany("TemplateItems")
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Incidency");
+
+                    b.Navigation("Template");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateKind", b =>
+                {
+                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.TemplateType", "TemplateType")
+                        .WithMany("TemplateKinds")
+                        .HasForeignKey("TemplateTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TemplateType");
+                });
+
             modelBuilder.Entity("BlazingGidde.Shared.Models.PersonMain.Address", b =>
                 {
                     b.HasOne("BlazingGidde.Shared.Models.PersonMain.AddressType", "AddressType")
@@ -643,6 +958,15 @@ namespace BlazingGidde.Server.Data.Migration
                     b.Navigation("EmailType");
 
                     b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.PersonMain.Person", b =>
+                {
+                    b.HasOne("BlazingGidde.Shared.Models.ApplicationUserBase", "ApplicationUser")
+                        .WithOne("Person")
+                        .HasForeignKey("BlazingGidde.Shared.Models.PersonMain.Person", "Id");
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("BlazingGidde.Shared.Models.PersonMain.PersonProfile", b =>
@@ -726,6 +1050,32 @@ namespace BlazingGidde.Server.Data.Migration
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.FlowUser", b =>
+                {
+                    b.HasOne("BlazingGidde.Shared.Models.ApplicationUserBase", null)
+                        .WithOne()
+                        .HasForeignKey("BlazingGidde.Shared.Models.FlowCheck.FlowUser", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.Template", b =>
+                {
+                    b.Navigation("TemplateItems");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateKind", b =>
+                {
+                    b.Navigation("CustomTemplateItems");
+
+                    b.Navigation("Templates");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateType", b =>
+                {
+                    b.Navigation("TemplateKinds");
+                });
+
             modelBuilder.Entity("BlazingGidde.Shared.Models.PersonMain.AddressType", b =>
                 {
                     b.Navigation("Addresses");
@@ -750,6 +1100,17 @@ namespace BlazingGidde.Server.Data.Migration
             modelBuilder.Entity("BlazingGidde.Shared.Models.PersonMain.PhoneType", b =>
                 {
                     b.Navigation("Phones");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.ApplicationUserBase", b =>
+                {
+                    b.Navigation("Person")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.FlowUser", b =>
+                {
+                    b.Navigation("Templates");
                 });
 #pragma warning restore 612, 618
         }

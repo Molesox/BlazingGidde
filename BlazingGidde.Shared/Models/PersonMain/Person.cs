@@ -82,6 +82,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// <summary>
         /// Gets or sets the skip application user property.
         /// </summary>
+        [ForeignKey("Id")]
         public ApplicationUserBase? ApplicationUser { get; set; }
 
         /// <summary>

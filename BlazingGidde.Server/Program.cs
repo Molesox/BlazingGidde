@@ -2,6 +2,7 @@ using System.Text;
 using BlazingGidde.Server.Data;
 using BlazingGidde.Server.Data.Repository;
 using BlazingGidde.Server.Services;
+using BlazingGidde.Shared.Models.FlowCheck;
 using BlazingGidde.Shared.Models.Patois;
 using BlazingGidde.Shared.Models.PersonMain;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,8 +20,7 @@ builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
-builder.Services.AddDefaultIdentity<
-	IdentityUser>()
+builder.Services.AddDefaultIdentity<IdentityUser>()
 	.AddRoles<IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationDbContext>();
 
