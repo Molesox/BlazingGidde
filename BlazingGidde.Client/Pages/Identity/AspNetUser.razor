@@ -3,49 +3,125 @@
 @using BlazingGidde.Client.Shared
 @using BlazingGidde.Shared.Models.Identity
 @using BlazingGidde.Shared.Models.Patois
+@using BlazingGidde.Shared.DTOs.Common
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
- 
+
 @inject AspNetUserManager UserManager
+@inject AspNetRoleManager RoleManager
+@inject UserRoleManager UserRoleManager
 
 @attribute [Authorize]
 
 <PageTitle>Application Users</PageTitle>
- 
 
-    
-    <GenericGrid TEntity="IdentityUser" Title="My Users"
-                Repository="@UserManager"
-                Columns="@myColumns">
-        <EditFormTemplate Context="user">
-              <div class="mb-3">
-            <label class="form-label">User Name</label>
-            <InputText class="form-control" @bind-Value="user.UserName" />
+<GenericGrid TEntity="IdentityUser" Title="My Users"
+             Repository="@UserManager"
+             Columns="@myColumns">
+    <EditFormTemplate Context="user">
+        <div class="card">
+            <div class="card-header">
+                <h5>User Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">User Name</label>
+                            <InputText class="form-control" @bind-Value="user.UserName" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <InputText class="form-control" @bind-Value="user.Email" type="email" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <InputText class="form-control" @bind-Value="user.PhoneNumber" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3 form-check">
+                            <InputCheckbox class="form-check-input" @bind-Value="user.LockoutEnabled" />
+                            <label class="form-check-label">Lockout Enabled</label>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <InputCheckbox class="form-check-input" @bind-Value="user.TwoFactorEnabled" />
+                            <label class="form-check-label">Two-Factor Authentication Enabled</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <InputText class="form-control" @bind-Value="user.Email" type="email" />
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Role Management</h5>
+            </div>
+            <div class="card-body">
+                <div>
+                    <h6>Assign Role</h6>
+                    <div class="input-group mb-3">
+                        <InputSelect class="form-control" @bind-Value="selectedRole">
+                            <option value="" disabled>Select a Role</option>
+                            @if (_roles != null)
+                            {
+                                @foreach (var role in _roles)
+                                {
+                                    <option value="@role.Name">@role.Name</option>
+                                }
+                            }
+                        </InputSelect>
+                        <button class="btn btn-primary" @onclick="() => AssignRole(user.Id)">Assign</button>
+                    </div>
+                </div>
+
+                <div>
+                    <h6>Current Roles</h6>
+                    @if (userRoles.ContainsKey(user.Id) && userRoles[user.Id].Any())
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Role</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var role in userRoles[user.Id])
+                                {
+                                    <tr>
+                                        <td>@role</td>
+                                        <td>
+
+	                                        <button class="btn btn-danger btn-sm" @onclick="() => RemoveRole(user.Id, role)">
+		                                        <span class="material-icons">delete</span>
+	                                        </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No roles assigned.</p>
+                    }
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Phone Number</label>
-            <InputText class="form-control" @bind-Value="user.PhoneNumber" />
-        </div>
-        <div class="mb-3 form-check">
-            <InputCheckbox class="form-check-input" @bind-Value="user.LockoutEnabled" />
-            <label class="form-check-label">Lockout Enabled</label>
-        </div>
-        <div class="mb-3 form-check">
-            <InputCheckbox class="form-check-input" @bind-Value="user.TwoFactorEnabled" />
-            <label class="form-check-label">Two-Factor Authentication Enabled</label>
-        </div>
-        </EditFormTemplate>
-    </GenericGrid>
+    </EditFormTemplate>
+</GenericGrid>
 
 @code {
     private List<ColumnDefinition<IdentityUser>> myColumns = new();
-    
-    protected override void OnInitialized()
+    private IEnumerable<IdentityRole>? _roles;
+    private string? selectedRole;
+    private Dictionary<string, List<string>> userRoles = new();
+
+    protected override async Task OnInitializedAsync()
     {
+        _roles = await RoleManager.GetAll();
+        await LoadUserRoles();
         myColumns = new List<ColumnDefinition<IdentityUser>>
         {
             new ColumnDefinition<IdentityUser>(x => x.Id, "ID"),
@@ -55,5 +131,55 @@
             new ColumnDefinition<IdentityUser>(x => x.LockoutEnabled, "Lockout Enabled", isEditable: true),
             new ColumnDefinition<IdentityUser>(x => x.TwoFactorEnabled, "2FA Enabled", isEditable: true)
         };
+    }
+
+    private async Task AssignRole(string userId)
+    {
+        if (!string.IsNullOrEmpty(selectedRole))
+        {
+            var dto = new AssignRoleDto { UserId = userId, RoleName = selectedRole };
+            var response = await UserRoleManager.AssignRole(dto);
+            if (response.Success)
+            {
+                await LoadUserRoles();
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine($"Error assigning role: {string.Join(", ", response.ErrorMessages)}");
+            }
+        }
+    }
+
+    private async Task RemoveRole(string userId, string roleName)
+    {
+        var dto = new AssignRoleDto { UserId = userId, RoleName = roleName };
+        var response = await UserRoleManager.RemoveRole(dto);
+        if (response.Success)
+        {
+            await LoadUserRoles();
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine($"Error removing role: {string.Join(", ", response.ErrorMessages)}");
+        }
+    }
+
+    private async Task LoadUserRoles()
+    {
+        userRoles.Clear();
+        var allUsers = await UserManager.GetAll();
+        if (allUsers != null)
+        {
+            foreach (var user in allUsers)
+            {
+                var response = await UserRoleManager.GetRoles(user.Id);
+                if (response.Success && response.Items != null)
+                {
+                    userRoles[user.Id] = response.Items.ToList();
+                }
+            }
+        }
     }
 }

@@ -1,7 +1,7 @@
 using System.Text;
-using BlazingGidde.Client.Services;
 using BlazingGidde.Server.Data;
 using BlazingGidde.Server.Data.Repository;
+using BlazingGidde.Server.Services;
 using BlazingGidde.Shared.Models.Patois;
 using BlazingGidde.Shared.Models.PersonMain;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,6 +30,7 @@ builder.Services.AddDefaultIdentity<
  builder.Services.AddTransient<RepositoryEF<DictionaryEntry, ApplicationDbContext>>();
  builder.Services.AddTransient<RepositoryUser>();
  builder.Services.AddTransient<RepositoryRole>();
+ builder.Services.AddTransient<UserRoleService>();
 
  builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {

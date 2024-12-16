@@ -19,6 +19,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<AspNetUserManager>();
 builder.Services.AddScoped<AspNetRoleManager>();
+builder.Services.AddScoped<UserRoleManager>();
 builder.Services.AddScoped<PersonMainManager>();
 builder.Services.AddScoped<DictionaryManager>();
 
