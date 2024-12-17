@@ -1,14 +1,22 @@
 ﻿
 using BlazingGidde.Shared.Models.FlowCheck;
+using BlazingGidde.Shared.Models.FlowCheck.TemplateItems;
 using BlazingGidde.Shared.Models.Patois;
 using BlazingGidde.Shared.Models.PersonMain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
+using BlazingGidde.Shared.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace BlazingGidde.Server.Data
 {
 	public partial class ApplicationDbContext : IdentityDbContext
 	{
+		public ApplicationDbContext(DbContextOptions options) : base(options)
+		{
+		}
+
 		#region Person Main
 
 		public virtual DbSet<Person> Persons { get; set; }
@@ -30,15 +38,24 @@ namespace BlazingGidde.Server.Data
 		public virtual DbSet<Incidency> Incidencies { get; set; }
 		public virtual DbSet<Template> Templates { get; set; }
 		public virtual DbSet<TemplateItem> TemplateItems { get; set; }
+		public virtual DbSet<BreakeableItem> BreakeableItems { get; set; }
+		public virtual DbSet<GazItem> GazItems { get; set; }
 		public virtual DbSet<TemplateKind> TemplateKinds { get; set; }
 		public virtual DbSet<TemplateType> TemplateTypes { get; set; }
 
 		#endregion
 
+		#region Patois
+
 		public virtual DbSet<DictionaryEntry> DictionaryEntries{ get; set; }
-	
-		public ApplicationDbContext(DbContextOptions options) : base(options)
+
+		#endregion
+
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			base.OnModelCreating(modelBuilder);
+			modelBuilder.Entity<Template>().UseTpcMappingStrategy();
+
 		}
 	}
 }

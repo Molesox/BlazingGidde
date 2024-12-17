@@ -2,19 +2,21 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using BlazingGidde.Shared.Models;
+using BlazingGidde.Shared.Models.FlowCheck;
 
 namespace BlazingGidde.Server.Data.Repository
 {
-	public class RepositoryUser : IRepository<IdentityUser>
+	public class RepositoryUser : IRepository<FlowUser>
 	{
-		private readonly UserManager<IdentityUser> _userManager;
+		private readonly UserManager<FlowUser> _userManager;
 
-		public RepositoryUser(UserManager<IdentityUser> userManager)
+		public RepositoryUser(UserManager<FlowUser> userManager)
 		{
 			_userManager = userManager;
 		}
 
-		public async Task<bool> Delete(IdentityUser entityToDelete)
+		public async Task<bool> Delete(FlowUser entityToDelete)
 		{
 			var result = await _userManager.DeleteAsync(entityToDelete);
 			return result.Succeeded;
@@ -29,39 +31,39 @@ namespace BlazingGidde.Server.Data.Repository
 			return result.Succeeded;
 		}
 
-		public async Task<IEnumerable<IdentityUser>> GetAll()
+		public async Task<IEnumerable<FlowUser>> GetAll()
 		{
 			return await _userManager.Users.ToListAsync();
 		}
 
-		public async Task<IdentityUser?> GetByID(object id)
+		public async Task<FlowUser?> GetByID(object id)
 		{
 			return await _userManager.FindByIdAsync(id.ToString() ?? string.Empty);
 		}
 
-		public async Task<IEnumerable<IdentityUser>> Get(QueryFilter<IdentityUser> queryFilter)
+		public async Task<IEnumerable<FlowUser>> Get(QueryFilter<FlowUser> queryFilter)
 		{
 			var all = await _userManager.Users.ToListAsync();
 			return queryFilter.GetFilteredList(all);
 		}
 
-		public async Task<IEnumerable<IdentityUser>> Get(LinqQueryFilter<IdentityUser> linqQueryFilter)
+		public async Task<IEnumerable<FlowUser>> Get(LinqQueryFilter<FlowUser> linqQueryFilter)
 		{
 			return await linqQueryFilter.GetFilteredList(_userManager.Users);
 		}
 
-		public async Task<int> GetTotalCount(LinqQueryFilter<IdentityUser> queryFilter)
+		public async Task<int> GetTotalCount(LinqQueryFilter<FlowUser> queryFilter)
 		{
 			return await queryFilter.GetTotalCount(_userManager.Users);
 		}
 
-		public async Task<IdentityUser?> Insert(IdentityUser entity)
+		public async Task<FlowUser?> Insert(FlowUser entity)
 		{
 			var result = await _userManager.CreateAsync(entity);
 			return result.Succeeded ? entity : null;
 		}
 
-		public async Task<IdentityUser?> Update(IdentityUser entityToUpdate)
+		public async Task<FlowUser?> Update(FlowUser entityToUpdate)
 		{
 			var user = await _userManager.FindByIdAsync(entityToUpdate.Id);
 			if (user == null) return null;

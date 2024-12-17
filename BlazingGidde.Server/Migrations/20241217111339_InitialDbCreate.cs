@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace BlazingGidde.Server.Data
+namespace BlazingGidde.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class initialDbCreate : Migration
+    public partial class InitialDbCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,6 +19,9 @@ namespace BlazingGidde.Server.Data
 
             migrationBuilder.EnsureSchema(
                 name: "Patois");
+
+            migrationBuilder.CreateSequence(
+                name: "TemplateSequence");
 
             migrationBuilder.CreateTable(
                 name: "AddressType",
@@ -34,21 +37,6 @@ namespace BlazingGidde.Server.Data
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AddressType", x => x.AddressTypeID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ApplicationUserBase",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreateUser = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    UpdateUser = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ApplicationUserBase", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -182,50 +170,6 @@ namespace BlazingGidde.Server.Data
                 });
 
             migrationBuilder.CreateTable(
-                name: "FlowUser",
-                schema: "FlowCheck",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FlowUser", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_FlowUser_ApplicationUserBase_Id",
-                        column: x => x.Id,
-                        principalTable: "ApplicationUserBase",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Person",
-                schema: "Person",
-                columns: table => new
-                {
-                    PersonID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Culture = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
-                    VatNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    Remarks = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    AnnualRevenue = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Person", x => x.PersonID);
-                    table.ForeignKey(
-                        name: "FK_Person_ApplicationUserBase_Id",
-                        column: x => x.Id,
-                        principalTable: "ApplicationUserBase",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -332,6 +276,28 @@ namespace BlazingGidde.Server.Data
                 });
 
             migrationBuilder.CreateTable(
+                name: "FlowUser",
+                schema: "FlowCheck",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreateUser = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    UpdateUser = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FlowUser", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FlowUser_AspNetUsers_Id",
+                        column: x => x.Id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TemplateKind",
                 schema: "FlowCheck",
                 columns: table => new
@@ -357,6 +323,94 @@ namespace BlazingGidde.Server.Data
                         principalTable: "TemplateType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Person",
+                schema: "Person",
+                columns: table => new
+                {
+                    PersonID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Culture = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: false),
+                    VatNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Remarks = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    AnnualRevenue = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    PersonTypeID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Person", x => x.PersonID);
+                    table.ForeignKey(
+                        name: "FK_Person_FlowUser_Id",
+                        column: x => x.Id,
+                        principalSchema: "FlowCheck",
+                        principalTable: "FlowUser",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Person_PersonType_PersonTypeID",
+                        column: x => x.PersonTypeID,
+                        principalSchema: "Person",
+                        principalTable: "PersonType",
+                        principalColumn: "PersonTypeID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CustomTemplateItem",
+                schema: "FlowCheck",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TemplateKindId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomTemplateItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CustomTemplateItem_TemplateKind_TemplateKindId",
+                        column: x => x.TemplateKindId,
+                        principalSchema: "FlowCheck",
+                        principalTable: "TemplateKind",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Template",
+                schema: "FlowCheck",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false, defaultValueSql: "NEXT VALUE FOR [TemplateSequence]"),
+                    FlowUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    TemplateKindId = table.Column<int>(type: "int", nullable: true),
+                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreateUser = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    UpdateUser = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Template", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Template_FlowUser_FlowUserId",
+                        column: x => x.FlowUserId,
+                        principalSchema: "FlowCheck",
+                        principalTable: "FlowUser",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Template_TemplateKind_TemplateKindId",
+                        column: x => x.TemplateKindId,
+                        principalSchema: "FlowCheck",
+                        principalTable: "TemplateKind",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -489,85 +543,6 @@ namespace BlazingGidde.Server.Data
                 });
 
             migrationBuilder.CreateTable(
-                name: "CustomTemplateItem",
-                schema: "FlowCheck",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TemplateKindId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CustomTemplateItem", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CustomTemplateItem_TemplateKind_TemplateKindId",
-                        column: x => x.TemplateKindId,
-                        principalSchema: "FlowCheck",
-                        principalTable: "TemplateKind",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Template",
-                schema: "FlowCheck",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FlowUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    TemplateKindId = table.Column<int>(type: "int", nullable: true),
-                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreateUser = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    UpdateUser = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Template", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Template_FlowUser_FlowUserId",
-                        column: x => x.FlowUserId,
-                        principalSchema: "FlowCheck",
-                        principalTable: "FlowUser",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Template_TemplateKind_TemplateKindId",
-                        column: x => x.TemplateKindId,
-                        principalSchema: "FlowCheck",
-                        principalTable: "TemplateKind",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Incidency",
-                schema: "FlowCheck",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IsQualityAdvised = table.Column<bool>(type: "bit", nullable: true),
-                    IsMaintenancAdvised = table.Column<bool>(type: "bit", nullable: true),
-                    Signature = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CorrectiveActions = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TemplateId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Incidency", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Incidency_Template_TemplateId",
-                        column: x => x.TemplateId,
-                        principalSchema: "FlowCheck",
-                        principalTable: "Template",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TemplateItem",
                 schema: "FlowCheck",
                 columns: table => new
@@ -578,7 +553,6 @@ namespace BlazingGidde.Server.Data
                     Traceability = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Line = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TemplateId = table.Column<int>(type: "int", nullable: false),
-                    IncidencyId = table.Column<int>(type: "int", nullable: true),
                     UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreateUser = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
@@ -588,16 +562,77 @@ namespace BlazingGidde.Server.Data
                 {
                     table.PrimaryKey("PK_TemplateItem", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TemplateItem_Incidency_IncidencyId",
-                        column: x => x.IncidencyId,
-                        principalSchema: "FlowCheck",
-                        principalTable: "Incidency",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_TemplateItem_Template_TemplateId",
                         column: x => x.TemplateId,
                         principalSchema: "FlowCheck",
                         principalTable: "Template",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BreakeableItem",
+                schema: "FlowCheck",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BreakeableItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BreakeableItem_TemplateItem_Id",
+                        column: x => x.Id,
+                        principalSchema: "FlowCheck",
+                        principalTable: "TemplateItem",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GazItem",
+                schema: "FlowCheck",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    O2 = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    N2 = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CO2 = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsGasOk = table.Column<bool>(type: "bit", nullable: true),
+                    IsSealedOk = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GazItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GazItem_TemplateItem_Id",
+                        column: x => x.Id,
+                        principalSchema: "FlowCheck",
+                        principalTable: "TemplateItem",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Incidency",
+                schema: "FlowCheck",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    IsQualityAdvised = table.Column<bool>(type: "bit", nullable: true),
+                    IsMaintenancAdvised = table.Column<bool>(type: "bit", nullable: true),
+                    Signature = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CorrectiveActions = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Incidency", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Incidency_TemplateItem_Id",
+                        column: x => x.Id,
+                        principalSchema: "FlowCheck",
+                        principalTable: "TemplateItem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -672,18 +707,18 @@ namespace BlazingGidde.Server.Data
                 column: "PersonID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Incidency_TemplateId",
-                schema: "FlowCheck",
-                table: "Incidency",
-                column: "TemplateId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Person_Id",
                 schema: "Person",
                 table: "Person",
                 column: "Id",
                 unique: true,
                 filter: "[Id] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Person_PersonTypeID",
+                schema: "Person",
+                table: "Person",
+                column: "PersonTypeID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersonProfile_PersonID",
@@ -714,12 +749,6 @@ namespace BlazingGidde.Server.Data
                 schema: "FlowCheck",
                 table: "Template",
                 column: "TemplateKindId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TemplateItem_IncidencyId",
-                schema: "FlowCheck",
-                table: "TemplateItem",
-                column: "IncidencyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TemplateItem_TemplateId",
@@ -757,6 +786,10 @@ namespace BlazingGidde.Server.Data
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "BreakeableItem",
+                schema: "FlowCheck");
+
+            migrationBuilder.DropTable(
                 name: "CustomTemplateItem",
                 schema: "FlowCheck");
 
@@ -769,20 +802,20 @@ namespace BlazingGidde.Server.Data
                 schema: "Person");
 
             migrationBuilder.DropTable(
-                name: "PersonProfile",
-                schema: "Person");
+                name: "GazItem",
+                schema: "FlowCheck");
 
             migrationBuilder.DropTable(
-                name: "PersonType",
+                name: "Incidency",
+                schema: "FlowCheck");
+
+            migrationBuilder.DropTable(
+                name: "PersonProfile",
                 schema: "Person");
 
             migrationBuilder.DropTable(
                 name: "Phone",
                 schema: "Person");
-
-            migrationBuilder.DropTable(
-                name: "TemplateItem",
-                schema: "FlowCheck");
 
             migrationBuilder.DropTable(
                 name: "AddressType",
@@ -792,11 +825,12 @@ namespace BlazingGidde.Server.Data
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "EmailType",
                 schema: "Person");
+
+            migrationBuilder.DropTable(
+                name: "TemplateItem",
+                schema: "FlowCheck");
 
             migrationBuilder.DropTable(
                 name: "Person",
@@ -807,12 +841,12 @@ namespace BlazingGidde.Server.Data
                 schema: "Person");
 
             migrationBuilder.DropTable(
-                name: "Incidency",
+                name: "Template",
                 schema: "FlowCheck");
 
             migrationBuilder.DropTable(
-                name: "Template",
-                schema: "FlowCheck");
+                name: "PersonType",
+                schema: "Person");
 
             migrationBuilder.DropTable(
                 name: "FlowUser",
@@ -823,11 +857,14 @@ namespace BlazingGidde.Server.Data
                 schema: "FlowCheck");
 
             migrationBuilder.DropTable(
-                name: "ApplicationUserBase");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "TemplateType",
                 schema: "FlowCheck");
+
+            migrationBuilder.DropSequence(
+                name: "TemplateSequence");
         }
     }
 }

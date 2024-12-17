@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BlazingGidde.Shared.Models.FlowCheck;
+using Microsoft.AspNetCore.Identity;
 
 namespace BlazingGidde.Server.Services;
 
 public class UserRoleService
 {
-	private readonly UserManager<IdentityUser> _userManager;
+	private readonly UserManager<FlowUser> _userManager;
 	private readonly RoleManager<IdentityRole> _roleManager;
 
-	public UserRoleService(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+	public UserRoleService(UserManager<FlowUser> userManager, RoleManager<IdentityRole> roleManager)
 	{
 		_userManager = userManager;
 		_roleManager = roleManager;

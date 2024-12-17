@@ -44,7 +44,11 @@ namespace BlazingGidde.Shared.Models.PersonMain
        
         public int? SortKey { get; set; }
 
+        /// <summary>
+        /// The collection of Persons associated with this person type.
+        /// </summary>
+        public virtual ICollection<Person> Persons { get; set; } = new List<Person>();
 
-        #endregion
-    }
+		#endregion
+	}
 }

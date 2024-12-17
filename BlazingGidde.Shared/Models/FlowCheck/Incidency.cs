@@ -18,8 +18,9 @@ public class Incidency
 
     public string CorrectiveActions { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Gets or set the template parent.
-    /// </summary>
-    public Template Template { get; set; } = new();
+	/// <summary>
+	/// Gets or set the template parent.
+	/// </summary>
+	[ForeignKey(nameof(TemplateItem.Id))]
+    public TemplateItem Template { get; set; } = new();
 }

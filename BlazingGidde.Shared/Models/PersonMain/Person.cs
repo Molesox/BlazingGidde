@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
+using BlazingGidde.Shared.Models.FlowCheck;
 
 namespace BlazingGidde.Shared.Models.PersonMain
 {
@@ -82,13 +83,19 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// <summary>
         /// Gets or sets the skip application user property.
         /// </summary>
-        [ForeignKey("Id")]
-        public ApplicationUserBase? ApplicationUser { get; set; }
+        [ForeignKey(nameof(FlowUser.Id))]
+        public virtual FlowUser? ApplicationUser { get; set; }
 
-        /// <summary>
-        /// The collection of Addresses associated with this Person.
-        /// </summary>
-        [ForeignKey("PersonID")]
+		/// <summary>
+		/// Gets or sets the skip person type property.
+		/// </summary>
+        public virtual PersonType PersonType { get; set; } = new();
+
+
+		/// <summary>
+		/// The collection of Addresses associated with this Person.
+		/// </summary>
+		[ForeignKey("PersonID")]
         public virtual ICollection<Address>? Addresses { get; set; } = new List<Address>();
 
         /// <summary>

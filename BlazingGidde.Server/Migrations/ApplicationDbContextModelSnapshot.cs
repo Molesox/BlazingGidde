@@ -4,19 +4,16 @@ using BlazingGidde.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BlazingGidde.Server.Data
+namespace BlazingGidde.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241216195945_initialDbCreate")]
-    partial class initialDbCreate
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,6 +21,8 @@ namespace BlazingGidde.Server.Data
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.HasSequence("TemplateSequence");
 
             modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.CustomTemplateItem", b =>
                 {
@@ -56,8 +55,6 @@ namespace BlazingGidde.Server.Data
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<string>("CorrectiveActions")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -72,12 +69,7 @@ namespace BlazingGidde.Server.Data
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TemplateId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("TemplateId");
 
                     b.ToTable("Incidency", "FlowCheck");
                 });
@@ -86,9 +78,10 @@ namespace BlazingGidde.Server.Data
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("NEXT VALUE FOR [TemplateSequence]");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
@@ -118,6 +111,8 @@ namespace BlazingGidde.Server.Data
                     b.HasIndex("TemplateKindId");
 
                     b.ToTable("Template", "FlowCheck");
+
+                    b.UseTpcMappingStrategy();
                 });
 
             modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateItem", b =>
@@ -135,9 +130,6 @@ namespace BlazingGidde.Server.Data
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<int?>("IncidencyId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Line")
                         .HasColumnType("nvarchar(max)");
@@ -160,11 +152,11 @@ namespace BlazingGidde.Server.Data
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IncidencyId");
-
                     b.HasIndex("TemplateId");
 
                     b.ToTable("TemplateItem", "FlowCheck");
+
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateKind", b =>
@@ -488,6 +480,9 @@ namespace BlazingGidde.Server.Data
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)");
 
+                    b.Property<int>("PersonTypeID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Remarks")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -506,6 +501,8 @@ namespace BlazingGidde.Server.Data
                     b.HasIndex("Id")
                         .IsUnique()
                         .HasFilter("[Id] IS NOT NULL");
+
+                    b.HasIndex("PersonTypeID");
 
                     b.ToTable("Person", "Person");
                 });
@@ -832,7 +829,40 @@ namespace BlazingGidde.Server.Data
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BlazingGidde.Shared.Models.ApplicationUserBase", b =>
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateItems.BreakeableItem", b =>
+                {
+                    b.HasBaseType("BlazingGidde.Shared.Models.FlowCheck.TemplateItem");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("BreakeableItem", "FlowCheck");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateItems.GazItem", b =>
+                {
+                    b.HasBaseType("BlazingGidde.Shared.Models.FlowCheck.TemplateItem");
+
+                    b.Property<decimal>("CO2")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool?>("IsGasOk")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsSealedOk")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("N2")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("O2")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.ToTable("GazItem", "FlowCheck");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.FlowUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
@@ -851,13 +881,6 @@ namespace BlazingGidde.Server.Data
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.ToTable("ApplicationUserBase");
-                });
-
-            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.FlowUser", b =>
-                {
-                    b.HasBaseType("BlazingGidde.Shared.Models.ApplicationUserBase");
-
                     b.ToTable("FlowUser", "FlowCheck");
                 });
 
@@ -874,9 +897,9 @@ namespace BlazingGidde.Server.Data
 
             modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.Incidency", b =>
                 {
-                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.Template", "Template")
-                        .WithMany()
-                        .HasForeignKey("TemplateId")
+                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.TemplateItem", "Template")
+                        .WithOne("Incidency")
+                        .HasForeignKey("BlazingGidde.Shared.Models.FlowCheck.Incidency", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -896,17 +919,11 @@ namespace BlazingGidde.Server.Data
 
             modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateItem", b =>
                 {
-                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.Incidency", "Incidency")
-                        .WithMany()
-                        .HasForeignKey("IncidencyId");
-
                     b.HasOne("BlazingGidde.Shared.Models.FlowCheck.Template", "Template")
                         .WithMany("TemplateItems")
                         .HasForeignKey("TemplateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Incidency");
 
                     b.Navigation("Template");
                 });
@@ -962,11 +979,19 @@ namespace BlazingGidde.Server.Data
 
             modelBuilder.Entity("BlazingGidde.Shared.Models.PersonMain.Person", b =>
                 {
-                    b.HasOne("BlazingGidde.Shared.Models.ApplicationUserBase", "ApplicationUser")
+                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.FlowUser", "ApplicationUser")
                         .WithOne("Person")
                         .HasForeignKey("BlazingGidde.Shared.Models.PersonMain.Person", "Id");
 
+                    b.HasOne("BlazingGidde.Shared.Models.PersonMain.PersonType", "PersonType")
+                        .WithMany("Persons")
+                        .HasForeignKey("PersonTypeID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("ApplicationUser");
+
+                    b.Navigation("PersonType");
                 });
 
             modelBuilder.Entity("BlazingGidde.Shared.Models.PersonMain.PersonProfile", b =>
@@ -1050,9 +1075,27 @@ namespace BlazingGidde.Server.Data
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateItems.BreakeableItem", b =>
+                {
+                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.TemplateItem", null)
+                        .WithOne()
+                        .HasForeignKey("BlazingGidde.Shared.Models.FlowCheck.TemplateItems.BreakeableItem", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateItems.GazItem", b =>
+                {
+                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.TemplateItem", null)
+                        .WithOne()
+                        .HasForeignKey("BlazingGidde.Shared.Models.FlowCheck.TemplateItems.GazItem", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.FlowUser", b =>
                 {
-                    b.HasOne("BlazingGidde.Shared.Models.ApplicationUserBase", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithOne()
                         .HasForeignKey("BlazingGidde.Shared.Models.FlowCheck.FlowUser", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1062,6 +1105,11 @@ namespace BlazingGidde.Server.Data
             modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.Template", b =>
                 {
                     b.Navigation("TemplateItems");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateItem", b =>
+                {
+                    b.Navigation("Incidency");
                 });
 
             modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateKind", b =>
@@ -1097,19 +1145,21 @@ namespace BlazingGidde.Server.Data
                     b.Navigation("Phones");
                 });
 
+            modelBuilder.Entity("BlazingGidde.Shared.Models.PersonMain.PersonType", b =>
+                {
+                    b.Navigation("Persons");
+                });
+
             modelBuilder.Entity("BlazingGidde.Shared.Models.PersonMain.PhoneType", b =>
                 {
                     b.Navigation("Phones");
                 });
 
-            modelBuilder.Entity("BlazingGidde.Shared.Models.ApplicationUserBase", b =>
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.FlowUser", b =>
                 {
                     b.Navigation("Person")
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.FlowUser", b =>
-                {
                     b.Navigation("Templates");
                 });
 #pragma warning restore 612, 618
