@@ -2,22 +2,21 @@
 @using BlazingGidde.Shared.Models.Patois
 @using BlazingGidde.Shared.Repository;
 @using Microsoft.AspNetCore.Identity
-
 @inject DictionaryManager dictionaryManager
 
 <PageTitle>Dictionnaire</PageTitle>
 
 <style>
 	.scrollable-container {
-	max-height: 80vh;
-	overflow-y: auto;
-	padding-right: 15px;
-	/* To prevent cutting off content */
+		max-height: calc(100vh - 18rem);
+		overflow-y: auto;
+		padding-right: 15px;
+		/* To prevent cutting off content */
 	}
 </style>
+<h2>Dictionnaire</h2>
 
 <div class="container my-1">
-	<h2>Dictionnaire</h2>
 
 	<!-- Toggle Switch -->
 	<div class="d-flex justify-content-end mb-3">
@@ -27,7 +26,7 @@
 		</div>
 	</div>
 
-	<div class="list-group list-group-flush ">
+	<div class="list-group list-group-flush scrollable-container">
 		<Virtualize ItemsProvider="itemsProvider" Context="entry" ItemSize="100" OverscanCount="100">
 			<div class="list-group-item mb-3 shadow-sm" style="background-color: rgb(224, 224, 224);">
 				<div class="row">
@@ -35,35 +34,35 @@
 					{
 						<!-- Left column (French content) -->
 						<div class="col-md-6">
-						<h5 class="mb-2">
-							<span class="badge bg-primary me-2">French Word:</span> @entry.FrenchWord
-						</h5>
-						<p class="mb-1"><strong>Example:</strong> @entry.FrenchExample</p>
-					</div>
+							<h5 class="mb-2">
+								<span class="badge bg-primary me-2">French Word:</span> @entry.FrenchWord
+							</h5>
+							<p class="mb-1"><strong>Example:</strong> @entry.FrenchExample</p>
+						</div>
 						<!-- Right column (Dialect content) -->
 						<div class="col-md-6">
-						<h5 class="mb-2">
-							<span class="badge bg-success me-2">Dialect Word:</span> @entry.DialectWord
-						</h5>
-						<p class="mb-1"><strong>Example:</strong> @entry.DialectExample</p>
-					</div>
+							<h5 class="mb-2">
+								<span class="badge bg-success me-2">Dialect Word:</span> @entry.DialectWord
+							</h5>
+							<p class="mb-1"><strong>Example:</strong> @entry.DialectExample</p>
+						</div>
 					}
 					else
 					{
 						<!-- Left column (Dialect content) -->
 						<div class="col-md-6">
-						<h5 class="mb-2">
-							<span class="badge bg-success me-2">Dialect Word:</span> @entry.DialectWord
-						</h5>
-						<p class="mb-1"><strong>Example:</strong> @entry.DialectExample</p>
-					</div>
+							<h5 class="mb-2">
+								<span class="badge bg-success me-2">Dialect Word:</span> @entry.DialectWord
+							</h5>
+							<p class="mb-1"><strong>Example:</strong> @entry.DialectExample</p>
+						</div>
 						<!-- Right column (French content) -->
 						<div class="col-md-6">
-						<h5 class="mb-2">
-							<span class="badge bg-primary me-2">French Word:</span> @entry.FrenchWord
-						</h5>
-						<p class="mb-1"><strong>Example:</strong> @entry.FrenchExample</p>
-					</div>
+							<h5 class="mb-2">
+								<span class="badge bg-primary me-2">French Word:</span> @entry.FrenchWord
+							</h5>
+							<p class="mb-1"><strong>Example:</strong> @entry.FrenchExample</p>
+						</div>
 					}
 				</div>
 			</div>
@@ -95,12 +94,11 @@
 		else
 		{
 			var queryFilter = new LinqQueryFilter<DictionaryEntry>(
-				null,
-				dt => dt.FrenchWord)
-		{
-			Skip = request.StartIndex,
-			Take = request.Count,
-		};
+				)
+				{
+					Skip = request.StartIndex,
+					Take = request.Count,
+				};
 			var items = await dictionaryManager.Get(queryFilter);
 
 			// Add loaded items to the cached collection
@@ -126,8 +124,6 @@
 			{
 				isFullyLoaded = true;
 			}
-
-
 
 			return new ItemsProviderResult<DictionaryEntry>(items, totalItemCountCache.Value);
 		}
