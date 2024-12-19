@@ -1,0 +1,122 @@
+﻿@page "/create-template"
+@using BlazingGidde.Shared.Models
+@using BlazingGidde.Client.Services
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+<PageTitle>Nuevo Checklist</PageTitle>
+
+<h3>Selecciona el tipo de plantilla que quieres crear:</h3>
+
+<!-- Barra de búsqueda -->
+<div class="mb-4 mt-4">
+    <input type="text" class="form-control" placeholder="Buscar plantilla..." @bind="searchTerm" />
+</div>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        @foreach (var template in filteredTemplates)
+        {
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                <div class="card card-template">
+                    <h5 class="card-title text-center">@template.Name</h5>
+                    <img src="@template.ImageUrl" class="card-img-top" alt="@template.Name">
+                    <div class="card-body">
+                        <button class="btn btn-outline-primary" @onclick='() => CreateNewTemplate(template.TemplateCodeKind)'>
+                            Crear Plantilla
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private string searchTerm = "";
+
+    // Lista de CustomTemplateItems con TemplateCodeKind
+    private List<CustomTemplateItem> templates = new List<CustomTemplateItem>
+    {
+        new CustomTemplateItem { Name = "Rompibles", ImageUrl = "/rompibleCYE.png", TemplateCodeKind = TemplateCode.BREAK },
+        new CustomTemplateItem { Name = "Gases y estanqueidad", ImageUrl = "/GasEst.png", TemplateCodeKind = TemplateCode.GAS },
+        new CustomTemplateItem { Name = "Verificación Código de barras", ImageUrl = "/BAR.png", TemplateCodeKind = TemplateCode.LABELREADER },
+        new CustomTemplateItem { Name = "Control de manipuladores", ImageUrl = "/controlmanipuladores.png", TemplateCodeKind = TemplateCode.MANIP }
+    };
+
+    // Filtrar las plantillas por el título que contenga el texto de búsqueda
+    private IEnumerable<CustomTemplateItem> filteredTemplates =>
+        string.IsNullOrWhiteSpace(searchTerm)
+            ? templates
+            : templates.Where(t => t.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+
+    private void CreateNewTemplate(TemplateCode checklistType)
+    {
+        // Navegar a la página de creación de plantilla usando el TemplateCode como parámetro
+        NavigationManager.NavigateTo($"/create-template/{checklistType.ToString()}");
+    }
+
+    // Modelo de CustomTemplateItem
+    public class CustomTemplateItem
+    {
+        public string Name { get; set; }
+        public string ImageUrl { get; set; }
+        public TemplateCode TemplateCodeKind { get; set; }
+    }
+}
+
+<style>
+    /* Estilos comunes para las tarjetas */
+    .card-template {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease;
+        height: 100%;
+    }
+
+        .card-template:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+    .card-img-top {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+    }
+
+    .card-body {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-outline-primary {
+        color: #007bff;
+        border-color: #007bff;
+        border-radius: 4px;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+    .card-title {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .card {
+        max-width: 100%;
+        min-height: 200px;
+    }
+
+    input.form-control {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+</style>

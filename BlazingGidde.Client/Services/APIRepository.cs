@@ -3,7 +3,7 @@ using BlazingGidde.Shared.Repository;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-// ReSharper disable InconsistentNaming
+
 
 namespace BlazingGidde.Client.Services
 {

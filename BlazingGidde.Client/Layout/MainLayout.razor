@@ -95,12 +95,23 @@ else
     {
         navItems = new List<NavItem>
 {
-new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
-new NavItem { Id = "2", Href = "/person", IconName = IconName.PersonFill, Text = "Person" },
-new NavItem { Id = "3", Href = "/patois", IconName = IconName.EaselFill, Text = "Patois" },
-new NavItem { Id = "4", Text = "Admin", IconName = IconName.ShieldShaded},
-new NavItem { Id = "5", Href = "/appusers", IconName=IconName.PeopleFill, ParentId = "4", Text = "Users" },
-new NavItem { Id = "6", Href = "/approles",IconName=IconName.PersonFillGear, ParentId = "4", Text = "Roles" }
+    new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
+    new NavItem { Id = "2", Href = "/person", IconName = IconName.PersonFill, Text = "Person" },
+    new NavItem { Id = "3", Href = "/patois", IconName = IconName.EaselFill, Text = "Patois" },
+    new NavItem { Id = "4", Text = "Admin", IconName = IconName.ShieldShaded},
+    new NavItem { Id = "5", Href = "/appusers", IconName=IconName.PeopleFill, ParentId = "4", Text = "Users" },
+    new NavItem { Id = "6", Href = "/approles",IconName=IconName.PersonFillGear, ParentId = "4", Text = "Roles" },
+
+     // Agregar los nuevos elementos del menú FlowChek después de la sección de administración
+    new NavItem { Id = "7", Text = "FlowChek", IconName = IconName.CheckCircle },
+    new NavItem { Id = "8", Href = "/new-checklist", IconName = IconName.Check, ParentId = "7", Text = "Nuevo CheckList" },
+    new NavItem { Id = "9", Href = "/consult-templates", IconName = IconName.Book, ParentId = "7", Text = "Consultar Plantillas" },
+    new NavItem { Id = "10", Href = "/consult-checklist", IconName = IconName.Search, ParentId = "7", Text = "Consultar CheckList" },
+
+    // Agregar el menú de Administración después de FlowChek si es necesario
+    new NavItem { Id = "11", Text = "Administración", IconName = IconName.ShieldShaded },
+    new NavItem { Id = "12", Href = "/create-template", IconName = IconName.Plus, ParentId = "11", Text = "Crear Plantilla" },
+    new NavItem { Id = "13", Href = "/modify-template", IconName = IconName.Pencil, ParentId = "11", Text = "Modificar Plantilla" },
 };
 
         return navItems;

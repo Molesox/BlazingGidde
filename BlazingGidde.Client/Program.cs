@@ -1,5 +1,8 @@
 using BlazingGidde.Client;
 using BlazingGidde.Client.Services;
+using BlazingGidde.Client.Services.FlowCheck;
+using BlazingGidde.Client.Services.FlowCheck.TemplateItems;
+using BlazingGidde.Shared.Models.FlowCheck.TemplateItems;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
@@ -22,6 +25,17 @@ builder.Services.AddScoped<AspNetRoleManager>();
 builder.Services.AddScoped<UserRoleManager>();
 builder.Services.AddScoped<PersonMainManager>();
 builder.Services.AddScoped<DictionaryManager>();
+
+builder.Services.AddScoped<BreakeableItemManager>();
+builder.Services.AddScoped<GazItemManager>();
+builder.Services.AddScoped<CustomTemplateItemManager>();
+builder.Services.AddScoped<FlowUserManager>();
+builder.Services.AddScoped<IncidencyManager>();
+builder.Services.AddScoped<TemplateManager>();
+builder.Services.AddScoped<TemplateItemManager>();
+builder.Services.AddScoped<TemplateKindManager>();
+builder.Services.AddScoped<TemplateTypeManager>();
+
 
 builder.Services.AddBlazorBootstrap();
 

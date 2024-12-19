@@ -41,4 +41,6 @@ public class TemplateKind : ModelBase
     /// </summary>
      public ICollection<CustomTemplateItem> CustomTemplateItems { get; set; } = new List<CustomTemplateItem>();
 
+    public TemplateCode TemplateCode { get; set; }
+
 }
