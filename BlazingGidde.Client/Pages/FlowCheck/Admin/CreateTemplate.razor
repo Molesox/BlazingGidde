@@ -1,6 +1,5 @@
 ﻿@page "/create-template"
-@using BlazingGidde.Shared.Models
-@using BlazingGidde.Client.Services
+@inject CustomTemplateItemManager CTImanager
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 
@@ -22,7 +21,7 @@
                     <h5 class="card-title text-center">@template.Name</h5>
                     <img src="@template.ImageUrl" class="card-img-top" alt="@template.Name">
                     <div class="card-body">
-                        <button class="btn btn-outline-primary" @onclick='() => CreateNewTemplate(template.TemplateCodeKind)'>
+                        <button class="btn btn-outline-primary" @onclick='() => CreateNewTemplate(template.TemplateCode)'>
                             Crear Plantilla
                         </button>
                     </div>
@@ -38,17 +37,29 @@
     // Lista de CustomTemplateItems con TemplateCodeKind
     private List<CustomTemplateItem> templates = new List<CustomTemplateItem>
     {
-        new CustomTemplateItem { Name = "Rompibles", ImageUrl = "/rompibleCYE.png", TemplateCodeKind = TemplateCode.BREAK },
-        new CustomTemplateItem { Name = "Gases y estanqueidad", ImageUrl = "/GasEst.png", TemplateCodeKind = TemplateCode.GAS },
-        new CustomTemplateItem { Name = "Verificación Código de barras", ImageUrl = "/BAR.png", TemplateCodeKind = TemplateCode.LABELREADER },
-        new CustomTemplateItem { Name = "Control de manipuladores", ImageUrl = "/controlmanipuladores.png", TemplateCodeKind = TemplateCode.MANIP }
+        new CustomTemplateItem { Name = "Rompibles", ImageUrl = "/Images/rompibleCYE.png", TemplateCode = TemplateCode.BREAK },
+        new CustomTemplateItem { Name = "Gases y estanqueidad", ImageUrl = "/GasEst.png", TemplateCode = TemplateCode.GAS },
+        new CustomTemplateItem { Name = "Verificación Código de barras", ImageUrl = "/BAR.png", TemplateCode = TemplateCode.LABELREADER },
+        new CustomTemplateItem { Name = "Control de manipuladores", ImageUrl = "/controlmanipuladores.png", TemplateCode = TemplateCode.MANIP }
     };
+
+    public List<CustomTemplateItem> mytemplate = new List<CustomTemplateItem>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        foreach ( var template in templates)
+        {
+            await CTImanager.Insert(template);
+        }
+        mytemplate = (await CTImanager.GetAll()).ToList();
+    }
 
     // Filtrar las plantillas por el título que contenga el texto de búsqueda
     private IEnumerable<CustomTemplateItem> filteredTemplates =>
         string.IsNullOrWhiteSpace(searchTerm)
-            ? templates
-            : templates.Where(t => t.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+            ? mytemplate
+            : mytemplate.Where(t => t.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
 
     private void CreateNewTemplate(TemplateCode checklistType)
     {
@@ -56,13 +67,6 @@
         NavigationManager.NavigateTo($"/create-template/{checklistType.ToString()}");
     }
 
-    // Modelo de CustomTemplateItem
-    public class CustomTemplateItem
-    {
-        public string Name { get; set; }
-        public string ImageUrl { get; set; }
-        public TemplateCode TemplateCodeKind { get; set; }
-    }
 }
 
 <style>

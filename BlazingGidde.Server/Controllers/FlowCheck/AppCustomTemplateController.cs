@@ -1,20 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BlazingGidde.Server.Data;
+using BlazingGidde.Server.Data.Repository;
+using BlazingGidde.Shared.Models.FlowCheck;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+
 
 namespace BlazingGidde.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AppCustomTemplatesController : ControllerBase
+    [Authorize]
+    public class AppCustomTemplatesController : BlazingGiddeBaseController<CustomTemplateItem, ApplicationDbContext>
     {
-        [HttpGet]
-        public IActionResult GetAllTemplates()
-        {
-            
-            return Ok(new
-            {
-                success = true,
-                items = new List<string>()
-            });
-        }
+
+        public AppCustomTemplatesController(RepositoryEF<CustomTemplateItem, ApplicationDbContext> repository,
+            ILogger<BlazingGiddeBaseController<CustomTemplateItem, ApplicationDbContext>> logger)
+            : base(repository, logger) { }
     }
 }

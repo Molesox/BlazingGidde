@@ -23,5 +23,10 @@ public class CustomTemplateItem
     /// <summary>
     /// The skip parent template kind property.
     /// </summary>
-    public TemplateCode TemplateCodeKind { get; set; } = new();
+    public TemplateKind TemplateKind { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the template code. 
+    /// </summary>
+    public TemplateCode TemplateCode { get; set; }
 }
