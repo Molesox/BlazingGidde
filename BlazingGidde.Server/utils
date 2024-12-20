@@ -1,0 +1,4 @@
+dotnet ef database drop
+dotnet ef migrations remove
+dotnet ef migrations add InitialDbCreate -o Data/Migrations -v
+dotnet ef database update

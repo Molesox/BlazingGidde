@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json;
 using BlazingGidde.Shared.API;
 using BlazingGidde.Shared.Models.PersonMain;
@@ -8,15 +7,15 @@ namespace BlazingGidde.Client.Services;
 public class PersonMainManager : APIRepository<Person>
 {
     public PersonMainManager(HttpClient _http) 
-        : base(_http, "Person", nameof(Person.PersonID))
+        : base(_http, "Person", nameof(Person.PersonId))
     {
     }
 
-    public async Task<IEnumerable<Phone>> GetPhonesByPersonId(int personId)
+    public async Task<IEnumerable<Phone>> GetPhonesByPersonId(int id)
     {
         try
         {
-            var url = $"{controllerName}/{personId}/phones";
+            var url = $"{controllerName}/{id}/phones";
             var result = await http.GetAsync(url);
             result.EnsureSuccessStatusCode();
 
@@ -42,11 +41,11 @@ public class PersonMainManager : APIRepository<Person>
         }
     }
 
-    public async Task<IEnumerable<Email>> GetEmailsByPersonId(int personId)
+    public async Task<IEnumerable<Email>> GetEmailsByPersonId(int id)
     {
         try
         {
-            var url = $"{controllerName}/{personId}/emails";
+            var url = $"{controllerName}/{id}/emails";
             var result = await http.GetAsync(url);
             result.EnsureSuccessStatusCode();
 

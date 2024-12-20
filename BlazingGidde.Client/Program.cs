@@ -2,12 +2,11 @@ using BlazingGidde.Client;
 using BlazingGidde.Client.Services;
 using BlazingGidde.Client.Services.FlowCheck;
 using BlazingGidde.Client.Services.FlowCheck.TemplateItems;
-using BlazingGidde.Shared.Models.FlowCheck.TemplateItems;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
- 
+
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.RootComponents.Add<App>("#app");

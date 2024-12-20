@@ -1,13 +1,11 @@
 ﻿using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using BlazingGidde.Shared.Models;
 using BlazingGidde.Shared.Models.FlowCheck;
 
 namespace BlazingGidde.Server.Data.Repository
 {
-	public class RepositoryUser : IRepository<FlowUser>
+    public class RepositoryUser : IRepository<FlowUser>
 	{
 		private readonly UserManager<FlowUser> _userManager;
 
@@ -34,6 +32,11 @@ namespace BlazingGidde.Server.Data.Repository
 		public async Task<IEnumerable<FlowUser>> GetAll()
 		{
 			return await _userManager.Users.ToListAsync();
+		}
+
+		public virtual IQueryable<FlowUser> GetAllQueryable()
+		{
+			return _userManager.Users.AsQueryable();
 		}
 
 		public async Task<FlowUser?> GetByID(object id)

@@ -1,14 +1,9 @@
-using System.Linq.Expressions;
-using BlazingGidde.Client.Services;
 using BlazingGidde.Server.Data;
-using BlazingGidde.Server.Data.Repository;
 using BlazingGidde.Shared.API;
 using BlazingGidde.Shared.Models.PersonMain;
 using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BlazingGidde.Server.Controllers.Identity
 {
@@ -35,7 +30,7 @@ namespace BlazingGidde.Server.Controllers.Identity
         {
             try
             {
-                var linqFilter = new LinqQueryFilter<Phone>(p => p.PersonID == id);
+                var linqFilter = new LinqQueryFilter<Phone>(p => p.PersonId == id);
                 var phones = await _repositoryPhones.Get(linqFilter);
                 return Ok(new APIListOfEntityResponse<Phone>
                 {
@@ -55,7 +50,7 @@ namespace BlazingGidde.Server.Controllers.Identity
         {
             try
             {
-                var linqFilter = new LinqQueryFilter<Email>(p => p.PersonID == id);
+                var linqFilter = new LinqQueryFilter<Email>(p => p.PersonId == id);
                 var emails = await _repositoryEmails.Get(linqFilter);
                 return Ok(new APIListOfEntityResponse<Email>
                 {

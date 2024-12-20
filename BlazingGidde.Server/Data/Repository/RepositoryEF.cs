@@ -1,4 +1,5 @@
-﻿using BlazingGidde.Shared.Repository;
+﻿using BlazingGidde.Shared.Models;
+using BlazingGidde.Shared.Repository;
 using Microsoft.EntityFrameworkCore;
 //2
 namespace BlazingGidde.Server.Data.Repository
@@ -112,6 +113,11 @@ namespace BlazingGidde.Server.Data.Repository
 			}
 
 			return await context.Set<TEntity>().ToListAsync();
+		}
+
+		public virtual IQueryable<TEntity> GetAllQueryable()
+		{
+			return dbSet.AsQueryable();
 		}
 
 		/// <summary>

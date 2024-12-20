@@ -11,16 +11,32 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog.Templates;
+using Serilog.Templates.Themes;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateLogger();
+
 // Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
+
+builder.Services.AddSerilog((services, lc) => lc
+      .ReadFrom.Configuration(builder.Configuration)
+      .ReadFrom.Services(services)
+      .Enrich.FromLogContext()
+      .WriteTo.Console(new ExpressionTemplate(
+          "[{@t:HH:mm:ss} {@l:u3}{#if @tr is not null} ({substring(@tr,0,4)}:{substring(@sp,0,4)}){#end}] {@m}\n{@x}",
+          theme: TemplateTheme.Code)));
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDefaultIdentity<FlowUser>()
@@ -31,8 +47,8 @@ builder.Services.AddTransient<IRepository<Person>, RepositoryEF<Person, Applicat
 builder.Services.AddTransient<IRepository<Email>, RepositoryEF<Email, ApplicationDbContext>>();
 builder.Services.AddTransient<IRepository<Phone>, RepositoryEF<Phone, ApplicationDbContext>>();
 builder.Services.AddTransient<IRepository<DictionaryEntry>, RepositoryEF<DictionaryEntry, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<CustomTemplateItem>,RepositoryEF<CustomTemplateItem, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<Incidency>,RepositoryEF<Incidency, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<CustomTemplateItem>, RepositoryEF<CustomTemplateItem, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<Incidency>, RepositoryEF<Incidency, ApplicationDbContext>>();
 builder.Services.AddTransient<IRepository<Template>, RepositoryEF<Template, ApplicationDbContext>>();
 builder.Services.AddTransient<IRepository<TemplateItem>, RepositoryEF<TemplateItem, ApplicationDbContext>>();
 builder.Services.AddTransient<IRepository<TemplateKind>, RepositoryEF<TemplateKind, ApplicationDbContext>>();
@@ -96,6 +112,21 @@ builder.Services.AddSwaggerGen(setup =>
 
 
 var app = builder.Build();
+app.UseSerilogRequestLogging(options =>
+{
+    // Customize the message template
+    options.MessageTemplate = "Handled {RequestPath}";
+
+    // Emit debug-level events instead of the defaults
+    options.GetLevel = (httpContext, elapsed, ex) => LogEventLevel.Debug;
+
+    // Attach additional properties to the request completion event
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
+        diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
+    };
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

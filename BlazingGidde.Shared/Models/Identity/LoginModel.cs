@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BlazingGidde.Shared.Models.Identity
 {
-	/// <summary>
-	/// Represents the login model used for user authentication.
-	/// </summary>
-	public class LoginModel
+    /// <summary>
+    /// Represents the login model used for user authentication.
+    /// </summary>
+    public class LoginModel
 	{
 		/// <summary>
 		/// Gets or sets the email address of the user. This field is required.

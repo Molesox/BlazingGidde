@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BlazingGidde.Shared.Models.Identity
+﻿namespace BlazingGidde.Shared.Models.Identity
 {
-	/// <summary>
-	/// Represents the result of a login attempt.
-	/// </summary>
-	public class LoginResult
+    /// <summary>
+    /// Represents the result of a login attempt.
+    /// </summary>
+    public class LoginResult
 	{
 		/// <summary>
 		/// Indicates whether the login attempt was successful.

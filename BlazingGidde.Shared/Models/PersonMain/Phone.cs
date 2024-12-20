@@ -1,36 +1,25 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
 
 namespace BlazingGidde.Shared.Models.PersonMain
 {
-	/// <summary>
-	/// The Phone model class.
-	/// </summary>
-	[Table("Phone", Schema = "Person")]
-	public partial class Phone
+    /// <summary>
+    /// The Phone model class.
+    /// </summary>
+    [Table("Phone", Schema = "Person")]
+	public partial class Phone : ModelBase
 	{
 		#region Properties
 
 		/// <summary>
-		/// Gets or sets the phone ID.
-		/// </summary>
-		[Key]
-		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-		public int PhoneID { get; set; }
-
-		/// <summary>
 		/// Gets or sets the person ID.
 		/// </summary>
-
-		public int PersonID { get; set; }
+		public int PersonId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the phone type ID.
 		/// </summary>
-
-		public int PhoneTypeID { get; set; }
+		public int PhoneTypeId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the phone number.
@@ -42,7 +31,6 @@ namespace BlazingGidde.Shared.Models.PersonMain
 		/// <summary>
 		/// Gets or sets the sort key.
 		/// </summary>
-
 		public int? SortKey { get; set; }
 
 		/// <summary>
@@ -54,9 +42,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
 		/// <summary>
 		/// Gets or sets the is default flag.
 		/// </summary>
-
 		public bool IsDefault { get; set; }
-
 
 		/// <summary>
 		/// The PhoneType associated with this Phone.
@@ -66,7 +52,6 @@ namespace BlazingGidde.Shared.Models.PersonMain
 		/// <summary>
 		/// The Person associated with this Phone.
 		/// </summary>
-
 		public virtual Person Person { get; set; } = new();
 
 		#endregion

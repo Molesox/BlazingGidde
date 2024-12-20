@@ -1,11 +1,10 @@
 ﻿using BlazingGidde.Shared.API;
 using BlazingGidde.Shared.DTOs.Common;
 using System.Net.Http.Json;
-using System.Text.Json;
 
 namespace BlazingGidde.Client.Services
 {
-	public class UserRoleManager
+    public class UserRoleManager
 	{
 		private readonly HttpClient _httpClient;
 		private const string ControllerName = "userrole";

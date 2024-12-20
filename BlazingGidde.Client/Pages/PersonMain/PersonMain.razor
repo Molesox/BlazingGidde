@@ -19,7 +19,7 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Person ID</label>
-                    <InputNumber class="form-control" @bind-Value="person.PersonID" />
+                    <InputNumber class="form-control" @bind-Value="person.PersonId" />
                 </div>
                 <div class="col-md-6">
                     <label class="form-label fw-bold">First Name</label>
@@ -67,7 +67,7 @@
     {
         myColumns = new List<ColumnDefinition<Person>>
         {
-            new ColumnDefinition<Person>(x => x.PersonID, "Person ID", isEditable: true),
+            new ColumnDefinition<Person>(x => x.PersonId, "Person ID", isEditable: true),
             new ColumnDefinition<Person>(x => x.FirstName, "First Name", isEditable: true),
             new ColumnDefinition<Person>(x => x.LastName, "Last Name", isEditable: true),
             new ColumnDefinition<Person>(x => x.Title, "Title", isEditable: true),

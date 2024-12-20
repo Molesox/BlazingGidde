@@ -1,0 +1,4 @@
+CREATE SCHEMA [FlowCheck]
+    AUTHORIZATION [dbo];
+GO
+

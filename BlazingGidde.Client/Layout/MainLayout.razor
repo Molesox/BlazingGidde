@@ -44,6 +44,7 @@ else
         --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.08);
         --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.08);
     }
+
     </style>
 }
 
@@ -52,7 +53,7 @@ else
 <div class="bb-page">
     <AuthorizeView>
         <Sidebar Href="/" @ref="sidebar" ImageSrc="logo-alpsoft.png" Title="Alpcore"
-            DataProvider="SidebarDataProvider" WidthUnit="Unit.Px" />
+            DataProvider="SidebarDataProvider" WidthUnit="Unit.Px" Width="250"/>
     </AuthorizeView>
 
     <main>

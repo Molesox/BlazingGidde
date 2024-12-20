@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
-using System.Runtime.Serialization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BlazingGidde.Shared.Models.PersonMain
 {
@@ -10,149 +8,81 @@ namespace BlazingGidde.Shared.Models.PersonMain
     /// The Address model class.
     /// </summary>
     [Table("Address", Schema = "Person")]
-    public partial class Address
+    public partial class Address : ModelBase
     {
         #region Properties
 
         /// <summary>
-        /// Gets or sets the address ID.
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int AddressID
-        {
-            get; set;
-        }
-
-        /// <summary>
         /// Gets or sets the person ID.
         /// </summary>
-
-        public int PersonID
-        {
-            get; set;
-        }
+        public int PersonId { get; set; }
 
         /// <summary>
         /// Gets or sets the address type ID.
         /// </summary>
-
-        public int AddressTypeID
-        {
-            get; set;
-        } 
+        public int AddressTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the address line 1.
         /// </summary>
         [Required]
         [StringLength(60)]
-
-        public string AddressLine1
-        {
-            get; set;
-        }= string.Empty;
-
+        public string AddressLine1 { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the address line 2.
         /// </summary>
         [StringLength(60)]
-
-        public string AddressLine2
-        {
-            get; set;
-        }= string.Empty;
-
+        public string AddressLine2 { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the address line 3.
         /// </summary>
         [StringLength(60)]
-
-        public string AddressLine3
-        {
-            get; set;
-        }= string.Empty;
-
+        public string AddressLine3 { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the postal code.
         /// </summary>
         [Required]
         [StringLength(20)]
-
-        public string PostalCode
-        {
-            get; set;
-        }= string.Empty;
-
+        public string PostalCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the city.
         /// </summary>
         [Required]
         [StringLength(50)]
-
-        public string City
-        {
-            get; set;
-        }= string.Empty;
-
+        public string City { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the region.
         /// </summary>
         [StringLength(30)]
-
-        public string Region
-        {
-            get; set;
-        }= string.Empty;
-
+        public string Region { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the country.
         /// </summary>
         [StringLength(30)]
 
-        public string Country
-        {
-            get; set;
-        }= string.Empty;
-
-
+        public string Country { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the sort key.
         /// </summary>
-
-        public int? SortKey
-        {
-            get; set;
-        }
-
+        public int? SortKey { get; set; }
 
         /// <summary>
         /// Gets or sets the remarks.
         /// </summary>
         [StringLength(200)]
-
-        public string Remarks
-        {
-            get; set;
-        } = string.Empty;
-
+        public string Remarks { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the is default flag.
         /// </summary>
-
-        public bool IsDefault
-        {
-            get; set;
-        }
-
+        public bool IsDefault { get; set; }
 
         /// <summary>
         /// The AddressType associated with this Address.

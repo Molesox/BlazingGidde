@@ -1,11 +1,10 @@
 ﻿using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace BlazingGidde.Server.Data.Repository
 {
-	public class RepositoryRole : IRepository<IdentityRole>
+    public class RepositoryRole : IRepository<IdentityRole>
 	{
 		private readonly RoleManager<IdentityRole> _roleManager;
 
@@ -32,6 +31,12 @@ namespace BlazingGidde.Server.Data.Repository
 		{
 			return await _roleManager.Roles.ToListAsync();
 		}
+
+		public virtual IQueryable<IdentityRole> GetAllQueryable()
+		{
+			return _roleManager.Roles.AsQueryable();
+		}
+
 
 		public async Task<IdentityRole?> GetByID(object id)
 		{

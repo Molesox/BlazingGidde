@@ -1,15 +1,12 @@
 ﻿using BlazingGidde.Server.Services;
 using BlazingGidde.Shared.API;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using BlazingGidde.Shared.DTOs.Common;
 using Microsoft.AspNetCore.Authorization;
 
 namespace BlazingGidde.Server.Controllers.Identity
 {
-	[ApiController]
+    [ApiController]
 	[Route("[controller]")]
 	[Authorize]
 	public class UserRoleController : ControllerBase

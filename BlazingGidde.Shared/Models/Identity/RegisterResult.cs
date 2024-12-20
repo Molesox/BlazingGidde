@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BlazingGidde.Shared.Models.Identity
+﻿namespace BlazingGidde.Shared.Models.Identity
 {
 
- 
-	/// <summary>
-	/// Represents the result of a user registration attempt.
-	/// </summary>
-	public class RegisterResult
+
+    /// <summary>
+    /// Represents the result of a user registration attempt.
+    /// </summary>
+    public class RegisterResult
 	{
 		/// <summary>
 		/// Indicates whether the registration attempt was successful.

@@ -1,8 +1,4 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using BlazingGidde.Shared.Models.PersonMain;
-using Microsoft.AspNetCore.Identity;
 
 namespace BlazingGidde.Shared.Models;
 

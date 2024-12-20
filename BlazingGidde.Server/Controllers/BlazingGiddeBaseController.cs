@@ -1,11 +1,8 @@
-﻿using BlazingGidde.Server.Data.Repository;
-using BlazingGidde.Shared;
-using BlazingGidde.Shared.API;
+﻿using BlazingGidde.Shared.API;
 using BlazingGidde.Shared.Models;
 using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 
 namespace BlazingGidde.Server.Controllers
@@ -81,8 +78,14 @@ namespace BlazingGidde.Server.Controllers
                 //si TEntity respeta la interfaz de model base
                 if (typeof(IModelBase).IsAssignableFrom(typeof(TEntity)))
                 {
-                    var integerId = int.Parse(Id);
-                    entity = await _repository.GetByID(integerId);
+                    if (int.TryParse(Id, out var integerId))
+                    {
+                        entity = await _repository.GetByID(integerId);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Invalid ID format for IModelBase entity.");
+                    }
                 }
                 else
                 {
@@ -247,6 +250,13 @@ namespace BlazingGidde.Server.Controllers
             try
             {
                 _logger.LogInformation("Inserting a new entity.");
+
+                if (Entity is ISupportTimeStamp timeStampedEntity)
+                {
+                    timeStampedEntity.CreateDate = DateTime.UtcNow;
+                    timeStampedEntity.CreateUser = User.Identity?.Name ?? "anonymous";
+                }
+
                 var insertedEntity = await _repository.Insert(Entity);
 
                 _logger.LogInformation("Entity inserted successfully.");
@@ -283,6 +293,12 @@ namespace BlazingGidde.Server.Controllers
             try
             {
                 _logger.LogInformation("Updating an entity.");
+                if (Entity is ISupportTimeStamp timeStampedEntity)
+                {
+                    timeStampedEntity.UpdateDate = DateTime.UtcNow;
+                    timeStampedEntity.UpdateUser = User.Identity?.Name ?? "anonymous";
+                }
+
                 var updateEntity = await _repository.Update(Entity);
 
                 if (updateEntity != null)
@@ -330,15 +346,21 @@ namespace BlazingGidde.Server.Controllers
             {
                 _logger.LogInformation("Deleting entity with ID: {Id}", Id);
                 bool success = false;
-                //si TEntity respeta la interfaz de model base
+
                 if (typeof(IModelBase).IsAssignableFrom(typeof(TEntity)))
-                {
-                    var integerId = int.Parse(Id); // utilizamos id como integer
-                    success = await _repository.Delete(integerId);
+                {//si TEntity respeta la interfaz de model base
+                    if (int.TryParse(Id, out var integerId))
+                    {
+                        success = await _repository.Delete(integerId);
+                    }
+                    else
+                    {
+                        throw new ArgumentException("Invalid ID format for IModelBase entity.");
+                    }
                 }
                 else
                 {
-                    success = await _repository.Delete(Id); // si no usamos string
+                    success = await _repository.Delete(Id);
                 }
 
                 if (success)

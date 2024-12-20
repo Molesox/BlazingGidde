@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
 
 namespace BlazingGidde.Shared.Models.PersonMain
 {
@@ -11,23 +8,15 @@ namespace BlazingGidde.Shared.Models.PersonMain
     /// </summary>
     [Table("PersonType", Schema = "Person")]
     
-    public partial class PersonType 
+    public partial class PersonType : ModelBase
     {
         #region Properties
-
-        /// <summary>
-        /// Gets or sets the person type ID.
-        /// </summary>
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int PersonTypeID { get; set; }
 
         /// <summary>
         /// Gets or sets the code.
         /// </summary>
         [Required]
         [StringLength(2)]
-       
         public string Code { get; set; }= string.Empty;
 
         /// <summary>
@@ -47,6 +36,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// <summary>
         /// The collection of Persons associated with this person type.
         /// </summary>
+        [ForeignKey("PersonTypeId")]
         public virtual ICollection<Person> Persons { get; set; } = new List<Person>();
 
 		#endregion

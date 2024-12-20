@@ -1,7 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
 
 namespace BlazingGidde.Shared.Models.PersonMain
 {
@@ -10,7 +8,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
     /// </summary>
     [Table("PersonProfile", Schema = "Person")]
     
-    public partial class PersonProfile
+    public partial class PersonProfile : IModelBase
     {
         #region Properties
 
@@ -19,13 +17,13 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int PersonProfileID { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets the person ID.
         /// </summary>
        
-        public int PersonID { get; set; }
+        public int PersonId { get; set; }
 
         /// <summary>
         /// Gets or sets the photo.
@@ -37,7 +35,6 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// Gets or sets the birth date.
         /// </summary>
         [Column(TypeName = "date")]
-       
         public DateTime? BirthDate { get; set; }
 
         /// <summary>
@@ -49,7 +46,6 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// <summary>
         /// The Person associated with this PersonProfile.
         /// </summary>
-
         public virtual Person Person { get; set; } = new();
 
         #endregion

@@ -32,6 +32,12 @@ namespace BlazingGidde.Shared.Repository
 		Task<IEnumerable<TEntity>> GetAll();
 
 		/// <summary>
+        /// Gets all entities from the repository as an IQueryable.
+        /// </summary>
+        /// <returns>An IQueryable of entities.</returns>
+        IQueryable<TEntity> GetAllQueryable();
+
+		/// <summary>
 		/// Gets an entity using its ID.
 		/// </summary>
 		/// <param name="id">ID of the entity to retrieve.</param>

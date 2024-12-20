@@ -5,13 +5,11 @@ using BlazingGidde.Shared.Models.Patois;
 using BlazingGidde.Shared.Models.PersonMain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
-using BlazingGidde.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace BlazingGidde.Server.Data
 {
-	public partial class ApplicationDbContext : IdentityDbContext
+    public partial class ApplicationDbContext : IdentityDbContext
 	{
 		public ApplicationDbContext(DbContextOptions options) : base(options)
 		{
@@ -54,6 +52,7 @@ namespace BlazingGidde.Server.Data
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+
 			modelBuilder.Entity<Template>().UseTpcMappingStrategy();
 
 		}

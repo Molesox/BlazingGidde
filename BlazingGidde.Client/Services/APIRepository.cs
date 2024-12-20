@@ -102,7 +102,7 @@ namespace BlazingGidde.Client.Services
 				return new List<TEntity>();
 			}
 		}
-	public async Task<int> GetTotalCount(LinqQueryFilter<TEntity> linqQueryFilter)
+		public async Task<int> GetTotalCount(LinqQueryFilter<TEntity> linqQueryFilter)
 		{
 			try
 			{
@@ -115,7 +115,7 @@ namespace BlazingGidde.Client.Services
 				{
 					PropertyNameCaseInsensitive = true
 				});
-					return response;
+				return response;
 			}
 			catch (Exception)
 			{
@@ -250,6 +250,14 @@ namespace BlazingGidde.Client.Services
 			{
 				return false;
 			}
+		}
+
+		public IQueryable<TEntity> GetAllQueryable()
+		{
+			// IQueryable cannot be used across API boundaries.
+			throw new InvalidOperationException(
+				@"IQueryable cannot be used in the API repository.
+				 Use the LinqQueryFilter or a similar mechanism to perform filtering over HTTP.");
 		}
 	}
 }

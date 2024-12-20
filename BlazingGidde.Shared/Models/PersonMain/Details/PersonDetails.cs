@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,7 +10,7 @@ public class PersonDetails
     /// </summary>
     [Key]
     [Display(Name = "ID", Description = "Unique Identifier")]
-    public int PersonID { get; set; }
+    public int PersonId { get; set; }
 
     /// <summary>
     /// Gets or sets the culture.
