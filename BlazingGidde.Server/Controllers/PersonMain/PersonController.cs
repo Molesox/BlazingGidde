@@ -18,11 +18,11 @@ namespace BlazingGidde.Server.Controllers.Identity
     [Authorize]
     public class PersonController : BlazingGiddeBaseController<Person, ApplicationDbContext>
     {
-        private readonly RepositoryEF<Phone, ApplicationDbContext> _repositoryPhones;
-        private readonly RepositoryEF<Email, ApplicationDbContext> _repositoryEmails;
-        public PersonController(RepositoryEF<Person, ApplicationDbContext> repository,
-        RepositoryEF<Phone, ApplicationDbContext> phonesRepository,
-        RepositoryEF<Email, ApplicationDbContext> emailsRepository,
+        private readonly IRepository<Phone> _repositoryPhones;
+        private readonly IRepository<Email> _repositoryEmails;
+        public PersonController(IRepository<Person> repository,
+        IRepository<Phone> phonesRepository,
+        IRepository<Email> emailsRepository,
         ILogger<BlazingGiddeBaseController<Person, ApplicationDbContext>> logger)
         : base(repository, logger)
         {
@@ -35,7 +35,8 @@ namespace BlazingGidde.Server.Controllers.Identity
         {
             try
             {
-                var phones = await _repositoryPhones.dbSet.Where(phone => phone.PersonID == id).ToListAsync();
+                var linqFilter = new LinqQueryFilter<Phone>(p => p.PersonID == id);
+                var phones = await _repositoryPhones.Get(linqFilter);
                 return Ok(new APIListOfEntityResponse<Phone>
                 {
                     Success = true,
@@ -54,7 +55,8 @@ namespace BlazingGidde.Server.Controllers.Identity
         {
             try
             {
-                var emails = await _repositoryEmails.dbSet.Where(e => e.PersonID == id).ToListAsync();
+                var linqFilter = new LinqQueryFilter<Email>(p => p.PersonID == id);
+                var emails = await _repositoryEmails.Get(linqFilter);
                 return Ok(new APIListOfEntityResponse<Email>
                 {
                     Success = true,

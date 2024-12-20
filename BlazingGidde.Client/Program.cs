@@ -29,7 +29,6 @@ builder.Services.AddScoped<DictionaryManager>();
 builder.Services.AddScoped<BreakeableItemManager>();
 builder.Services.AddScoped<GazItemManager>();
 builder.Services.AddScoped<CustomTemplateItemManager>();
-builder.Services.AddScoped<FlowUserManager>();
 builder.Services.AddScoped<IncidencyManager>();
 builder.Services.AddScoped<TemplateManager>();
 builder.Services.AddScoped<TemplateItemManager>();

@@ -5,7 +5,7 @@ namespace BlazingGidde.Client.Services.FlowCheck
     public class TemplateKindManager : APIRepository<TemplateKind>
     {
         public TemplateKindManager(HttpClient _http) 
-            : base(_http, "AppTemplateKinds", nameof(TemplateKind.Id)) 
+            : base(_http, "TemplateKind", nameof(TemplateKind.Id)) 
         { }
     }
 }

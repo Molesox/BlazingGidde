@@ -27,18 +27,18 @@ builder.Services.AddDefaultIdentity<FlowUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddTransient<RepositoryEF<Person, ApplicationDbContext>>();
-builder.Services.AddTransient<RepositoryEF<Email, ApplicationDbContext>>();
-builder.Services.AddTransient<RepositoryEF<Phone, ApplicationDbContext>>();
-builder.Services.AddTransient<RepositoryEF<DictionaryEntry, ApplicationDbContext>>();
-builder.Services.AddTransient<RepositoryEF<CustomTemplateItem, ApplicationDbContext>>();
-builder.Services.AddTransient<RepositoryEF<Incidency, ApplicationDbContext>>();
-builder.Services.AddTransient<RepositoryEF<Template, ApplicationDbContext>>();
-builder.Services.AddTransient<RepositoryEF<TemplateItem, ApplicationDbContext>>();
-builder.Services.AddTransient<RepositoryEF<TemplateKind, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<Person>, RepositoryEF<Person, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<Email>, RepositoryEF<Email, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<Phone>, RepositoryEF<Phone, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<DictionaryEntry>, RepositoryEF<DictionaryEntry, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<CustomTemplateItem>,RepositoryEF<CustomTemplateItem, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<Incidency>,RepositoryEF<Incidency, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<Template>, RepositoryEF<Template, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<TemplateItem>, RepositoryEF<TemplateItem, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<TemplateKind>, RepositoryEF<TemplateKind, ApplicationDbContext>>();
 builder.Services.AddTransient<IRepository<TemplateType>, RepositoryEF<TemplateType, ApplicationDbContext>>();
-builder.Services.AddTransient<RepositoryEF<BreakeableItem, ApplicationDbContext>>();
-builder.Services.AddTransient<RepositoryEF<GazItem, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<BreakeableItem>, RepositoryEF<BreakeableItem, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<GazItem>, RepositoryEF<GazItem, ApplicationDbContext>>();
 builder.Services.AddTransient<RepositoryUser>();
 builder.Services.AddTransient<RepositoryRole>();
 builder.Services.AddTransient<UserRoleService>();
