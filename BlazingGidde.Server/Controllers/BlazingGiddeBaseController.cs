@@ -77,7 +77,17 @@ namespace BlazingGidde.Server.Controllers
             try
             {
                 _logger.LogInformation("Fetching entity with ID: {Id}", Id);
-                var entity = await _repository.GetByID(Id);
+                TEntity? entity = null;
+                //si TEntity respeta la interfaz de model base
+                if (typeof(IModelBase).IsAssignableFrom(typeof(TEntity)))
+                {
+                    var integerId = int.Parse(Id);
+                    entity = await _repository.GetByID(integerId);
+                }
+                else
+                {
+                    entity = await _repository.GetByID(Id);
+                }
 
                 if (entity is not null)
                 {
@@ -320,15 +330,15 @@ namespace BlazingGidde.Server.Controllers
             {
                 _logger.LogInformation("Deleting entity with ID: {Id}", Id);
                 bool success = false;
-
+                //si TEntity respeta la interfaz de model base
                 if (typeof(IModelBase).IsAssignableFrom(typeof(TEntity)))
                 {
-                    var integerId = int.Parse(Id);
+                    var integerId = int.Parse(Id); // utilizamos id como integer
                     success = await _repository.Delete(integerId);
                 }
                 else
                 {
-                    success = await _repository.Delete(Id);
+                    success = await _repository.Delete(Id); // si no usamos string
                 }
 
                 if (success)
