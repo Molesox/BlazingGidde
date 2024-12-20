@@ -71,7 +71,7 @@
 </div>
 
 @code {
-	private ItemsProviderDelegate<DictionaryEntry> itemsProvider;
+	private ItemsProviderDelegate<DictionaryEntry>? itemsProvider;
 	private int? totalItemCountCache;
 	private bool isSwapped = false; // Variable to track the swap state
 
@@ -125,7 +125,7 @@
 				isFullyLoaded = true;
 			}
 
-			return new ItemsProviderResult<DictionaryEntry>(items, totalItemCountCache.Value);
+			return new ItemsProviderResult<DictionaryEntry>(items!, totalItemCountCache.Value);
 		}
 	}
 

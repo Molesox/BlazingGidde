@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using BlazingGidde.Shared.Models.FlowCheck;
 using BlazingGidde.Shared.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace BlazingGidde.Server.Controllers.Identity
 	public class LoginController : ControllerBase
 	{
 		private readonly IConfiguration _configuration;
-		private readonly SignInManager<IdentityUser> _signInManager;
+		private readonly SignInManager<FlowUser> _signInManager;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LoginController"/> class.
@@ -24,7 +25,7 @@ namespace BlazingGidde.Server.Controllers.Identity
 		/// <param name="configuration">The configuration to retrieve JWT settings.</param>
 		/// <param name="signInManager">The sign-in manager to handle user authentication.</param>
 		public LoginController(IConfiguration configuration,
-			SignInManager<IdentityUser> signInManager)
+			SignInManager<FlowUser> signInManager)
 		{
 			_configuration = configuration;
 			_signInManager = signInManager;

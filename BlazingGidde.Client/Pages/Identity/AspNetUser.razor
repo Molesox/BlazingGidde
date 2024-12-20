@@ -15,7 +15,7 @@
 
 <PageTitle>Application Users</PageTitle>
 
-<GenericGrid TEntity="IdentityUser" Title="My Users"
+<GenericGrid TEntity="FlowUser" Title="My Users"
              Repository="@UserManager"
              Columns="@myColumns">
     <EditFormTemplate Context="user">
@@ -113,7 +113,7 @@
 </GenericGrid>
 
 @code {
-    private List<ColumnDefinition<IdentityUser>> myColumns = new();
+    private List<ColumnDefinition<FlowUser>> myColumns = new();
     private IEnumerable<IdentityRole>? _roles;
     private string? selectedRole;
     private Dictionary<string, List<string>> userRoles = new();
@@ -122,14 +122,14 @@
     {
         _roles = await RoleManager.GetAll();
         await LoadUserRoles();
-        myColumns = new List<ColumnDefinition<IdentityUser>>
+        myColumns = new List<ColumnDefinition<FlowUser>>
         {
-            new ColumnDefinition<IdentityUser>(x => x.Id, "ID"),
-            new ColumnDefinition<IdentityUser>(x => x.UserName, "User Name", isEditable: true),
-            new ColumnDefinition<IdentityUser>(x => x.Email, "Email", isEditable: true),
-            new ColumnDefinition<IdentityUser>(x => x.PhoneNumber, "Phone Number", isEditable: true),
-            new ColumnDefinition<IdentityUser>(x => x.LockoutEnabled, "Lockout Enabled", isEditable: true),
-            new ColumnDefinition<IdentityUser>(x => x.TwoFactorEnabled, "2FA Enabled", isEditable: true)
+            new ColumnDefinition<FlowUser>(x => x.Id, "ID"),
+            new ColumnDefinition<FlowUser>(x => x.UserName, "User Name", isEditable: true),
+            new ColumnDefinition<FlowUser>(x => x.Email, "Email", isEditable: true),
+            new ColumnDefinition<FlowUser>(x => x.PhoneNumber, "Phone Number", isEditable: true),
+            new ColumnDefinition<FlowUser>(x => x.LockoutEnabled, "Lockout Enabled", isEditable: true),
+            new ColumnDefinition<FlowUser>(x => x.TwoFactorEnabled, "2FA Enabled", isEditable: true)
         };
     }
 

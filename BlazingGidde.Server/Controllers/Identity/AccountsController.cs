@@ -1,4 +1,5 @@
-﻿using BlazingGidde.Shared.Models.Identity;
+﻿using BlazingGidde.Shared.Models.FlowCheck;
+using BlazingGidde.Shared.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,13 +12,13 @@ namespace BlazingGidde.Server.Controllers.Identity
 	[ApiController]
 	public class AccountsController : ControllerBase
 	{
-		private readonly UserManager<IdentityUser> _userManager;
+		private readonly UserManager<FlowUser> _userManager;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="AccountsController"/> class.
 		/// </summary>
 		/// <param name="userManager">The user manager to handle identity operations.</param>
-		public AccountsController(UserManager<IdentityUser> userManager)
+		public AccountsController(UserManager<FlowUser> userManager)
 		{
 			_userManager = userManager;
 		}
@@ -30,16 +31,14 @@ namespace BlazingGidde.Server.Controllers.Identity
 		[HttpPost]
 		public async Task<IActionResult> Post([FromBody] RegisterModel model)
 		{
-			var newUser = new IdentityUser { UserName = model.Email, Email = model.Email, PhoneNumber=model.PhoneNumber };
+			var newUser = new FlowUser { UserName = model.Email, Email = model.Email, PhoneNumber=model.PhoneNumber };
 
 			var result = await _userManager.CreateAsync(newUser, model.Password!);
 
 			if (!result.Succeeded)
 			{
 				var errors = result.Errors.Select(x => x.Description);
-
 				return Ok(new RegisterResult { Successful = false, Errors = errors });
-
 			}
 
 			return Ok(new RegisterResult { Successful = true });

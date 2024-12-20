@@ -1,7 +1,7 @@
 ﻿<AuthorizeView>
 	<Authorized>
 		<div class="login-display">
-			<span class="user-greeting">Hello, @context.User.Identity.Name!</span>
+			<span class="user-greeting">Hello, @context.User.Identity?.Name!</span>
 			<button class="btn btn-danger" @onclick="Logout">
 				<span class="material-icons">
 					logout

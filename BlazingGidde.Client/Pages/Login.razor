@@ -37,7 +37,7 @@
 </div>
 
 @code {
-	[Inject] protected ToastService ToastService { get; set; }
+	[Inject] protected ToastService? ToastService { get; set; }
 
     private LoginModel _loginModel = new();
     private string _error = "";
@@ -52,7 +52,7 @@
         else
         {
             _error = result.Error!;
-              ToastService.Notify(new(ToastType.Danger, $"Error: {_error}."));
+            ToastService?.Notify(new(ToastType.Danger, $"Error: {_error}."));
         }
     }
 }

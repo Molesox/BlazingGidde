@@ -238,7 +238,7 @@ namespace BlazingGidde.Server.Controllers
                 var insertedEntity = await _repository.Insert(Entity);
 
                 _logger.LogInformation("Entity inserted successfully.");
-                return CreatedAtAction(nameof(GetById), new { Id = GetEntityId(insertedEntity) }, new APIEntityResponse<TEntity>
+                return CreatedAtAction(nameof(GetById), new { Id = GetEntityId(insertedEntity!) }, new APIEntityResponse<TEntity>
                 {
                     Success = true,
                     Items = insertedEntity

@@ -15,19 +15,22 @@
 
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <InputText id="email" class="form-control" placeholder="Enter your email address" @bind-Value="_registerModel.Email" Type="email" />
+                    <InputText id="email" class="form-control" placeholder="Enter your email address"
+                        @bind-Value="_registerModel.Email" Type="email" />
                     <ValidationMessage For="@(() => _registerModel.Email)" />
                 </div>
 
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <InputText id="password" class="form-control" placeholder="Enter a password" @bind-Value="_registerModel.Password" Type="password" />
+                    <InputText id="password" class="form-control" placeholder="Enter a password"
+                        @bind-Value="_registerModel.Password" Type="password" />
                     <ValidationMessage For="@(() => _registerModel.Password)" />
                 </div>
 
                 <div class="mb-3">
                     <label for="confirmPassword" class="form-label">Confirm Password</label>
-                    <InputText id="confirmPassword" class="form-control" placeholder="Confirm your password" @bind-Value="_registerModel.ConfirmPassword" Type="password" />
+                    <InputText id="confirmPassword" class="form-control" placeholder="Confirm your password"
+                        @bind-Value="_registerModel.ConfirmPassword" Type="password" />
                     <ValidationMessage For="@(() => _registerModel.ConfirmPassword)" />
                 </div>
 
@@ -38,7 +41,7 @@
 </div>
 
 @code {
-	[Inject] protected ToastService ToastService { get; set; }
+    [Inject] protected ToastService? ToastService { get; set; }
 
     private RegisterModel _registerModel = new();
     private string _error = "";
@@ -53,10 +56,11 @@
         }
         else
         {
-            if (result.Errors is not null){
-				                _error = string.Join("<br>", result.Errors);
-			            ToastService.Notify(new(ToastType.Danger, $"Error: {_error}."));
-			}
+            if (result.Errors is not null)
+            {
+                _error = string.Join("<br>", result.Errors);
+                ToastService?.Notify(new(ToastType.Danger, $"Error: {_error}."));
+            }
 
 
             await InvokeAsync(StateHasChanged);
