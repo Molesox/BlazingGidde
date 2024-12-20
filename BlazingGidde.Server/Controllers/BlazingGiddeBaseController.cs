@@ -1,10 +1,12 @@
 ﻿using BlazingGidde.Server.Data.Repository;
+using BlazingGidde.Shared;
 using BlazingGidde.Shared.API;
+using BlazingGidde.Shared.Models;
 using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
- 
+
 
 namespace BlazingGidde.Server.Controllers
 {
@@ -44,7 +46,7 @@ namespace BlazingGidde.Server.Controllers
                 _logger.LogWarning("No entities found.");
                 return Ok(new APIListOfEntityResponse<TEntity>
                 {
-                    Success = false,
+                    Success = true,
                     ErrorMessages = new List<string> { "No entities found." }
                 });
             }
@@ -317,8 +319,17 @@ namespace BlazingGidde.Server.Controllers
             try
             {
                 _logger.LogInformation("Deleting entity with ID: {Id}", Id);
+                bool success = false;
 
-                var success = await _repository.Delete(Id as object);
+                if (typeof(IModelBase).IsAssignableFrom(typeof(TEntity)))
+                {
+                    var integerId = int.Parse(Id);
+                    success = await _repository.Delete(integerId);
+                }
+                else
+                {
+                    success = await _repository.Delete(Id);
+                }
 
                 if (success)
                 {

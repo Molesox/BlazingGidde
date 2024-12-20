@@ -2,9 +2,10 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+
 namespace BlazingGidde.Shared.Models;
 
-public abstract class ModelBase : ISupportTimeStamp
+public abstract class ModelBase : ISupportTimeStamp, IModelBase
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

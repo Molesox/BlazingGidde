@@ -6,10 +6,12 @@ using BlazingGidde.Shared.Models.FlowCheck;
 using BlazingGidde.Shared.Models.FlowCheck.TemplateItems;
 using BlazingGidde.Shared.Models.Patois;
 using BlazingGidde.Shared.Models.PersonMain;
+using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -34,7 +36,7 @@ builder.Services.AddTransient<RepositoryEF<Incidency, ApplicationDbContext>>();
 builder.Services.AddTransient<RepositoryEF<Template, ApplicationDbContext>>();
 builder.Services.AddTransient<RepositoryEF<TemplateItem, ApplicationDbContext>>();
 builder.Services.AddTransient<RepositoryEF<TemplateKind, ApplicationDbContext>>();
-builder.Services.AddTransient<RepositoryEF<TemplateType, ApplicationDbContext>>();
+builder.Services.AddTransient<IRepository<TemplateType>, RepositoryEF<TemplateType, ApplicationDbContext>>();
 builder.Services.AddTransient<RepositoryEF<BreakeableItem, ApplicationDbContext>>();
 builder.Services.AddTransient<RepositoryEF<GazItem, ApplicationDbContext>>();
 builder.Services.AddTransient<RepositoryUser>();
@@ -57,7 +59,41 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(setup =>
+{
+    // Include 'SecurityScheme' to use JWT Authentication
+    var jwtSecurityScheme = new OpenApiSecurityScheme
+    {
+        BearerFormat = "JWT",
+        Name = "JWT Authentication",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = JwtBearerDefaults.AuthenticationScheme,
+        Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
+
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+
+    setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+
+    setup.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { jwtSecurityScheme, Array.Empty<string>() }
+    });
+
+    setup.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Flow",
+        Description = "Flow API",
+    });
+
+});
+
 
 var app = builder.Build();
 
