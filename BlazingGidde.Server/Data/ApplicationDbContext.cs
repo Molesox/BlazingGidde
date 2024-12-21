@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BlazingGidde.Server.Data
 {
-    public partial class ApplicationDbContext : IdentityDbContext
+	public partial class ApplicationDbContext : IdentityDbContext
 	{
 		public ApplicationDbContext(DbContextOptions options) : base(options)
 		{
@@ -18,14 +18,14 @@ namespace BlazingGidde.Server.Data
 		#region Person Main
 
 		public virtual DbSet<Person> Persons { get; set; }
-		public virtual DbSet<Address> Addresses{ get; set; }
+		public virtual DbSet<Address> Addresses { get; set; }
 		public virtual DbSet<AddressType> AddressTypes { get; set; }
-		public virtual DbSet<Email> Emails { get; set; }	
+		public virtual DbSet<Email> Emails { get; set; }
 		public virtual DbSet<EmailType> EmailTypes { get; set; }
-		public virtual DbSet<PersonProfile> PersonProfiles{ get; set; }
-		public virtual DbSet<PersonType> PersonTypes{ get; set; }
-		public virtual DbSet<Phone> Phones{ get; set; }
-		public virtual DbSet<PhoneType> PhoneTypes{ get; set; }
+		public virtual DbSet<PersonProfile> PersonProfiles { get; set; }
+		public virtual DbSet<PersonType> PersonTypes { get; set; }
+		public virtual DbSet<Phone> Phones { get; set; }
+		public virtual DbSet<PhoneType> PhoneTypes { get; set; }
 
 		#endregion
 
@@ -45,9 +45,13 @@ namespace BlazingGidde.Server.Data
 
 		#region Patois
 
-		public virtual DbSet<DictionaryEntry> DictionaryEntries{ get; set; }
+		public virtual DbSet<DictionaryEntry> DictionaryEntries { get; set; }
 
 		#endregion
+
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
+			.LogTo(Console.WriteLine)
+			.EnableSensitiveDataLogging();
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
