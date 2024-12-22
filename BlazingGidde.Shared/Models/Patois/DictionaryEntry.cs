@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BlazingGidde.Shared.Models.Patois
 {
     [Table("DictionaryEntry", Schema = "Patois")]
-	public class DictionaryEntry
+	public class DictionaryEntry : IModelBase<int>
 	{
 
 		[Key]

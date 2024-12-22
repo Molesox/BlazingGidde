@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 namespace BlazingGidde.Shared.Models.FlowCheck;
 
 [Table("FlowUser", Schema ="FlowCheck")]
-public class FlowUser : IdentityUser, IApplicationUserBase
+public class FlowUser : IdentityUser, IApplicationUserBase, IModelBase<string>
 {
 	
 	/// <summary>

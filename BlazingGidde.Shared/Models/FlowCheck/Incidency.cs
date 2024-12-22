@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BlazingGidde.Shared.Models.FlowCheck;
 
 [Table("Incidency", Schema ="FlowCheck")]
-public class Incidency
+public class Incidency : IModelBase<int>
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

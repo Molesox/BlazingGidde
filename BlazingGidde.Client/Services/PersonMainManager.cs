@@ -4,10 +4,10 @@ using BlazingGidde.Shared.Models.PersonMain;
 
 namespace BlazingGidde.Client.Services;
 
-public class PersonMainManager : APIRepository<Person>
+public class PersonMainManager : APIRepository<Person, int>
 {
     public PersonMainManager(HttpClient _http) 
-        : base(_http, "Person", nameof(Person.PersonId))
+        : base(_http, "Person")
     {
     }
 

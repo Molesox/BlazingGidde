@@ -1,6 +1,6 @@
 namespace BlazingGidde.Shared.Models;
 
-public interface IModelBase
+public interface IModelBase<Tkey>
 {
-    public int Id { get; set; }
+    public Tkey Id { get; set; }
 }

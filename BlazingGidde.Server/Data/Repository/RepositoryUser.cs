@@ -34,7 +34,7 @@ namespace BlazingGidde.Server.Data.Repository
 			return await _userManager.Users.ToListAsync();
 		}
 
-		public virtual IQueryable<FlowUser> GetAllQueryable()
+		public virtual IQueryable<FlowUser> GetQueryable()
 		{
 			return _userManager.Users.AsQueryable();
 		}

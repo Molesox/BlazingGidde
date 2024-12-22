@@ -207,6 +207,24 @@ namespace BlazingGidde.Server.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FlowRole",
+                schema: "FlowCheck",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FlowRole", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FlowRole_AspNetRoles_Id",
+                        column: x => x.Id,
+                        principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -832,6 +850,10 @@ namespace BlazingGidde.Server.Data.Migrations
                 schema: "Person");
 
             migrationBuilder.DropTable(
+                name: "FlowRole",
+                schema: "FlowCheck");
+
+            migrationBuilder.DropTable(
                 name: "GazItem",
                 schema: "FlowCheck");
 
@@ -852,11 +874,11 @@ namespace BlazingGidde.Server.Data.Migrations
                 schema: "Person");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
                 name: "EmailType",
                 schema: "Person");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "TemplateItem",

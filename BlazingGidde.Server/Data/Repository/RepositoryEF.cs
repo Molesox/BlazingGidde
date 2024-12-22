@@ -115,7 +115,7 @@ namespace BlazingGidde.Server.Data.Repository
 			return await context.Set<TEntity>().ToListAsync();
 		}
 
-		public virtual IQueryable<TEntity> GetAllQueryable()
+		public virtual IQueryable<TEntity> GetQueryable()
 		{
 			return dbSet.AsQueryable();
 		}

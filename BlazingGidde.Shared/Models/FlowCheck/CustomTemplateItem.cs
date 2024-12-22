@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BlazingGidde.Shared.Models.FlowCheck;
 
 [Table("CustomTemplateItem", Schema ="FlowCheck")]
-public class CustomTemplateItem 
+public class CustomTemplateItem : IModelBase<int>
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

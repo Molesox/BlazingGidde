@@ -2,10 +2,10 @@
 
 namespace BlazingGidde.Client.Services.FlowCheck
 {
-    public class IncidencyManager : APIRepository<Incidency>
+    public class IncidencyManager : APIRepository<Incidency, int>
     {
         public IncidencyManager(HttpClient _http)
-            :base (_http, "Incidency", nameof(Incidency.Id))
+            :base (_http, "Incidency")
         { }
     }
 }

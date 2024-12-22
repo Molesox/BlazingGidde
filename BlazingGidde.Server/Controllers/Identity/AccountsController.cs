@@ -1,5 +1,6 @@
 ﻿using BlazingGidde.Shared.Models.FlowCheck;
 using BlazingGidde.Shared.Models.Identity;
+using BlazingGidde.Shared.Models.PersonMain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,7 +32,11 @@ namespace BlazingGidde.Server.Controllers.Identity
 		[HttpPost]
 		public async Task<IActionResult> Post([FromBody] RegisterModel model)
 		{
-			var newUser = new FlowUser { UserName = model.Email, Email = model.Email, PhoneNumber=model.PhoneNumber };
+			var newUser = new FlowUser { UserName = model.Email, Email = model.Email, PhoneNumber = model.PhoneNumber };
+
+			newUser.Person.FirstName = model.FirstName;
+			newUser.Person.LastName = model.LastName;
+			newUser.Person.Emails.Add(new Email { EmailAddress = model.Email, IsDefault = true });
 
 			var result = await _userManager.CreateAsync(newUser, model.Password!);
 

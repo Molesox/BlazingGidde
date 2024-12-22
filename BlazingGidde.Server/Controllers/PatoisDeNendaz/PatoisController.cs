@@ -9,10 +9,10 @@ namespace BlazingGidde.Server.Controllers.PatoisDeNendaz
     [Route("[Controller]")]
 	[ApiController] 
 	[Authorize]
-	public class PatoisController : BlazingGiddeBaseController<DictionaryEntry, ApplicationDbContext>
+	public class PatoisController : BlazingGiddeBaseController<DictionaryEntry, int, ApplicationDbContext>
 	{
 		public PatoisController(IRepository<DictionaryEntry> repository,
-			ILogger<BlazingGiddeBaseController<DictionaryEntry, ApplicationDbContext>> logger)
+			ILogger<BlazingGiddeBaseController<DictionaryEntry, int, ApplicationDbContext>> logger)
 			: base(repository, logger)
 		{
 		}

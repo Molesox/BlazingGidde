@@ -1,37 +1,35 @@
 ﻿using BlazingGidde.Shared.API;
+using BlazingGidde.Shared.DTOs;
+using BlazingGidde.Shared.DTOs.Common;
+using BlazingGidde.Shared.Models;
 using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazingGidde.Server.Controllers
 {
-	public interface IBlazingGiddeBaseController<TEntity>
-		where TEntity : class
+	public interface IBlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>
+		where TEntity : class, IModelBase<Tkey>
+        where TReadDto : class
+        where TCreateDto : class
+        where TUpdateDto : class, IModelBase<Tkey>
+        where TCreateDtoResponse : class
+        where TUpdateDtoReponse : class
 	{
-		[HttpGet]
-		Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetAll();
+		Task<ActionResult<APIListOfEntityResponse<TReadDto>>> GetAll();
 
-		[HttpGet("{Id}")]
-		Task<ActionResult<APIEntityResponse<TEntity>>> GetById(string Id);
+		Task<ActionResult<APIEntityResponse<TReadDto>>> GetById(Tkey Id);
 
-		[HttpPost("getwithfilter")]
 		Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithFilter(QueryFilter<TEntity> Filter);
 
-		[HttpPost("getwithLinqfilter")]
 		Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithLinqFilter(LinqQueryFilter<TEntity> linqQueryFilter);
 
-		[HttpPost("GetTotalCount")]
-		Task<ActionResult<int>> GetTotalCount(LinqQueryFilter<TEntity> queryFilter);
+		Task<ActionResult<APIEntityResponse<CountDto>>> GetTotalCount(LinqQueryFilter<TEntity> queryFilter);
 
+		Task<ActionResult<APIEntityResponse<TCreateDtoResponse>>> Post([FromBody] TCreateDto Entity);
 
-		[HttpPost]
-		Task<ActionResult<APIEntityResponse<TEntity>>> Post([FromBody] TEntity Entity);
+		Task<ActionResult<APIEntityResponse<TUpdateDtoReponse>>> Put([FromBody] TUpdateDto Entity);
 
-		[HttpPut]
-		Task<ActionResult<APIEntityResponse<TEntity>>> Put([FromBody] TEntity Entity);
-
-		[HttpDelete("{Id}")]
-		Task<ActionResult<APIEntityResponse<TEntity>>> Delete(string Id);
-
+		Task<ActionResult<APIEntityResponse<TEntity>>> Delete(Tkey Id);
 		
 	}
 }

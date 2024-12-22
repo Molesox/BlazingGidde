@@ -1,7 +1,8 @@
-﻿@page "/approles"
+﻿@page "/FlowRoles"
 @using BlazingGidde.Client.Services
 @using BlazingGidde.Client
 
+@using BlazingGidde.Shared.Models.Identity
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
  @using BlazingGidde.Client.Shared
@@ -10,7 +11,7 @@
 
 <PageTitle>Application roles</PageTitle>
     
-    <GenericGrid TEntity="IdentityRole" Title="My roles"
+    <GenericGrid Tkey="string" TEntity="FlowRole" Title="My roles"
                 Repository="@RoleManager"
                 Columns="@myColumns">
         <EditFormTemplate Context="role">
@@ -22,15 +23,15 @@
     </GenericGrid>
 
 @code {
-    private List<ColumnDefinition<IdentityRole>> myColumns = new();
+    private List<ColumnDefinition<FlowRole>> myColumns = new();
     
     protected override void OnInitialized()
     {
-         myColumns = new List<ColumnDefinition<IdentityRole>>
+         myColumns = new List<ColumnDefinition<FlowRole>>
         {
-            new ColumnDefinition<IdentityRole>(x => x.Id, "ID"),
-            new ColumnDefinition<IdentityRole>(x => x.Name, "Name", isEditable: true),
-            new ColumnDefinition<IdentityRole>(x => x.NormalizedName, "NormalizedName", isEditable: true)
+            new ColumnDefinition<FlowRole>(x => x.Id, "ID"),
+            new ColumnDefinition<FlowRole>(x => x.Name, "Name", isEditable: true),
+            new ColumnDefinition<FlowRole>(x => x.NormalizedName, "NormalizedName", isEditable: true)
         };
     }
 }

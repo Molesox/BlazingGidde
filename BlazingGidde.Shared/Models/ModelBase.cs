@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlazingGidde.Shared.Models;
 
-public abstract class ModelBase : ISupportTimeStamp, IModelBase
+public abstract class ModelBase : ISupportTimeStamp, IModelBase<int>
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

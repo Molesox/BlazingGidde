@@ -2,10 +2,10 @@
 
 namespace BlazingGidde.Client.Services.FlowCheck
 {
-    public class CustomTemplateItemManager : APIRepository<CustomTemplateItem>
+    public class CustomTemplateItemManager : APIRepository<CustomTemplateItem, int>
     {
         public CustomTemplateItemManager(HttpClient _http)
-            : base(_http, "CustomTemplate", nameof(CustomTemplateItem.Id))
+            : base(_http, "CustomTemplate")
         { }
     }
 }

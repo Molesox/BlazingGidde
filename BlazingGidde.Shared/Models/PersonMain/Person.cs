@@ -8,7 +8,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
     /// The Person model class.
     /// </summary>
     [Table("Person", Schema = "Person")]
-    public partial class Person : IModelBase
+    public partial class Person : IModelBase<int>
     {
         #region Properties
         

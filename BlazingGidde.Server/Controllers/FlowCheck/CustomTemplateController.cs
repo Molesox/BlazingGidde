@@ -8,14 +8,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlazingGidde.Server.Controllers
 {
+
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class CustomTemplateController : BlazingGiddeBaseController<CustomTemplateItem, ApplicationDbContext>
+    public class CustomTemplateController : BlazingGiddeBaseController<CustomTemplateItem , int, ApplicationDbContext>
     {
 
         public CustomTemplateController(IRepository<CustomTemplateItem> repository,
-            ILogger<BlazingGiddeBaseController<CustomTemplateItem, ApplicationDbContext>> logger)
+            ILogger<BlazingGiddeBaseController<CustomTemplateItem,int, ApplicationDbContext>> logger)
             : base(repository, logger) { }
     }
+
 }
+

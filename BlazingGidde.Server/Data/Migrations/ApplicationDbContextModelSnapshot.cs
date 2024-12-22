@@ -761,6 +761,8 @@ namespace BlazingGidde.Server.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.UseTptMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -971,6 +973,13 @@ namespace BlazingGidde.Server.Data.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.ToTable("GazItem", "FlowCheck");
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.FlowRole", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole");
+
+                    b.ToTable("FlowRole", "FlowCheck");
                 });
 
             modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.FlowUser", b =>
@@ -1200,6 +1209,15 @@ namespace BlazingGidde.Server.Data.Migrations
                     b.HasOne("BlazingGidde.Shared.Models.FlowCheck.TemplateItem", null)
                         .WithOne()
                         .HasForeignKey("BlazingGidde.Shared.Models.FlowCheck.TemplateItems.GazItem", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.FlowRole", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                        .WithOne()
+                        .HasForeignKey("BlazingGidde.Shared.Models.FlowCheck.FlowRole", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

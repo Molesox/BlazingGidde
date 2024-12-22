@@ -9,10 +9,10 @@ namespace BlazingGidde.Server.Controllers.FlowCheck
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class GazItemController : BlazingGiddeBaseController<GazItem, ApplicationDbContext>
+    public class GazItemController : BlazingGiddeBaseController<GazItem,int, ApplicationDbContext>
     {
         public GazItemController(IRepository<GazItem> repository, 
-            ILogger<BlazingGiddeBaseController<GazItem, ApplicationDbContext>> logger) 
+            ILogger<BlazingGiddeBaseController<GazItem, int,ApplicationDbContext>> logger) 
             : base(repository, logger)
         {
         }

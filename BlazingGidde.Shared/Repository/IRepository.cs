@@ -7,7 +7,8 @@ namespace BlazingGidde.Shared.Repository
 	/// The IRepository interface provides the standard operations to be performed on a data repository for a given type.
 	/// </summary>
 	/// <typeparam name="TEntity">Type of entity that this repository works with.</typeparam>
-	public interface IRepository<TEntity> where TEntity : class
+	public interface IRepository<TEntity>
+	 where TEntity : class
 	{
 		#region Methods
 
@@ -32,10 +33,10 @@ namespace BlazingGidde.Shared.Repository
 		Task<IEnumerable<TEntity>> GetAll();
 
 		/// <summary>
-        /// Gets all entities from the repository as an IQueryable.
+        /// Gets the repository as an IQueryable.
         /// </summary>
         /// <returns>An IQueryable of entities.</returns>
-        IQueryable<TEntity> GetAllQueryable();
+        IQueryable<TEntity> GetQueryable();
 
 		/// <summary>
 		/// Gets an entity using its ID.

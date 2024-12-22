@@ -1,401 +1,434 @@
-﻿using BlazingGidde.Shared.API;
+﻿using AgileObjects.AgileMapper;
+using AgileObjects.AgileMapper.Extensions;
+using BlazingGidde.Shared.API;
+using BlazingGidde.Shared.DTOs;
+using BlazingGidde.Shared.DTOs.Common;
 using BlazingGidde.Shared.Models;
 using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace BlazingGidde.Server.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class BlazingGiddeBaseController<TEntity, TDataContext> : ControllerBase, IBlazingGiddeBaseController<TEntity>
-        where TEntity : class
+    public class BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>
+        : ControllerBase, IBlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>
+        where TEntity : class, IModelBase<Tkey>
+        where TReadDto : class
+        where TCreateDto : class
+        where TUpdateDto : class, IModelBase<Tkey>
+        where TCreateDtoResponse : class
+        where TUpdateDtoReponse : class
         where TDataContext : DbContext
     {
         protected readonly IRepository<TEntity> _repository;
-        protected readonly ILogger<BlazingGiddeBaseController<TEntity, TDataContext>> _logger;
+        protected readonly ILogger<BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>> _logger;
 
-        public BlazingGiddeBaseController(IRepository<TEntity> repository, ILogger<BlazingGiddeBaseController<TEntity, TDataContext>> logger)
+        public BlazingGiddeBaseController(IRepository<TEntity> repository,
+         ILogger<BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>> logger)
         {
             _repository = repository;
             _logger = logger;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetAll()
+        protected async Task<ActionResult<TResponse>> ExecuteAsync<TResponse>(
+            Func<Task<TResponse>> func,
+            string successMessage,
+            string errorMessage)
         {
             try
             {
-                _logger.LogInformation("Fetching all entities.");
-                var result = (await _repository.GetAll()).ToList();
-
-                if (result.Any())
-                {
-                    _logger.LogInformation("Entities fetched successfully.");
-                    return Ok(new APIListOfEntityResponse<TEntity>
-                    {
-                        Success = true,
-                        Items = result
-                    });
-                }
-
-                _logger.LogWarning("No entities found.");
-                return Ok(new APIListOfEntityResponse<TEntity>
-                {
-                    Success = true,
-                    ErrorMessages = new List<string> { "No entities found." }
-                });
+                var result = await func();
+                _logger.LogInformation("{Message}", successMessage);
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while fetching all entities.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new APIListOfEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "An internal server error occurred while fetching entities." }
-                });
+                _logger.LogError(ex, "{Message}", errorMessage);
+                return StatusCode(500, new { Success = false, ErrorMessages = new List<string> { errorMessage } });
             }
+        }
+
+        [HttpGet]
+        public virtual async Task<ActionResult<APIListOfEntityResponse<TReadDto>>> GetAll()
+        {
+            var correlationId = HttpContext.TraceIdentifier;
+
+            return await ExecuteAsync(async () =>
+            {
+                var query = PrepareQuery(_repository.GetQueryable());
+                var items = await MapToReadDto(query).ToListAsync();
+
+                LogFetchSuccess(items.Count, correlationId);
+
+                return new APIListOfEntityResponse<TReadDto> { Success = true, Items = items };
+            },
+            $"Request {correlationId}: Fetched all {typeof(TEntity).Name}",
+            $"Request {correlationId}: Failed to fetch all {typeof(TEntity).Name}");
+        }
+
+        protected virtual IQueryable<TEntity> PrepareQuery(IQueryable<TEntity> query) => query;
+        protected virtual IQueryable<TReadDto> MapToReadDto(IQueryable<TEntity> query) => query.Project().To<TReadDto>();
+
+        protected virtual void LogFetchSuccess(int count, string correlationId)
+        {
+            _logger.LogInformation(
+                "Request {CorrelationId}: Fetched {Count} {EntityName} records",
+                correlationId,
+                count,
+                typeof(TEntity).Name);
         }
 
         [HttpGet("{Id}")]
-        public async Task<ActionResult<APIEntityResponse<TEntity>>> GetById([FromRoute] string Id)
+        public virtual Task<ActionResult<APIEntityResponse<TReadDto>>> GetById([FromRoute] Tkey Id)
         {
-            if (string.IsNullOrWhiteSpace(Id))
-            {
-                _logger.LogWarning("GetById called with null or empty ID.");
-                return BadRequest(new APIEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "ID cannot be null or empty." }
-                });
-            }
+            var correlationId = HttpContext.TraceIdentifier;
 
-            try
+            return ExecuteAsync(async () =>
             {
-                _logger.LogInformation("Fetching entity with ID: {Id}", Id);
-                TEntity? entity = null;
-                //si TEntity respeta la interfaz de model base
-                if (typeof(IModelBase).IsAssignableFrom(typeof(TEntity)))
+                ValidateId(Id, correlationId);
+                LogFetchByIdStart(Id, correlationId);
+
+                var entity = await _repository.GetByID(Id);
+                if (entity == null)
                 {
-                    if (int.TryParse(Id, out var integerId))
-                    {
-                        entity = await _repository.GetByID(integerId);
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Invalid ID format for IModelBase entity.");
-                    }
-                }
-                else
-                {
-                    entity = await _repository.GetByID(Id);
+                    LogEntityNotFound(Id, correlationId);
+                    throw new KeyNotFoundException($"Entity with ID {Id} was not found.");
                 }
 
-                if (entity is not null)
-                {
-                    _logger.LogInformation("Entity with ID: {Id} fetched successfully.", Id);
-                    return Ok(new APIEntityResponse<TEntity>
-                    {
-                        Success = true,
-                        Items = entity
-                    });
-                }
+                var readDto = MapEntityToReadDto(entity);
 
-                _logger.LogWarning("Entity with ID: {Id} not found.", Id);
-                return NotFound(new APIEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { $"Entity with ID {Id} was not found." }
-                });
-            }
-            catch (Exception ex)
+                LogFetchByIdSuccess(Id, correlationId);
+
+                return new APIEntityResponse<TReadDto> { Success = true, Items = readDto };
+            },
+            $"Request {correlationId}: Fetched {typeof(TEntity).Name} by ID {Id}",
+            $"Request {correlationId}: Failed to fetch {typeof(TEntity).Name} by ID {Id}");
+        }
+
+        protected virtual void ValidateId(Tkey Id, string correlationId)
+        {
+            if (Id is null)
             {
-                _logger.LogError(ex, "An error occurred while fetching the entity with ID: {Id}.", Id);
-                return StatusCode(StatusCodes.Status500InternalServerError, new APIEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "An internal server error occurred while fetching the entity." }
-                });
+                _logger.LogWarning(
+                    "Request {CorrelationId}: {Method} called with null Id",
+                    correlationId,
+                    nameof(GetById));
+                throw new ArgumentException("ID cannot be null or empty.");
             }
         }
 
-        [HttpPost("getwithfilter")]
-        public async Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithFilter([FromBody] QueryFilter<TEntity> Filter)
+        protected virtual void LogFetchByIdStart(Tkey Id, string correlationId)
         {
-            if (Filter == null)
-            {
-                _logger.LogWarning("GetWithFilter called with null filter.");
-                return BadRequest(new APIListOfEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "Filter cannot be null." }
-                });
-            }
+            _logger.LogInformation(
+                "Request {CorrelationId}: Fetching {EntityName} with Id = {Id}",
+                correlationId,
+                typeof(TEntity).Name,
+                Id);
+        }
 
-            try
+        protected virtual void LogEntityNotFound(Tkey Id, string correlationId)
+        {
+            _logger.LogInformation(
+                "Request {CorrelationId}: No {EntityName} found for Id {Id}",
+                correlationId,
+                typeof(TEntity).Name,
+                Id);
+        }
+
+        protected virtual TReadDto MapEntityToReadDto(TEntity entity)
+            => entity.Map().ToANew<TReadDto>();
+
+        protected virtual void LogFetchByIdSuccess(Tkey Id, string correlationId)
+        {
+            _logger.LogInformation(
+                "Request {CorrelationId}: Successfully fetched {EntityName} with Id {Id}",
+                correlationId,
+                typeof(TEntity).Name,
+                Id);
+        }
+
+        [HttpPost("getwithfilter")]
+        public virtual Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithFilter([FromBody] QueryFilter<TEntity> Filter)
+        {
+            var correlationId = HttpContext.TraceIdentifier;
+
+            return ExecuteAsync(async () =>
             {
-                _logger.LogInformation("Fetching entities with filter.");
+                ValidateFilter(Filter, correlationId);
                 var result = await _repository.Get(Filter);
 
-                if (result.Any())
-                {
-                    _logger.LogInformation("Entities fetched successfully with filter.");
-                    return Ok(new APIListOfEntityResponse<TEntity>
-                    {
-                        Success = true,
-                        Items = result.ToList()
-                    });
-                }
+                _logger.LogInformation(
+                    "Request {CorrelationId}: Fetched {EntityName} with provided filter",
+                    correlationId,
+                    typeof(TEntity).Name);
 
-                _logger.LogWarning("No entities found with the provided filter.");
-                return Ok(new APIListOfEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "No entities match the provided filter criteria." }
-                });
-            }
-            catch (Exception ex)
+                return new APIListOfEntityResponse<TEntity> { Success = true, Items = result.ToList() };
+            },
+            $"Request {correlationId}: Fetched {typeof(TEntity).Name} with filter",
+            $"Request {correlationId}: Failed to fetch {typeof(TEntity).Name} with filter");
+        }
+
+        protected virtual void ValidateFilter(QueryFilter<TEntity> filter, string correlationId)
+        {
+            if (filter == null)
             {
-                _logger.LogError(ex, "An error occurred while fetching entities with filter.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new APIListOfEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "An internal server error occurred while fetching entities with the provided filter." }
-                });
+                _logger.LogWarning("Request {CorrelationId}: Filter cannot be null", correlationId);
+                throw new ArgumentNullException("Filter cannot be null.");
             }
         }
 
         [HttpPost("getwithLinqfilter")]
-        public async Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithLinqFilter([FromBody] LinqQueryFilter<TEntity> linqQueryFilter)
+        public virtual Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithLinqFilter([FromBody] LinqQueryFilter<TEntity> linqQueryFilter)
+        {
+            var correlationId = HttpContext.TraceIdentifier;
+
+            return ExecuteAsync(async () =>
+            {
+                ValidateLinqFilter(linqQueryFilter, correlationId);
+                var result = await _repository.Get(linqQueryFilter);
+
+                _logger.LogInformation(
+                    "Request {CorrelationId}: Fetched {EntityName} with LINQ filter",
+                    correlationId,
+                    typeof(TEntity).Name);
+
+                return new APIListOfEntityResponse<TEntity> { Success = true, Items = result.ToList() };
+            },
+            $"Request {correlationId}: Fetched {typeof(TEntity).Name} with LINQ filter",
+            $"Request {correlationId}: Failed to fetch {typeof(TEntity).Name} with LINQ filter");
+        }
+
+        protected virtual void ValidateLinqFilter(LinqQueryFilter<TEntity> linqQueryFilter, string correlationId)
         {
             if (linqQueryFilter == null)
             {
-                _logger.LogWarning("GetWithLinqFilter called with null LINQ filter.");
-                return BadRequest(new APIListOfEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "LINQ filter cannot be null." }
-                });
-            }
-
-            try
-            {
-                _logger.LogInformation("Fetching entities with LINQ filter.");
-                var result = await _repository.Get(linqQueryFilter);
-
-                if (result.Any())
-                {
-                    _logger.LogInformation("Entities fetched successfully with LINQ filter.");
-                    return Ok(new APIListOfEntityResponse<TEntity>
-                    {
-                        Success = true,
-                        Items = result.ToList()
-                    });
-                }
-
-                _logger.LogWarning("No entities found with the provided LINQ filter.");
-                return Ok(new APIListOfEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "No entities match the provided LINQ filter criteria." }
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while fetching entities with LINQ filter.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new APIListOfEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "An internal server error occurred while fetching entities with the provided LINQ filter." }
-                });
+                _logger.LogWarning("Request {CorrelationId}: LINQ filter cannot be null", correlationId);
+                throw new ArgumentNullException("LINQ filter cannot be null.");
             }
         }
 
         [HttpPost("GetTotalCount")]
-        public async Task<ActionResult<int>> GetTotalCount([FromBody] LinqQueryFilter<TEntity> queryFilter)
+        public virtual Task<ActionResult<APIEntityResponse<CountDto>>> GetTotalCount([FromBody] LinqQueryFilter<TEntity> queryFilter)
+        {
+            var correlationId = HttpContext.TraceIdentifier;
+
+            return ExecuteAsync(async () =>
+            {
+                ValidateQueryFilter(queryFilter, correlationId);
+                var count = await _repository.GetTotalCount(queryFilter);
+
+                _logger.LogInformation(
+                    "Request {CorrelationId}: Fetched total count for {EntityName}, count = {Count}",
+                    correlationId,
+                    typeof(TEntity).Name,
+                    count);
+
+                return new APIEntityResponse<CountDto>
+                {
+                    Success = true,
+                    Items = new CountDto { Counter = count }
+                };
+            },
+            $"Request {correlationId}: Fetched total count for {typeof(TEntity).Name}",
+            $"Request {correlationId}: Failed to fetch total count for {typeof(TEntity).Name}");
+        }
+
+        protected virtual void ValidateQueryFilter(LinqQueryFilter<TEntity> queryFilter, string correlationId)
         {
             if (queryFilter == null)
             {
-                _logger.LogWarning("GetTotalCount called with null query filter.");
-                return BadRequest(new { Success = false, ErrorMessages = new List<string> { "Query filter cannot be null." } });
-            }
-
-            try
-            {
-                _logger.LogInformation("Fetching total count of entities with provided filter.");
-                var result = await _repository.GetTotalCount(queryFilter);
-                return Ok(new { Success = true, Count = result });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while fetching total count.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Success = false, ErrorMessages = new List<string> { "An internal server error occurred while fetching the total count." } });
+                _logger.LogWarning("Request {CorrelationId}: Query filter cannot be null", correlationId);
+                throw new ArgumentNullException("Query filter cannot be null.");
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult<APIEntityResponse<TEntity>>> Post([FromBody] TEntity Entity)
+        public virtual Task<ActionResult<APIEntityResponse<TCreateDtoResponse>>> Post([FromBody] TCreateDto entity)
         {
-            if (Entity == null)
+            var correlationId = HttpContext.TraceIdentifier;
+
+            return ExecuteAsync(async () =>
             {
-                _logger.LogWarning("Post called with null entity.");
-                return BadRequest(new APIEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "Entity cannot be null." }
-                });
-            }
+                ValidateEntityForInsert(entity, correlationId);
+                var toInsert = MapCreateDtoToEntity(entity);
+                ApplyTimeStampForInsert(toInsert);
 
-            try
+                var inserted = await _repository.Insert(toInsert);
+                var readDto = MapEntityToCreateDtoResponse(inserted);
+
+                _logger.LogInformation(
+                    "Request {CorrelationId}: Inserted new {EntityName} with Id {Id}",
+                    correlationId,
+                    typeof(TEntity).Name,
+                    inserted.Id);
+
+                return new APIEntityResponse<TCreateDtoResponse> { Success = true, Items = readDto };
+            },
+            $"Request {correlationId}: Inserted {typeof(TEntity).Name}",
+            $"Request {correlationId}: Failed to insert {typeof(TEntity).Name}");
+        }
+
+        protected virtual void ValidateEntityForInsert(TCreateDto entity, string correlationId)
+        {
+            if (entity == null)
             {
-                _logger.LogInformation("Inserting a new entity.");
-
-                if (Entity is ISupportTimeStamp timeStampedEntity)
-                {
-                    timeStampedEntity.CreateDate = DateTime.UtcNow;
-                    timeStampedEntity.CreateUser = User.Identity?.Name ?? "anonymous";
-                }
-
-                var insertedEntity = await _repository.Insert(Entity);
-
-                _logger.LogInformation("Entity inserted successfully.");
-                return CreatedAtAction(nameof(GetById), new { Id = GetEntityId(insertedEntity!) }, new APIEntityResponse<TEntity>
-                {
-                    Success = true,
-                    Items = insertedEntity
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while inserting a new entity.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new APIEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "An internal server error occurred while inserting the entity." }
-                });
+                _logger.LogWarning(
+                    "Request {CorrelationId}: Entity cannot be null on Insert",
+                    correlationId);
+                throw new ArgumentNullException("Entity cannot be null.");
             }
         }
+
+        protected virtual TEntity MapCreateDtoToEntity(TCreateDto createDto)
+            => createDto.Map().ToANew<TEntity>();
+
+        protected virtual void ApplyTimeStampForInsert(TEntity entity)
+        {
+            if (entity is ISupportTimeStamp ts)
+            {
+                ts.CreateDate = DateTime.UtcNow;
+                ts.CreateUser = User.Identity?.Name ?? "anonymous";
+            }
+        }
+
+        protected virtual TCreateDtoResponse MapEntityToCreateDtoResponse(TEntity entity)
+            => entity.Map().ToANew<TCreateDtoResponse>();
 
         [HttpPut]
-        public async Task<ActionResult<APIEntityResponse<TEntity>>> Put([FromBody] TEntity Entity)
+        public virtual Task<ActionResult<APIEntityResponse<TUpdateDtoReponse>>> Put([FromBody] TUpdateDto entity)
         {
-            if (Entity == null)
+            var correlationId = HttpContext.TraceIdentifier;
+
+            return ExecuteAsync(async () =>
             {
-                _logger.LogWarning("Put called with null entity.");
-                return BadRequest(new APIEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "Entity cannot be null." }
-                });
-            }
+                ValidateEntityForUpdate(entity, correlationId);
+                var toUpdate = await _repository.GetByID(entity.Id);
+                ValidateEntityExists(toUpdate, entity.Id, correlationId);
+                MapUpdateDtoToEntity(entity, toUpdate);
+                ApplyTimeStampForUpdate(toUpdate);
 
-            try
+                var updated = await _repository.Update(toUpdate);
+                var updatedDto = MapEntityToUpdateDtoResponse(updated);
+
+                _logger.LogInformation(
+                    "Request {CorrelationId}: Updated {EntityName} with Id {Id}",
+                    correlationId,
+                    typeof(TEntity).Name,
+                    toUpdate.Id);
+
+                return new APIEntityResponse<TUpdateDtoReponse> { Success = true, Items = updatedDto };
+            },
+            $"Request {correlationId}: Updated {typeof(TEntity).Name} with ID {nameof(entity.Id)}",
+            $"Request {correlationId}: Failed to update {typeof(TEntity).Name} with ID {nameof(entity.Id)}");
+        }
+
+        protected virtual void ValidateEntityForUpdate(TUpdateDto entity, string correlationId)
+        {
+            if (entity == null)
             {
-                _logger.LogInformation("Updating an entity.");
-                if (Entity is ISupportTimeStamp timeStampedEntity)
-                {
-                    timeStampedEntity.UpdateDate = DateTime.UtcNow;
-                    timeStampedEntity.UpdateUser = User.Identity?.Name ?? "anonymous";
-                }
-
-                var updateEntity = await _repository.Update(Entity);
-
-                if (updateEntity != null)
-                {
-                    _logger.LogInformation("Entity updated successfully.");
-                    return Ok(new APIEntityResponse<TEntity>
-                    {
-                        Success = true,
-                        Items = updateEntity
-                    });
-                }
-
-                _logger.LogWarning("Entity to update was not found.");
-                return NotFound(new APIEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "Entity to update was not found." }
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while updating the entity.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new APIEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "An internal server error occurred while updating the entity." }
-                });
+                _logger.LogWarning(
+                    "Request {CorrelationId}: Entity cannot be null on Update",
+                    correlationId);
+                throw new ArgumentNullException("Entity cannot be null.");
             }
         }
+
+        protected virtual void ValidateEntityExists(TEntity entity, Tkey Id, string correlationId)
+        {
+            if (entity == null)
+            {
+                _logger.LogWarning(
+                    "Request {CorrelationId}: Entity with ID {Id} was not found for update",
+                    correlationId,
+                    Id);
+                throw new KeyNotFoundException($"Entity with ID {Id} was not found.");
+            }
+        }
+
+        protected virtual void MapUpdateDtoToEntity(TUpdateDto updateDto, TEntity entity)
+            => updateDto.Map().Over(entity);
+
+        protected virtual void ApplyTimeStampForUpdate(TEntity entity)
+        {
+            if (entity is ISupportTimeStamp ts)
+            {
+                ts.UpdateDate = DateTime.UtcNow;
+                ts.UpdateUser = User.Identity?.Name ?? "anonymous";
+            }
+        }
+
+        protected virtual TUpdateDtoReponse MapEntityToUpdateDtoResponse(TEntity entity)
+            => entity.Map().ToANew<TUpdateDtoReponse>();
 
         [HttpDelete("{Id}")]
-        public async Task<ActionResult<APIEntityResponse<TEntity>>> Delete([FromRoute] string Id)
+        public virtual Task<ActionResult<APIEntityResponse<TEntity>>> Delete([FromRoute] Tkey Id)
         {
-            if (string.IsNullOrWhiteSpace(Id))
+            var correlationId = HttpContext.TraceIdentifier;
+
+            return ExecuteAsync(async () =>
             {
-                _logger.LogWarning("Delete called with null or empty ID.");
-                return BadRequest(new APIEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "ID cannot be null or empty." }
-                });
-            }
+                ValidateIdForDelete(Id, correlationId);
+                var success = await _repository.Delete(Id);
+                ValidateDeleteSuccess(success, Id, correlationId);
 
-            try
+                _logger.LogInformation(
+                    "Request {CorrelationId}: Deleted {EntityName} with Id {Id}",
+                    correlationId,
+                    typeof(TEntity).Name,
+                    Id);
+
+                return new APIEntityResponse<TEntity> { Success = true };
+            },
+            $"Request {correlationId}: Deleted {typeof(TEntity).Name} with ID {Id}",
+            $"Request {correlationId}: Failed to delete {typeof(TEntity).Name} with ID {Id}");
+        }
+
+        protected virtual void ValidateIdForDelete(Tkey Id, string correlationId)
+        {
+            if (Id is null)
             {
-                _logger.LogInformation("Deleting entity with ID: {Id}", Id);
-                bool success = false;
-
-                if (typeof(IModelBase).IsAssignableFrom(typeof(TEntity)))
-                {//si TEntity respeta la interfaz de model base
-                    if (int.TryParse(Id, out var integerId))
-                    {
-                        success = await _repository.Delete(integerId);
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Invalid ID format for IModelBase entity.");
-                    }
-                }
-                else
-                {
-                    success = await _repository.Delete(Id);
-                }
-
-                if (success)
-                {
-                    _logger.LogInformation("Entity with ID: {Id} deleted successfully.", Id);
-                    return Ok(new APIEntityResponse<TEntity> { Success = true });
-                }
-
-                _logger.LogWarning("Entity with ID: {Id} not found for deletion.", Id);
-                return NotFound(new APIEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { $"Entity with ID {Id} was not found for deletion." }
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while deleting the entity with ID: {Id}.", Id);
-                return StatusCode(StatusCodes.Status500InternalServerError, new APIEntityResponse<TEntity>
-                {
-                    Success = false,
-                    ErrorMessages = new List<string> { "An internal server error occurred while deleting the entity." }
-                });
+                _logger.LogWarning(
+                    "Request {CorrelationId}: ID is null or empty on Delete",
+                    correlationId);
+                throw new ArgumentException("ID cannot be null or empty.");
             }
         }
 
-        /// <summary>
-        /// Helper method to extract the ID from the entity.
-        /// Assumes that the entity has a property named "Id" of type string.
-        /// Adjust this method based on your actual entity structure.
-        /// </summary>
-        private string GetEntityId(TEntity entity)
+        protected virtual void ValidateDeleteSuccess(bool success, Tkey Id, string correlationId)
         {
-            var property = typeof(TEntity).GetProperty("Id");
-            return property?.GetValue(entity)?.ToString() ?? string.Empty;
+            if (!success)
+            {
+                _logger.LogWarning(
+                    "Request {CorrelationId}: Could not find {EntityName} with Id {Id} to delete",
+                    correlationId,
+                    typeof(TEntity).Name,
+                    Id);
+                throw new KeyNotFoundException($"Entity with ID {Id} was not found for deletion.");
+            }
         }
+    }
+
+    public class BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto>
+        : BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TReadDto, TReadDto, TReadDto, TReadDto>
+        where TEntity : class, IModelBase<Tkey>
+        where TReadDto : class, IReadDto<Tkey>
+        where TDataContext : DbContext
+    {
+        public BlazingGiddeBaseController(IRepository<TEntity> repository,
+          ILogger<BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TReadDto, TReadDto, TReadDto, TReadDto>> logger)
+           : base(repository, logger)
+        { }
+    }
+
+    public class BlazingGiddeBaseController<TEntity, Tkey, TDataContext>
+        : BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TEntity, TEntity, TEntity, TEntity, TEntity>
+        where TEntity : class, IModelBase<Tkey>
+        where TDataContext : DbContext
+    {
+        public BlazingGiddeBaseController(IRepository<TEntity> repository, 
+        ILogger<BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TEntity, TEntity, TEntity, TEntity, TEntity>> logger)
+            : base(repository, logger)
+        { }
     }
 }

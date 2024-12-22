@@ -1,19 +1,26 @@
 -- this file contains sql statements that will be executed after the build script.
 
-if not exists (select 1
-from [dbo].[aspnetroles])
+if not exists (select 1 from [dbo].[aspnetroles])
 begin
-    -- insert usual roles into aspnetroles after deployment
+    declare @adminid    uniqueidentifier = newid();
+    declare @userid     uniqueidentifier = newid();
+    declare @managerid  uniqueidentifier = newid();
+    declare @viewerid   uniqueidentifier = newid();
 
-    insert into [dbo].[aspnetroles]
-        (id, [name], normalizedname, concurrencystamp)
+    insert into [dbo].[aspnetroles] (id, [name], normalizedname, concurrencystamp)
     values
-        (newid(), 'admin', upper('admin'), newid()),
-        (newid(), 'user', upper('user'), newid()),
-        (newid(), 'manager', upper('manager'), newid()),
-        (newid(), 'viewer', upper('viewer'), newid());
-end
+        (@adminid,   'admin',   upper('admin'),   newid()),
+        (@userid,    'user',    upper('user'),    newid()),
+        (@managerid, 'manager', upper('manager'), newid()),
+        (@viewerid,  'viewer',  upper('viewer'),  newid());
 
+    insert into [FlowCheck].[flowRole] (Id)
+    values
+        (@adminid),
+        (@userid),
+        (@managerid),
+        (@viewerid);
+end
 go
 
 

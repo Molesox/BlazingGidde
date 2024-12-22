@@ -1,4 +1,5 @@
 ﻿using BlazingGidde.Shared.Models.FlowCheck;
+using BlazingGidde.Shared.Models.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace BlazingGidde.Server.Services;
@@ -6,9 +7,9 @@ namespace BlazingGidde.Server.Services;
 public class UserRoleService
 {
 	private readonly UserManager<FlowUser> _userManager;
-	private readonly RoleManager<IdentityRole> _roleManager;
+	private readonly RoleManager<FlowRole> _roleManager;
 
-	public UserRoleService(UserManager<FlowUser> userManager, RoleManager<IdentityRole> roleManager)
+	public UserRoleService(UserManager<FlowUser> userManager, RoleManager<FlowRole> roleManager)
 	{
 		_userManager = userManager;
 		_roleManager = roleManager;

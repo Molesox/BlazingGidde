@@ -16,6 +16,8 @@ using Serilog.Templates.Themes;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
+using AgileObjects.AgileMapper;
+using BlazingGidde.Shared.Models.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -24,6 +26,8 @@ var connectionString = configuration.GetConnectionString("DefaultConnection");
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .CreateLogger();
+
+Mapper.WhenMapping.MapEntityKeys();
 
 // Add services to the container.
 
@@ -40,7 +44,7 @@ builder.Services.AddSerilog((services, lc) => lc
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDefaultIdentity<FlowUser>()
-    .AddRoles<IdentityRole>()
+    .AddRoles<FlowRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddTransient<IRepository<Person>, RepositoryEF<Person, ApplicationDbContext>>();
@@ -55,8 +59,8 @@ builder.Services.AddTransient<IRepository<TemplateKind>, RepositoryEF<TemplateKi
 builder.Services.AddTransient<IRepository<TemplateType>, RepositoryEF<TemplateType, ApplicationDbContext>>();
 builder.Services.AddTransient<IRepository<BreakeableItem>, RepositoryEF<BreakeableItem, ApplicationDbContext>>();
 builder.Services.AddTransient<IRepository<GazItem>, RepositoryEF<GazItem, ApplicationDbContext>>();
-builder.Services.AddTransient<RepositoryUser>();
-builder.Services.AddTransient<RepositoryRole>();
+builder.Services.AddTransient<IRepository<FlowUser>, RepositoryUser>();
+builder.Services.AddTransient<IRepository<FlowRole>, RepositoryRole>();
 builder.Services.AddTransient<UserRoleService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -110,8 +114,8 @@ builder.Services.AddSwaggerGen(setup =>
 
 });
 
-
 var app = builder.Build();
+
 app.UseSerilogRequestLogging(options =>
 {
     // Customize the message template
@@ -134,7 +138,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseWebAssemblyDebugging();
+    app.UseDeveloperExceptionPage();
+
 }
+
 
 app.UseHttpsRedirection();
 

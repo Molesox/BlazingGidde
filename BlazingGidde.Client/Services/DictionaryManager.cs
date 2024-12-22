@@ -2,10 +2,10 @@
 
 namespace BlazingGidde.Client.Services
 {
-	public class DictionaryManager : APIRepository<DictionaryEntry>
+	public class DictionaryManager : APIRepository<DictionaryEntry, int>
 	{
 		public DictionaryManager(HttpClient _http)
-			: base(_http, "Patois", nameof(DictionaryEntry.Id))
+			: base(_http, "Patois")
 		{
 			
 		}

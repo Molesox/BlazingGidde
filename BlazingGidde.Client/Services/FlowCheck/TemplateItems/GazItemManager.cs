@@ -2,10 +2,10 @@
 
 namespace BlazingGidde.Client.Services.FlowCheck.TemplateItems
 {
-    public class GazItemManager : APIRepository<GazItem>
+    public class GazItemManager : APIRepository<GazItem, int>
     {
         public GazItemManager(HttpClient _http)
-            : base(_http, "GazItem", nameof(GazItem.Id))
+            : base(_http, "GazItem")
         { }
     }
 }

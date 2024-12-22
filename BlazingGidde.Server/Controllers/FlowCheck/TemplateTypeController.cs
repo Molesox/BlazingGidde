@@ -9,10 +9,10 @@ namespace BlazingGidde.Server.Controllers.FlowCheck;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class TemplateTypeController : BlazingGiddeBaseController<TemplateType, ApplicationDbContext>
+public class TemplateTypeController : BlazingGiddeBaseController<TemplateType, int, ApplicationDbContext>
 {
     public TemplateTypeController(IRepository<TemplateType> repository,
-     ILogger<BlazingGiddeBaseController<TemplateType, ApplicationDbContext>> logger)
+     ILogger<BlazingGiddeBaseController<TemplateType,int, ApplicationDbContext>> logger)
      : base(repository, logger)
     {
     }

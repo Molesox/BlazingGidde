@@ -1,12 +1,16 @@
 using Microsoft.AspNetCore.Components;
 using System.Linq.Expressions;
 using BlazingGidde.Shared.Repository;
+using BlazingGidde.Client.Services;
+using Microsoft.EntityFrameworkCore.Metadata;
+using BlazingGidde.Shared.Models;
 namespace BlazingGidde.Client.Shared;
 
 
-public partial class GenericGrid<TEntity> : ComponentBase where TEntity : class, new()
+public partial class GenericGrid<TEntity, Tkey> : ComponentBase 
+where TEntity : class, IModelBase<Tkey>, new()
 {
-    [Parameter] public IRepository<TEntity> Repository { get; set; } = default!;
+    [Parameter] public APIRepository<TEntity, Tkey, TEntity, TEntity, TEntity, TEntity, TEntity> Repository { get; set; } = default!;
     [Parameter] public string Title { get; set; } = "Data Grid";
     [Parameter] public List<ColumnDefinition<TEntity>> Columns { get; set; } = new();
     [Parameter] public RenderFragment<TEntity>? EditFormTemplate { get; set; }
@@ -168,7 +172,7 @@ public partial class GenericGrid<TEntity> : ComponentBase where TEntity : class,
 
     private async Task DeleteItem(TEntity entity)
     {
-        await Repository.Delete(entity);
+        await Repository.Delete(entity.Id);
         await LoadData();
     }
 

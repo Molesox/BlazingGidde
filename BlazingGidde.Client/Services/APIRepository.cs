@@ -1,263 +1,229 @@
 ﻿using BlazingGidde.Shared.API;
+using BlazingGidde.Shared.DTOs;
+using BlazingGidde.Shared.DTOs.Common;
+using BlazingGidde.Shared.Models;
 using BlazingGidde.Shared.Repository;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-
 namespace BlazingGidde.Client.Services
 {
-	public class APIRepository<TEntity> : IRepository<TEntity>
-		where TEntity : class
+	public class APIRepository<TEntity, Tkey, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoResponse>
+		: IApiRepository<TEntity, Tkey, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoResponse>
+		where TEntity : class, IModelBase<Tkey>
+		where TReadDto : class
+		where TCreateDto : class
+		where TUpdateDto : class
+		where TCreateDtoResponse : class
+		where TUpdateDtoResponse : class
 	{
-		protected string controllerName;
-		protected HttpClient http;
-		protected string primaryKeyName;
+		protected readonly string controllerName;
+		protected readonly HttpClient http;
 
-		public APIRepository(HttpClient _http, string _controllerName, string _primaryKeyName)
+		public APIRepository(HttpClient _http, string _controllerName)
 		{
 			http = _http;
 			controllerName = _controllerName;
-			primaryKeyName = _primaryKeyName;
 		}
 
-		public async Task<IEnumerable<TEntity>> GetAll()
+		public async Task<IEnumerable<TReadDto>> GetAll()
 		{
-			try
-			{
-				var result = await http.GetAsync(controllerName);
-				result.EnsureSuccessStatusCode();
-
-				var responseBody = await result.Content.ReadAsStringAsync();
-				var response = JsonSerializer.Deserialize<APIListOfEntityResponse<TEntity>>(responseBody, new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
-
-				if (response is not null && response.Success)
+            try
+            {
+				var response = await http.GetFromJsonAsync<APIListOfEntityResponse<TReadDto>>(controllerName);
+				if (response?.Success == true)
 				{
 					return response.Items;
 				}
-
-				return new List<TEntity>();
+				return Enumerable.Empty<TReadDto>();
 			}
 			catch (Exception)
-			{
-				return new List<TEntity>();
+            {
+				// Optionally log the exception
+				return Enumerable.Empty<TReadDto>();
 			}
 		}
 
-		public async Task<TEntity?> GetByID(object id)
+		public async Task<TReadDto?> GetByID(object id)
 		{
-			try
-			{
+            try
+            {
 				var encodedId = WebUtility.HtmlEncode(id.ToString());
-				var url = @$"{controllerName}/{encodedId}";
-
-				var result = await http.GetAsync(url);
-				result.EnsureSuccessStatusCode();
-
-				var responseBody = await result.Content.ReadAsStringAsync();
-				var response = JsonSerializer.Deserialize<APIEntityResponse<TEntity>>(responseBody, new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
-
-				if (response is not null && response.Success)
+				var url = $"{controllerName}/{encodedId}";
+				var response = await http.GetFromJsonAsync<APIEntityResponse<TReadDto>>(url);
+				if (response?.Success == true)
 				{
 					return response.Items;
 				}
-
-				return null;
+				return default;
 			}
 			catch (Exception)
-			{
-				return null;
+            {
+				// Optionally log the exception
+				return default;
 			}
 		}
 
 		public async Task<IEnumerable<TEntity>> Get(LinqQueryFilter<TEntity> linqQueryFilter)
 		{
-			try
-			{
+            try
+            {
 				var url = $"{controllerName}/getwithLinqfilter";
-				var result = await http.PostAsJsonAsync(url, linqQueryFilter);
-				result.EnsureSuccessStatusCode();
+				var response = await http.PostAsJsonAsync(url, linqQueryFilter);
+				response.EnsureSuccessStatusCode();
 
-				var responseBody = await result.Content.ReadAsStringAsync();
-				var response = JsonSerializer.Deserialize<APIListOfEntityResponse<TEntity>>(responseBody, new JsonSerializerOptions
+				var responseBody = await response.Content.ReadAsStringAsync();
+				var apiResponse = JsonSerializer.Deserialize<APIListOfEntityResponse<TEntity>>(responseBody, new JsonSerializerOptions
 				{
 					PropertyNameCaseInsensitive = true
 				});
 
-				if (response is not null && response.Success)
+				if (apiResponse?.Success == true)
 				{
-					return response.Items;
+					return apiResponse.Items;
 				}
-
-				return new List<TEntity>();
+				return Enumerable.Empty<TEntity>();
 			}
 			catch (Exception)
-			{
-				return new List<TEntity>();
+            {
+				// Optionally log the exception
+				return Enumerable.Empty<TEntity>();
 			}
 		}
+
 		public async Task<int> GetTotalCount(LinqQueryFilter<TEntity> linqQueryFilter)
 		{
-			try
-			{
+            try
+            {
 				var url = $"{controllerName}/GetTotalCount";
-				var result = await http.PostAsJsonAsync(url, linqQueryFilter);
-				result.EnsureSuccessStatusCode();
+				var response = await http.PostAsJsonAsync(url, linqQueryFilter);
+				response.EnsureSuccessStatusCode();
 
-				var responseBody = await result.Content.ReadAsStringAsync();
-				var response = JsonSerializer.Deserialize<int>(responseBody, new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
-				return response;
+				var apiResponse = await response.Content.ReadFromJsonAsync<APIEntityResponse<CountDto>>();
+
+				return apiResponse?.Success == true ? apiResponse.Items?.Counter ?? 0 : 0;
 			}
 			catch (Exception)
-			{
+            {
+				// Optionally log the exception
 				return 0;
 			}
 		}
+
 		public async Task<IEnumerable<TEntity>> Get(QueryFilter<TEntity> queryFilter)
 		{
-			try
-			{
+            try
+            {
 				var url = $"{controllerName}/getwithfilter";
-				var result = await http.PostAsJsonAsync(url, queryFilter);
-				result.EnsureSuccessStatusCode();
+				var response = await http.PostAsJsonAsync(url, queryFilter);
+				response.EnsureSuccessStatusCode();
 
-				var responseBody = await result.Content.ReadAsStringAsync();
-				var response = JsonSerializer.Deserialize<APIListOfEntityResponse<TEntity>>(responseBody, new JsonSerializerOptions
+				var responseBody = await response.Content.ReadAsStringAsync();
+				var apiResponse = JsonSerializer.Deserialize<APIListOfEntityResponse<TEntity>>(responseBody, new JsonSerializerOptions
 				{
 					PropertyNameCaseInsensitive = true
 				});
 
-				if (response is not null && response.Success)
+				if (apiResponse?.Success == true)
 				{
-					return response.Items;
+					return apiResponse.Items;
 				}
-
-				return new List<TEntity>();
+				return [];
 			}
 			catch (Exception)
-			{
-				return new List<TEntity>();
+            {
+				// Optionally log the exception
+				return [];
 			}
 		}
 
-		public async Task<TEntity?> Insert(TEntity entity)
+		public async Task<TCreateDtoResponse?> Insert(TCreateDto createDto)
 		{
-			try
-			{
-				var result = await http.PostAsJsonAsync(controllerName, entity);
-				result.EnsureSuccessStatusCode();
+            try
+            {
+				var response = await http.PostAsJsonAsync(controllerName, createDto);
+				response.EnsureSuccessStatusCode();
 
-				var responseBody = await result.Content.ReadAsStringAsync();
-				var response = JsonSerializer.Deserialize<APIEntityResponse<TEntity>>(responseBody, new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
+				var apiResponse = await response.Content.ReadFromJsonAsync<APIEntityResponse<TCreateDtoResponse>>();
 
-				if (response is not null && response.Success)
+				if (apiResponse?.Success == true)
 				{
-					return response.Items!;
+					return apiResponse.Items;
 				}
-
-				return null;
+				return default;
 			}
 			catch (Exception)
-			{
-				return null;
+            {
+				// Optionally log the exception
+				return default;
 			}
 		}
 
-		public virtual async Task<TEntity?> Update(TEntity entityToUpdate)
+		public async Task<TUpdateDtoResponse?> Update(TUpdateDto updateDto)
 		{
-			try
-			{
-				var result = await http.PutAsJsonAsync(controllerName, entityToUpdate);
-				result.EnsureSuccessStatusCode();
+            try
+            {
+				var url = $"{controllerName}";
+				var response = await http.PutAsJsonAsync(url, updateDto);
+				response.EnsureSuccessStatusCode();
 
-				var responseBody = await result.Content.ReadAsStringAsync();
-				var response = JsonSerializer.Deserialize<APIEntityResponse<TEntity>>(responseBody, new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
+				var apiResponse = await response.Content.ReadFromJsonAsync<APIEntityResponse<TUpdateDtoResponse>>();
 
-				if (response is not null && response.Success)
+				if (apiResponse?.Success == true)
 				{
-					return response.Items!;
+					return apiResponse.Items;
 				}
-
-				return null;
+				return default;
 			}
 			catch (Exception)
-			{
-				return null;
-			}
-		}
-
-		public async Task<bool> Delete(TEntity entityToDelete)
-		{
-			try
-			{
-				var idFromEntity = default(string);
-
-				var property = entityToDelete.GetType().GetProperty(primaryKeyName);
-
-				if (property is not null)
-				{
-					var propertyValue = property.GetValue(entityToDelete);
-					idFromEntity = propertyValue?.ToString();
-				}
-
-				if (idFromEntity is null)
-				{
-					throw new Exception("Id missing from entity");
-				}
-
-				var encodedID = WebUtility.HtmlEncode(idFromEntity);
-				var url = $@"{controllerName}/{encodedID}";
-
-				var result = await http.DeleteAsync(url);
-				result.EnsureSuccessStatusCode();
-
-				return true;
-			}
-			catch (Exception)
-			{
-				return false;
+            {
+				// Optionally log the exception
+				return default;
 			}
 		}
 
 		public async Task<bool> Delete(object id)
 		{
-			try
-			{
+            try
+            {
 				var encodedID = WebUtility.HtmlEncode(id.ToString());
-				var url = @$"{controllerName}/{encodedID}";
-
-				var result = await http.DeleteAsync(url);
-				result.EnsureSuccessStatusCode();
+				var url = $"{controllerName}/{encodedID}";
+				var response = await http.DeleteAsync(url);
+				response.EnsureSuccessStatusCode();
 
 				return true;
 			}
 			catch (Exception)
-			{
+            {
+				// Optionally log the exception
 				return false;
 			}
 		}
 
-		public IQueryable<TEntity> GetAllQueryable()
-		{
-			// IQueryable cannot be used across API boundaries.
-			throw new InvalidOperationException(
-				@"IQueryable cannot be used in the API repository.
-				 Use the LinqQueryFilter or a similar mechanism to perform filtering over HTTP.");
-		}
+
 	}
+
+
+    public class APIRepository<TEntity, Tkey, TReadDto>
+        : APIRepository<TEntity, Tkey, TReadDto, TReadDto, TReadDto, TReadDto, TReadDto>
+        where TEntity : class, IModelBase<Tkey>
+        where TReadDto : class, IReadDto<Tkey>
+
+
+    {
+        public APIRepository(HttpClient _http, string _controllerName) :
+		 base(_http, _controllerName)
+        {
+        }
+    }
+	 public class APIRepository<TEntity, Tkey>
+        : APIRepository<TEntity, Tkey, TEntity, TEntity, TEntity, TEntity, TEntity>
+        where TEntity : class, IModelBase<Tkey>
+    {
+        public APIRepository(HttpClient _http, string _controllerName) :
+		 base(_http, _controllerName)
+        {
+        }
+    }
 }

@@ -3,17 +3,20 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using BlazingGidde.Server.Data.Repository;
 using BlazingGidde.Server.Data;
+using BlazingGidde.Shared.Models.Identity;
+using BlazingGidde.Shared.Repository;
+using BlazingGidde.Shared.Models.FlowCheck;
 
 namespace BlazingGidde.Server.Controllers.Identity
 {
 
-    [ApiController]
+	[ApiController]
 	[Route("[controller]")]
 	[Authorize]
-	public class AppRolesController : BlazingGiddeBaseController<IdentityRole, ApplicationDbContext>
+	public class AppRolesController : BlazingGiddeBaseController<FlowRole, string, ApplicationDbContext>
 	{
-		public AppRolesController(RepositoryRole repository,
-			ILogger<BlazingGiddeBaseController<IdentityRole, ApplicationDbContext>> logger
+		public AppRolesController(IRepository<FlowRole> repository,
+			ILogger<BlazingGiddeBaseController<FlowRole, string, ApplicationDbContext>> logger
 		)
 			: base(repository, logger)
 		{

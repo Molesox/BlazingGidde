@@ -6,6 +6,7 @@ using BlazingGidde.Shared.Models.PersonMain;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using BlazingGidde.Shared.Models.Identity;
 
 namespace BlazingGidde.Server.Data
 {
@@ -33,6 +34,7 @@ namespace BlazingGidde.Server.Data
 
 		public virtual DbSet<CustomTemplateItem> CustomTemplateItems { get; set; }
 		public virtual DbSet<FlowUser> FlowUsers { get; set; }
+		public virtual DbSet<FlowRole> FlowRoq { get; set; }
 		public virtual DbSet<Incidency> Incidencies { get; set; }
 		public virtual DbSet<Template> Templates { get; set; }
 		public virtual DbSet<TemplateItem> TemplateItems { get; set; }
@@ -47,13 +49,16 @@ namespace BlazingGidde.Server.Data
 
 		public virtual DbSet<DictionaryEntry> DictionaryEntries { get; set; }
 
-		#endregion
+        #endregion
 
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
-			.LogTo(Console.WriteLine)
-			.EnableSensitiveDataLogging();
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder
+            .LogTo(Console.WriteLine)
+            .EnableSensitiveDataLogging();
+        }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 

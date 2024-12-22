@@ -15,7 +15,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// Gets or sets the code.
         /// </summary>
         [Required]
-        [StringLength(1)]
+        [StringLength(2)]
         public string Code { get; set; } = string.Empty;
 
         /// <summary>
