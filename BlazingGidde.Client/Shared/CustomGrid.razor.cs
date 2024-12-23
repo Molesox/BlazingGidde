@@ -6,6 +6,7 @@ using BlazorBootstrap;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Query;
 using AgileObjects.AgileMapper;
+using AgileObjects.AgileMapper.Extensions;
 
 namespace BlazingGidde.Client.Shared;
 
@@ -19,7 +20,7 @@ public partial class CustomGrid<TEntity, Tkey, TReadDto, TCreateDto> : Component
 	[Parameter] public RenderFragment GridColumns { get; set; }
 	[Parameter] public string Title { get; set; } = "Item";
 
-	private bool showModal = false;
+	private Modal modal = default!;
 	private bool isEditMode = false;
 	private TCreateDto? selectedItem = default!;
 
@@ -53,23 +54,25 @@ public partial class CustomGrid<TEntity, Tkey, TReadDto, TCreateDto> : Component
 		};
 	}
 
-	private void OpenAddModal()
+	private async Task OpenAddModal()
 	{
 		isEditMode = false;
-		selectedItem = Mapper.Map(default(TEntity)).ToANew<TCreateDto>();
-		showModal = true;
+		var e = Activator.CreateInstance<TEntity>();
+		selectedItem = e.Map().ToANew<TCreateDto>();
+
+		await modal?.ShowAsync();
 	}
 
 	private async Task OpenEditModal(TReadDto item)
 	{
 		isEditMode = true;
 		selectedItem = Mapper.Map(item).ToANew<TCreateDto>();
-		showModal = true;
+		await modal?.ShowAsync();
 	}
 
-	private void CloseModal()
+	private async Task CloseModal()
 	{
-		showModal = false;
+		await modal?.HideAsync();
 		selectedItem = default;
 	}
 

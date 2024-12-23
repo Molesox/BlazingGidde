@@ -1,47 +1,55 @@
-﻿<h3>CustomGrid</h3>
+﻿<h3>@Title</h3>
 
 @typeparam TEntity
 @typeparam Tkey
 @typeparam TReadDto
 @typeparam TCreateDto
 
-<div>
-    <button class="btn btn-primary mb-3" @onclick="OpenAddModal">Add</button>
-    <Grid TItem="TReadDto" Class="table table-hover table-bordered table-striped" DataProvider="DataProvider"
-          AllowFiltering="true" AllowPaging="true" AllowSorting="true" Responsive="true">
-        <GridColumns>
-            @GridColumns
-            <GridColumn TItem="TReadDto" HeaderText="Actions">
-                <ChildContent Context="item">
-                    <button class="btn btn-sm btn-secondary me-2" @onclick="() => OpenEditModal(item)">Edit</button>
-                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteItem(item)">Delete</button>
-                </ChildContent>
-            </GridColumn>
-        </GridColumns>
-    </Grid>
-
-    <div class="modal fade @(showModal ? "show d-block" : "")" tabindex="-1" style="background: rgba(0,0,0,0.5);" @onclick="CloseModal">
-        <div class="modal-dialog" @onclick:stopPropagation>
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">@((isEditMode ? "Edit" : "Add") + " " + Title)</h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
-                </div>
-                <div class="modal-body">
-                    @if (EditFormTemplate is not null && selectedItem is not null)
-                    {
-	                    <EditForm Model="selectedItem" OnValidSubmit="SaveItem">
-		                    <DataAnnotationsValidator />
-		                    @EditFormTemplate(selectedItem)
-		                    <div class="modal-footer">
-			                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CloseModal">Close</Button>
-			                    <Button Color="ButtonColor.Primary" Type="ButtonType.Submit"  Outline="true">Save</Button>
-		                    </div>
-	                    </EditForm>
-                    }
-                </div>
-   
-            </div>
+<div class="mb-4">
+    <div class="d-flex justify-content-between">
+        <div>
+        </div>
+        <div>
+            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="OpenAddModal">
+                <Icon Name="IconName.PlusCircle" Class="me-2" />Add @Title
+            </Button>
         </div>
     </div>
 </div>
+
+<Grid TItem="TReadDto" Class="table table-hover table-bordered table-striped" DataProvider="DataProvider"
+    AllowFiltering="true" AllowPaging="true" AllowSorting="true" Responsive="true">
+    <GridColumns>
+        @GridColumns
+        <GridColumn TItem="TReadDto" HeaderText="Actions" Width="150px">
+            <ChildContent Context="item">
+                <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" Class="me-2"
+                    @onclick="() => OpenEditModal(item)">
+                    <Icon Name="IconName.Pencil" />
+                </Button>
+                <Button Color="ButtonColor.Danger" Size="ButtonSize.Small" @onclick="() => DeleteItem(item)">
+                    <Icon Name="IconName.Basket" />
+                </Button>
+            </ChildContent>
+        </GridColumn>
+    </GridColumns>
+</Grid>
+
+<Modal @ref="modal" Title="@((isEditMode ? "Edit" : "Add") + " " + Title)" Size="ModalSize.Large"
+    OnHide="CloseModal">
+    <BodyTemplate>
+        <EditForm Model="selectedItem" OnValidSubmit="SaveItem">
+            <DataAnnotationsValidator />
+            @EditFormTemplate(selectedItem)
+            <div class="mt-3 d-flex justify-content-end">
+                <Button Color="ButtonColor.Secondary" Variant="Outline" Class="me-2" @onclick="CloseModal">
+                    <Icon Name="IconName.XCircle" Class="me-1" />Close
+                </Button>
+                <Button Color="ButtonColor.Primary" Variant="Outline" Type="ButtonType.Submit">
+                    <Icon Name="IconName.Save" Class="me-1" />Save
+                </Button>
+            </div>
+        </EditForm>
+    </BodyTemplate>
+
+</Modal>
