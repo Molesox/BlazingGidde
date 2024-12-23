@@ -38,51 +38,47 @@
         <GridColumn TItem="PersonDto" HeaderText="Culture" PropertyName="Culture">
             <ChildContent Context="item">@item.Culture</ChildContent>
         </GridColumn>
-        
-         
-        
- 
-        
+
  
     </GridColumns>
 
     <EditFormTemplate Context="person">
-        <div class="container-fluid p-3">
-            <h5 class="mb-3">Person Details</h5>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Person ID</label>
-                    <InputNumber class="form-control" @bind-Value="person.PersonId" />
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">First Name</label>
-                    <InputText class="form-control" @bind-Value="person.FirstName" />
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Last Name</label>
-                    <InputText class="form-control" @bind-Value="person.LastName" />
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Title</label>
-                    <InputText class="form-control" @bind-Value="person.Title" />
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Culture</label>
-                    <InputText class="form-control" @bind-Value="person.Culture" />
-                </div>
-              
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Remarks</label>
-                    <InputText class="form-control" @bind-Value="person.Remarks" />
-                </div>
-              
-            </div>
-        </div>
+
+	    <div class="container-fluid p-3">
+		    <h5 class="mb-3">Person Details</h5>
+		    <div class="row mb-3">
+			    <div class="col-md-6">
+				    <label class="form-label fw-bold">Person ID</label>
+				    <InputNumber class="form-control" @bind-Value="person.PersonId"/>
+			    </div>
+			    <div class="col-md-6">
+				    <label class="form-label fw-bold">First Name</label>
+				    <InputText class="form-control" @bind-Value="person.FirstName"/>
+			    </div>
+		    </div>
+		    <div class="row mb-3">
+			    <div class="col-md-6">
+				    <label class="form-label fw-bold">Last Name</label>
+				    <InputText class="form-control" @bind-Value="person.LastName"/>
+			    </div>
+			    <div class="col-md-6">
+				    <label class="form-label fw-bold">Title</label>
+				    <InputText class="form-control" @bind-Value="person.Title"/>
+			    </div>
+		    </div>
+		    <div class="row mb-3">
+			    <div class="col-md-6">
+				    <label class="form-label fw-bold">Culture</label>
+				    <InputText class="form-control" @bind-Value="person.Culture"/>
+			    </div>
+
+		    </div>
+		    <div class="row mb-3">
+			    <div class="col-md-6">
+				    <label class="form-label fw-bold">Remarks</label>
+				    <InputText class="form-control" @bind-Value="person.Remarks"/>
+			    </div>
+		    </div>
+	    </div>
     </EditFormTemplate>
 </CustomGrid>

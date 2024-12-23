@@ -4,6 +4,8 @@
 @using BlazingGidde.Shared.Models.Identity
 @using BlazingGidde.Shared.Models.Patois
 @using BlazingGidde.Shared.DTOs.Common
+@using BlazingGidde.Shared.DTOs.FlowCheck
+@using BlazingGidde.Shared.DTOs.FlowCheck.Request
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 
@@ -16,145 +18,155 @@
 <PageTitle>Application Users</PageTitle>
 
 <CustomGrid TEntity="FlowUser" Tkey="string" Repository="@UserManager"
- TCreateDto="FlowUser" TUpdateDto="FlowUser"
-    TReadDto="FlowUser">
+ TCreateDto="CreateFlowUserDto" TReadDto="FlowUserDto">
 
     <GridColumns>
         <!-- ID Column -->
-        <GridColumn TItem="FlowUser" HeaderText="ID" PropertyName="Id">
+        <GridColumn TItem="FlowUserDto" HeaderText="ID" PropertyName="Id">
             <ChildContent Context="item">@item.Id</ChildContent>
         </GridColumn>
 
         <!-- User Name Column -->
-        <GridColumn TItem="FlowUser" HeaderText="User Name" PropertyName="UserName">
-            <ChildContent Context="item">@item.UserName</ChildContent>
+        <GridColumn TItem="FlowUserDto" HeaderText="User Name" PropertyName="UserName">
+	        <ChildContent Context="item">@item.PersonLastName</ChildContent>
+        </GridColumn>
+
+        <GridColumn TItem="FlowUserDto" HeaderText="User Name" PropertyName="UserName">
+	        <ChildContent Context="item">@item.PersonFirstName</ChildContent>
         </GridColumn>
 
         <!-- Email Column -->
-        <GridColumn TItem="FlowUser" HeaderText="Email" PropertyName="Email">
+        <GridColumn TItem="FlowUserDto" HeaderText="Email" PropertyName="Email">
             <ChildContent Context="item">@item.Email</ChildContent>
         </GridColumn>
 
         <!-- Phone Number Column -->
-        <GridColumn TItem="FlowUser" HeaderText="Phone Number" PropertyName="PhoneNumber">
+        <GridColumn TItem="FlowUserDto" HeaderText="Phone Number" PropertyName="PhoneNumber">
             <ChildContent Context="item">@item.PhoneNumber</ChildContent>
         </GridColumn>
 
         <!-- Lockout Enabled Column -->
-        <GridColumn TItem="FlowUser" HeaderText="Lockout Enabled" PropertyName="LockoutEnabled">
+        <GridColumn TItem="FlowUserDto" HeaderText="Lockout Enabled" PropertyName="LockoutEnabled">
             <ChildContent Context="item">@item.LockoutEnabled</ChildContent>
         </GridColumn>
 
         <!-- Two-Factor Enabled Column -->
-        <GridColumn TItem="FlowUser" HeaderText="Two-Factor Enabled" PropertyName="TwoFactorEnabled">
+        <GridColumn TItem="FlowUserDto" HeaderText="Two-Factor Enabled" PropertyName="TwoFactorEnabled">
             <ChildContent Context="item">@item.TwoFactorEnabled</ChildContent>
         </GridColumn>
 
-        <!-- Actions Column -->
-        @* <GridColumn TItem="FlowUser" HeaderText="Actions">
-            <ChildContent Context="item">
-                <button class="btn btn-primary btn-sm me-2" @onclick="() => EditUser(item)">
-                    <span class="material-icons">edit</span>
-                </button>
-                <button class="btn btn-danger btn-sm" @onclick="() => DeleteUser(item.Id)">
-                    <span class="material-icons">delete</span>
-                </button>
-            </ChildContent>
-        </GridColumn> *@
+        
     </GridColumns>
 
     <EditFormTemplate Context="user">
-        <div class="card">
-            <div class="card-header">
-                <h5>User Information</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">User Name</label>
-                            <InputText class="form-control" @bind-Value="user.UserName" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <InputText class="form-control" @bind-Value="user.Email" type="email" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Phone Number</label>
-                            <InputText class="form-control" @bind-Value="user.PhoneNumber" />
-                        </div>
+    <div class="card">
+        <div class="card-header">
+            <h5>User Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Column 1 -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Id</label>
+                        <InputText class="form-control" @bind-Value="user.Id"/>
                     </div>
-                    <div class="col-md-6">
-                        <div class="mb-3 form-check">
-                            <InputCheckbox class="form-check-input" @bind-Value="user.LockoutEnabled" />
-                            <label class="form-check-label">Lockout Enabled</label>
-                        </div>
-                        <div class="mb-3 form-check">
-                            <InputCheckbox class="form-check-input" @bind-Value="user.TwoFactorEnabled" />
-                            <label class="form-check-label">Two-Factor Authentication Enabled</label>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <InputText class="form-control" @bind-Value="user.PersonTitle"/>
+                        <ValidationMessage For="@(() => user.PersonTitle)" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        <InputText class="form-control" @bind-Value="user.PersonFirstName"/>
+                        <ValidationMessage For="@(() => user.PersonFirstName)" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <InputText class="form-control" @bind-Value="user.PhoneNumber"/>
+                        <ValidationMessage For="@(() => user.PhoneNumber)" />
+                    </div>
+                </div>
+                <!-- Column 2 -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Culture</label>
+                        <InputText class="form-control" @bind-Value="user.PersonCulture"/>
+                        <ValidationMessage For="@(() => user.PersonCulture)" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        <InputText class="form-control" @bind-Value="user.PersonLastName"/>
+                        <ValidationMessage For="@(() => user.PersonLastName)" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <InputText class="form-control" @bind-Value="user.Email" type="email"/>
+                        <ValidationMessage For="@(() => user.Email)" />
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="card mt-4">
-            <div class="card-header">
-                <h5>Role Management</h5>
-            </div>
-            <div class="card-body">
-                <div>
-                    <h6>Assign Role</h6>
-                    <div class="input-group mb-3">
-                        <InputSelect class="form-control" @bind-Value="selectedRole">
-                            <option value="" disabled>Select a Role</option>
-                            @if (_roles != null)
-                            {
-                                @foreach (var role in _roles)
-                                {
-                                    <option value="@role.Name">@role.Name</option>
-                                }
-                            }
-                        </InputSelect>
-                        <button class="btn btn-primary" @onclick="() => AssignRole(user.Id)">Assign</button>
-                    </div>
-                </div>
-
-                <div>
-                    <h6>Current Roles</h6>
-                    @if (userRoles.ContainsKey(user.Id) && userRoles[user.Id].Any())
-                    {
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Role</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var role in userRoles[user.Id])
-                                {
-                                    <tr>
-                                        <td>@role</td>
-                                        <td>
-
-                                            <button class="btn btn-danger btn-sm" @onclick="() => RemoveRole(user.Id, role)">
-                                                <span class="material-icons">delete</span>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                    else
-                    {
-                        <p>No roles assigned.</p>
-                    }
-                </div>
-            </div>
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Role Management</h5>
         </div>
-    </EditFormTemplate>
+        <div class="card-body">
+            <div>
+                <h6>Assign Role</h6>
+                <div class="input-group mb-3">
+                    <InputSelect class="form-control" @bind-Value="selectedRole">
+                        <option value="" disabled>Select a Role</option>
+                        @if (_roles != null)
+							{
+								@foreach (var role in _roles)
+								{
+										<option value="@role.Name">@role.Name</option>
+								}
+							}
+					</InputSelect>
+					<button class="btn btn-primary" @onclick="() => AssignRole(user.Id)">Assign</button>
+				</div>
+			</div>
+
+			<div>
+				<h6>Current Roles</h6>
+					@if (userRoles.ContainsKey(user.Id) && userRoles[user.Id].Any())
+					{
+						<table class="table">
+							<thead>
+							<tr>
+								<th>Role</th>
+								<th>Actions</th>
+							</tr>
+							</thead>
+							<tbody>
+								@foreach (var role in userRoles[user.Id])
+								{
+									<tr>
+										<td>@role</td>
+										<td>
+											<button class="btn btn-danger btn-sm" @onclick="() => RemoveRole(user.Id, role)">
+												<span class="material-icons">delete</span>
+											</button>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					}
+					else
+					{
+						<p>No roles assigned.</p>
+					}
+			</div>
+		</div>
+	</div>
+</EditFormTemplate>
+
+
 </CustomGrid>
 
 @code {

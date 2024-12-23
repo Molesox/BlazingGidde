@@ -223,10 +223,9 @@ namespace BlazingGidde.Client.Services
 
 
 	}
-
-
+	
     public class APIRepository<TEntity, Tkey, TReadDto, TCreateDto>
-        : APIRepository<TEntity, Tkey, TReadDto, TCreateDto, TReadDto, TReadDto, TReadDto>
+        : APIRepository<TEntity, Tkey, TReadDto, TCreateDto, TCreateDto, TReadDto, TReadDto>
         where TEntity : class, IModelBase<Tkey>
         where TReadDto : class, IReadDto<Tkey>
 		where TCreateDto : class, IModelBase<Tkey>

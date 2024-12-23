@@ -5,138 +5,117 @@ using BlazingGidde.Shared.Repository;
 using BlazorBootstrap;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Query;
+using AgileObjects.AgileMapper;
 
 namespace BlazingGidde.Client.Shared;
 
 public partial class CustomGrid<TEntity, Tkey, TReadDto, TCreateDto> : ComponentBase
-where TEntity : class, IModelBase<Tkey>
-where TReadDto : class, IModelBase<Tkey>
-where TCreateDto : class, IModelBase<Tkey>
+	where TEntity : class, IModelBase<Tkey>
+	where TReadDto : class, IModelBase<Tkey>
+	where TCreateDto : class, IModelBase<Tkey>
 {
-    [Parameter] public IApiRepository<TEntity, Tkey, TReadDto, TCreateDto, TReadDto, TReadDto, TReadDto> Repository { get; set; } = default!;
+	[Parameter] public IApiRepository<TEntity, Tkey, TReadDto, TCreateDto, TCreateDto, TReadDto, TReadDto> Repository { get; set; } = default!;
+	[Parameter] public RenderFragment<TCreateDto>? EditFormTemplate { get; set; }
+	[Parameter] public RenderFragment GridColumns { get; set; }
+	[Parameter] public string Title { get; set; } = "Item";
 
-    [Parameter] public RenderFragment<TCreateDto>? EditFormTemplate { get; set; }
+	private bool showModal = false;
+	private bool isEditMode = false;
+	private TCreateDto? selectedItem = default!;
 
-    [Parameter] public RenderFragment GridColumns { get; set; }
+	private async Task<GridDataProviderResult<TReadDto>> DataProvider(GridDataProviderRequest<TReadDto> request)
+	{
+		string sortString = request.Sorting?.FirstOrDefault()?.SortString ?? "";
+		SortDirection sortDirection = request.Sorting?.FirstOrDefault()?.SortDirection ?? SortDirection.None;
 
-    [Parameter] public string Title { get; set; } = "Item";
-    // Modal
-    private bool showModal = false;
-    private bool isEditMode = false;
+		var query = new QueryFilter<TEntity>
+		{
+			OrderByDescending = sortDirection == SortDirection.Descending,
+			OrderByPropertyName = sortString,
+			FilterProperties = request.Filters.Select(filter => new FilterProperty
+			{
+				CaseSensitive = false,
+				Name = filter.PropertyName,
+				Operator = MapFilterOperator(filter.Operator) ?? QueryFilterOperator.Contains,
+				Value = filter.Value
+			}).ToList(),
+			PageSize = request.PageSize,
+			PageNumber = request.PageNumber
+		};
 
-    private TCreateDto? selectedItem = default!;
+		var result = await Repository.Get(query);
+		result.Items ??= new List<TReadDto>();
 
-    private async Task<GridDataProviderResult<TReadDto>> DataProvider(GridDataProviderRequest<TReadDto> request)
-    {
-        string sortString = "";
-        SortDirection sortDirection = SortDirection.None;
+		return new GridDataProviderResult<TReadDto>
+		{
+			Data = result.Items,
+			TotalCount = result.TotalCount
+		};
+	}
 
-        if (request.Sorting is not null && request.Sorting.Any())
-        {
-            // Note: Multi column sorting is not supported at this moment
-            sortString = request.Sorting.FirstOrDefault()!.SortString;
-            sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
-        }
+	private void OpenAddModal()
+	{
+		isEditMode = false;
+		selectedItem = Mapper.Map(default(TEntity)).ToANew<TCreateDto>();
+		showModal = true;
+	}
 
-        var query = new QueryFilter<TEntity>()
-        {
-            OrderByDescending = sortDirection == SortDirection.Descending ? true : false,
-            OrderByPropertyName = sortString,
-            FilterProperties = new List<FilterProperty>(request.Filters.Count()),
-            PageSize = request.PageSize,
-            PageNumber = request.PageNumber
-        };
+	private async Task OpenEditModal(TReadDto item)
+	{
+		isEditMode = true;
+		selectedItem = Mapper.Map(item).ToANew<TCreateDto>();
+		showModal = true;
+	}
 
-        foreach (var filter in request.Filters)
-        {
-            var filterProperty = new FilterProperty()
-            {
-                CaseSensitive = false,
-                Name = filter.PropertyName,
-                Operator = MapFilterOperator(filter.Operator) ?? QueryFilterOperator.Contains,
-                Value = filter.Value
-            };
+	private void CloseModal()
+	{
+		showModal = false;
+		selectedItem = default;
+	}
 
-            query.FilterProperties.Add(filterProperty);
-        }
+	private async Task SaveItem()
+	{
+		if (selectedItem is null) return;
 
+		if (isEditMode)
+		{
+			var updateDto = Mapper.Map(selectedItem).ToANew<TCreateDto>();
+			await Repository.Update(updateDto);
+		}
+		else
+		{
+			var createDto = Mapper.Map(selectedItem).ToANew<TCreateDto>();
+			await Repository.Insert(createDto);
+		}
 
-        var result = await Repository.Get(query);
-        if (result.Items is null)
-        {
-            result.Items = new List<TReadDto>();
-        }
+		CloseModal();
+		await InvokeAsync(StateHasChanged); // Ensure the UI updates
+	}
 
-        return await Task.FromResult(new GridDataProviderResult<TReadDto> { Data = result.Items, TotalCount = result.TotalCount });
-    }
-   private void OpenAddModal()
-    {
-        isEditMode = false;
-        selectedItem = Activator.CreateInstance<TCreateDto>();
-        showModal = true;
-    }
+	private async Task DeleteItem(TReadDto item)
+	{
+		var idProperty = typeof(TReadDto).GetProperty("Id");
+		if (idProperty?.GetValue(item) is Tkey id)
+		{
+			await Repository.Delete(id);
+			await InvokeAsync(StateHasChanged); // Ensure the UI updates
+		}
+	}
 
-    private async Task OpenEditModal(TReadDto item)
-    {
-        isEditMode = true;
-        selectedItem = (TCreateDto)(object)item;
-        showModal = true;
-    }
-
-    private void CloseModal()
-    {
-        showModal = false;
-        selectedItem = default;
-    }
-
-    private void CloseModalOutside()
-    {
-        CloseModal();
-    }
-
-    private async Task SaveItem()
-    {
-        if (isEditMode && selectedItem is TReadDto updateDto)
-        {
-            await Repository.Update(updateDto);
-        }
-        else if (selectedItem is TCreateDto createDto)
-        {
-            await Repository.Insert(createDto);
-        }
-        showModal = false;
-        selectedItem = default;
-        await InvokeAsync(StateHasChanged); // Ensure the UI updates
-    }
-
-    private async Task DeleteItem(TReadDto item)
-    {
-        var idProperty = typeof(TReadDto).GetProperty("Id");
-        if (idProperty != null)
-        {
-            var id = idProperty.GetValue(item);
-            if (id != null)
-            {
-                await Repository.Delete(id);
-                    await InvokeAsync(StateHasChanged); // Ensure the UI updates
-            }
-        }
-    }
-
-    public static QueryFilterOperator? MapFilterOperator(FilterOperator sourceOperator)
-    {
-        return sourceOperator switch
-        {
-            FilterOperator.Equals => QueryFilterOperator.Equals,
-            FilterOperator.NotEquals => QueryFilterOperator.NotEquals,
-            FilterOperator.LessThan => QueryFilterOperator.LessThan,
-            FilterOperator.LessThanOrEquals => QueryFilterOperator.LessThanOrEqual,
-            FilterOperator.GreaterThan => QueryFilterOperator.GreaterThan,
-            FilterOperator.GreaterThanOrEquals => QueryFilterOperator.GreaterThanOrEqual,
-            FilterOperator.Contains => QueryFilterOperator.Contains,
-            FilterOperator.StartsWith => QueryFilterOperator.StartsWith,
-            FilterOperator.EndsWith => QueryFilterOperator.EndsWith,
-            _ => null // Handle unmapped cases as needed
-        };
-    }
+	public static QueryFilterOperator? MapFilterOperator(FilterOperator sourceOperator)
+	{
+		return sourceOperator switch
+		{
+			FilterOperator.Equals => QueryFilterOperator.Equals,
+			FilterOperator.NotEquals => QueryFilterOperator.NotEquals,
+			FilterOperator.LessThan => QueryFilterOperator.LessThan,
+			FilterOperator.LessThanOrEquals => QueryFilterOperator.LessThanOrEqual,
+			FilterOperator.GreaterThan => QueryFilterOperator.GreaterThan,
+			FilterOperator.GreaterThanOrEquals => QueryFilterOperator.GreaterThanOrEqual,
+			FilterOperator.Contains => QueryFilterOperator.Contains,
+			FilterOperator.StartsWith => QueryFilterOperator.StartsWith,
+			FilterOperator.EndsWith => QueryFilterOperator.EndsWith,
+			_ => null
+		};
+	}
 }
