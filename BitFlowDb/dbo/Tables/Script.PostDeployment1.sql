@@ -23,7 +23,6 @@ begin
 end
 go
 
-
 if not exists (select 1 from flowcheck.templatetype)
 begin
     insert into flowcheck.templatetype ([name], imgurl, code, updatedate, createdate, createuser, updateuser)

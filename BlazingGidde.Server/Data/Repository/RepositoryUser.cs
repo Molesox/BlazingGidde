@@ -44,18 +44,12 @@ namespace BlazingGidde.Server.Data.Repository
 			return await _userManager.FindByIdAsync(id.ToString() ?? string.Empty);
 		}
 
-		public async Task<IEnumerable<FlowUser>> Get(QueryFilter<FlowUser> queryFilter)
+		public async Task<(IEnumerable<FlowUser>,int)> Get(IQueryFilter<FlowUser> queryFilter)
 		{
-			var all = await _userManager.Users.ToListAsync();
-			return queryFilter.GetFilteredList(all);
+			return await queryFilter.GetFilteredList(_userManager.Users);
 		}
 
-		public async Task<IEnumerable<FlowUser>> Get(LinqQueryFilter<FlowUser> linqQueryFilter)
-		{
-			return await linqQueryFilter.GetFilteredList(_userManager.Users);
-		}
-
-		public async Task<int> GetTotalCount(LinqQueryFilter<FlowUser> queryFilter)
+		public async Task<int> GetTotalCount(IQueryFilter<FlowUser> queryFilter)
 		{
 			return await queryFilter.GetTotalCount(_userManager.Users);
 		}

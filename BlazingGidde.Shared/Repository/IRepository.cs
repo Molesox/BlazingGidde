@@ -33,10 +33,10 @@ namespace BlazingGidde.Shared.Repository
 		Task<IEnumerable<TEntity>> GetAll();
 
 		/// <summary>
-        /// Gets the repository as an IQueryable.
-        /// </summary>
-        /// <returns>An IQueryable of entities.</returns>
-        IQueryable<TEntity> GetQueryable();
+		/// Gets the repository as an IQueryable.
+		/// </summary>
+		/// <returns>An IQueryable of entities.</returns>
+		IQueryable<TEntity> GetQueryable();
 
 		/// <summary>
 		/// Gets an entity using its ID.
@@ -50,22 +50,14 @@ namespace BlazingGidde.Shared.Repository
 		/// </summary>
 		/// <param name="queryFilter">The query filter to use</param>
 		/// <returns>An IEnumerable of filtered entities.</returns>
-		Task<IEnumerable<TEntity>> Get(QueryFilter<TEntity> queryFilter);
-
-		/// <summary>
-		/// Gets entities based on a Expresion
-		/// </summary>
-		/// <param name="queryLinq">The expression to filter the entities</param>
-		/// <returns>An IEnumerable of filtered entities./returns>
-		Task<IEnumerable<TEntity>> Get(LinqQueryFilter<TEntity> linqQueryFilter);
+		Task<(IEnumerable<TEntity>, int)> Get(IQueryFilter<TEntity> queryFilter);
 
 		/// <summary>
 		/// Get total count of entities based on a query filter.
 		/// </summary>
 		/// <param name="queryFilter">The query filter to use</param>
 		/// <returns>The total count.</returns>
-		Task<int> GetTotalCount(LinqQueryFilter<TEntity> queryFilter);
-
+		Task<int> GetTotalCount(IQueryFilter<TEntity> queryFilter);
 
 		/// <summary>
 		/// Inserts a new entity into the repository.

@@ -1,6 +1,8 @@
 ﻿@page "/person"
 @using BlazingGidde.Client.Services
 @using BlazingGidde.Client.Shared
+@using BlazingGidde.Shared.DTOs.Person
+@using BlazingGidde.Shared.DTOs.Person.Request
 @using BlazingGidde.Shared.Models.PersonMain
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -10,9 +12,40 @@
 
 <PageTitle>Application Person</PageTitle>
 
-<GenericGrid TEntity="Person" Title="Persons" Tkey="int"
-             Repository="@personManager"
-             Columns="@myColumns">
+<CustomGrid TEntity="Person" Tkey="int" Repository="@personManager" TCreateDto="CreatePersonDto" TReadDto="PersonDto" >
+  <GridColumns>
+        <!-- Person ID Column -->
+        <GridColumn TItem="PersonDto" HeaderText="Person ID" PropertyName="PersonId">
+            <ChildContent Context="item">@item.PersonId</ChildContent>
+        </GridColumn>
+        
+        <!-- First Name Column -->
+        <GridColumn TItem="PersonDto" HeaderText="First Name" PropertyName="FirstName">
+            <ChildContent Context="item">@item.FirstName</ChildContent>
+        </GridColumn>
+        
+        <!-- Last Name Column -->
+        <GridColumn TItem="PersonDto" HeaderText="Last Name" PropertyName="LastName">
+            <ChildContent Context="item">@item.LastName</ChildContent>
+        </GridColumn>
+        
+        <!-- Title Column -->
+        <GridColumn TItem="PersonDto" HeaderText="Title" PropertyName="Title">
+            <ChildContent Context="item">@item.Title</ChildContent>
+        </GridColumn>
+        
+        <!-- Culture Column -->
+        <GridColumn TItem="PersonDto" HeaderText="Culture" PropertyName="Culture">
+            <ChildContent Context="item">@item.Culture</ChildContent>
+        </GridColumn>
+        
+         
+        
+ 
+        
+ 
+    </GridColumns>
+
     <EditFormTemplate Context="person">
         <div class="container-fluid p-3">
             <h5 class="mb-3">Person Details</h5>
@@ -41,40 +74,15 @@
                     <label class="form-label fw-bold">Culture</label>
                     <InputText class="form-control" @bind-Value="person.Culture" />
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">VAT Number</label>
-                    <InputText class="form-control" @bind-Value="person.VatNumber" />
-                </div>
+              
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Remarks</label>
                     <InputText class="form-control" @bind-Value="person.Remarks" />
                 </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Annual Revenue</label>
-                    <InputNumber class="form-control" @bind-Value="person.AnnualRevenue" />
-                </div>
+              
             </div>
         </div>
     </EditFormTemplate>
-</GenericGrid>
-
-@code {
-    private List<ColumnDefinition<Person>> myColumns = new();
-
-    protected override void OnInitialized()
-    {
-        myColumns = new List<ColumnDefinition<Person>>
-        {
-            new ColumnDefinition<Person>(x => x.PersonId, "Person ID", isEditable: true),
-            new ColumnDefinition<Person>(x => x.FirstName, "First Name", isEditable: true),
-            new ColumnDefinition<Person>(x => x.LastName, "Last Name", isEditable: true),
-            new ColumnDefinition<Person>(x => x.Title, "Title", isEditable: true),
-            new ColumnDefinition<Person>(x => x.Culture, "Culture", isEditable: true),
-            new ColumnDefinition<Person>(x => x.VatNumber, "VAT Number", isEditable: true),
-            new ColumnDefinition<Person>(x => x.Remarks, "Remarks", isEditable: true),
-            new ColumnDefinition<Person>(x => x.AnnualRevenue, "Annual Revenue", isEditable: true)
-        };
-    }
-}
+</CustomGrid>

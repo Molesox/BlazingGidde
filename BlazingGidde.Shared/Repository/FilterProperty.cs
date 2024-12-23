@@ -21,7 +21,7 @@ namespace BlazingGidde.Shared.Repository
 		/// <summary>
 		/// Defines how to compare the column values (StartsWith, Contains, Equals, etc.)
 		/// </summary>
-		public FilterOperator Operator { get; set; }
+		public QueryFilterOperator Operator { get; set; }
 
 		/// <summary>
 		/// If true, the comparison will be case sensitive

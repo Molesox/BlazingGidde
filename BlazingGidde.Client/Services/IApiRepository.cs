@@ -1,4 +1,5 @@
 using BlazingGidde.Shared.DTOs;
+using BlazingGidde.Shared.DTOs.Common;
 using BlazingGidde.Shared.Models;
 using BlazingGidde.Shared.Repository;
 
@@ -7,8 +8,8 @@ namespace BlazingGidde.Client.Services
     public interface IApiRepository<TEntity, Tkey, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoResponse>
     where TEntity : class, IModelBase<Tkey>
     where TReadDto : class
-    where TCreateDto : class
-    where TUpdateDto : class
+    where TCreateDto : class, IModelBase<Tkey>
+    where TUpdateDto : class, IModelBase<Tkey>
     where TCreateDtoResponse : class
     where TUpdateDtoResponse : class
     {
@@ -18,19 +19,20 @@ namespace BlazingGidde.Client.Services
         Task<TReadDto?> GetByID(object Id);
 
 
-        Task<IEnumerable<TEntity>> Get(QueryFilter<TEntity> queryFilter);
+        Task<QueryFilterResponse<TReadDto>> Get(QueryFilter<TEntity> queryFilter);
 
 
-        Task<IEnumerable<TEntity>> Get(LinqQueryFilter<TEntity> linqQueryFilter);
+        Task<QueryFilterResponse<TReadDto>> Get(LinqQueryFilter<TEntity> linqQueryFilter);
+
+        Task<int> GetTotalCount(QueryFilter<TEntity> queryFilter);
+
+        Task<int> GetTotalCount(LinqQueryFilter<TEntity> linqQueryFilter);
 
 
-        Task<int> GetTotalCount(LinqQueryFilter<TEntity> queryFilter);
+        Task<TCreateDtoResponse> Insert(TCreateDto Entity);
 
 
-        Task<TCreateDtoResponse> Insert( TCreateDto Entity);
-
-
-        Task<TUpdateDtoResponse> Update( TUpdateDto Entity);
+        Task<TUpdateDtoResponse> Update(TUpdateDto Entity);
 
 
         Task<bool> Delete(object Id);

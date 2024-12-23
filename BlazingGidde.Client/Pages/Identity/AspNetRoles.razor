@@ -5,33 +5,33 @@
 @using BlazingGidde.Shared.Models.Identity
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
- @using BlazingGidde.Client.Shared
+@using BlazingGidde.Client.Shared
 @inject AspNetRoleManager RoleManager
 @attribute [Authorize]
 
 <PageTitle>Application roles</PageTitle>
-    
-    <GenericGrid Tkey="string" TEntity="FlowRole" Title="My roles"
-                Repository="@RoleManager"
-                Columns="@myColumns">
-        <EditFormTemplate Context="role">
-            <div class="mb-3">
-                <label class="form-label">Name</label>
-                <input class="form-control" @bind="role.Name" />
-            </div>
-        </EditFormTemplate>
-    </GenericGrid>
 
-@code {
-    private List<ColumnDefinition<FlowRole>> myColumns = new();
-    
-    protected override void OnInitialized()
-    {
-         myColumns = new List<ColumnDefinition<FlowRole>>
-        {
-            new ColumnDefinition<FlowRole>(x => x.Id, "ID"),
-            new ColumnDefinition<FlowRole>(x => x.Name, "Name", isEditable: true),
-            new ColumnDefinition<FlowRole>(x => x.NormalizedName, "NormalizedName", isEditable: true)
-        };
-    }
-}
+<CustomGrid Tkey="string" TEntity="FlowRole" TCreateDto="FlowRole" TReadDto="FlowRole" TUpdateDto="FlowRole"
+    Repository="@RoleManager">
+    <GridColumns>
+       <GridColumn TItem="FlowRole"  HeaderText="Id" PropertyName="Id">
+                @context.Id
+        </GridColumn>
+        <GridColumn TItem="FlowRole" HeaderText="Employee Name" PropertyName="Name">
+                @context.Name
+        </GridColumn>
+        <GridColumn TItem="FlowRole" HeaderText="Normalized Name" PropertyName="NormalizedName">
+                @context.NormalizedName
+        </GridColumn>
+    </GridColumns>
+
+
+
+    <EditFormTemplate Context="role">
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input class="form-control" @bind="role.Name" />
+        </div>
+
+    </EditFormTemplate>
+</CustomGrid>

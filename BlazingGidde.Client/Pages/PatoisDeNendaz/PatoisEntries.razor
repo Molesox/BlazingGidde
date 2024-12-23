@@ -99,7 +99,7 @@
 					Skip = request.StartIndex,
 					Take = request.Count,
 				};
-			var items = await dictionaryManager.Get(queryFilter);
+			var items =( await dictionaryManager.Get(queryFilter)).Items;
 
 			// Add loaded items to the cached collection
 			if (items != null && items.Any())

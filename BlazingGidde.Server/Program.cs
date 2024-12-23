@@ -18,6 +18,7 @@ using Serilog;
 using Serilog.Events;
 using AgileObjects.AgileMapper;
 using BlazingGidde.Shared.Models.Identity;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -31,7 +32,8 @@ Mapper.WhenMapping.MapEntityKeys();
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+.AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 builder.Services.AddRazorPages();
 
 builder.Services.AddSerilog((services, lc) => lc

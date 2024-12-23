@@ -1,355 +1,249 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BlazingGidde.Shared.DTOs.Common;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Reflection;
-//Author: DS
-//Year: 2022
+
+// Author: DS
+// Year: 2022 (Updated)
+
 #nullable disable
 namespace BlazingGidde.Shared.Repository
 {
-	/// <summary>
-	/// A serializable filter. An alternative to trying to serialize and deserialize LINQ expressions,
-	/// which are very finicky. This class uses standard types. 
-	/// </summary>
-	/// <typeparam name="TEntity"></typeparam>
-	public class QueryFilter<TEntity> where TEntity : class
-	{
-		public QueryFilter() { }
+    /// <summary>
+    /// A serializable filter. An alternative to trying to serialize and deserialize LINQ expressions,
+    /// which are very finicky. This class uses standard types. 
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    public class QueryFilter<TEntity> : IQueryFilter<TEntity>
+        where TEntity : class
+    {
+        public QueryFilter() { }
 
-		/// <summary>
-		/// If you want to return a subset of the properties, you can specify only
-		/// the properties that you want to retrieve in the SELECT clause.
-		/// Leave empty to return all columns
-		/// </summary>
-		public List<string> IncludePropertyNames { get; set; } = new List<string>();
+        /// <summary>
+        /// If you want to return a subset of the properties, you can specify only
+        /// the properties that you want to retrieve in the SELECT clause.
+        /// Leave empty to return all columns
+        /// </summary>
+        public List<string> IncludePropertyNames { get; set; } = new List<string>();
 
-		/// <summary>
-		/// Defines the property names and values in the WHERE clause
-		/// </summary>
-		public List<FilterProperty> FilterProperties { get; set; } = new List<FilterProperty>();
+        /// <summary>
+        /// Defines the property names and values in the WHERE clause
+        /// </summary>
+        public List<FilterProperty> FilterProperties { get; set; } = new List<FilterProperty>();
 
-		/// <summary>
-		/// Specify the property to ORDER BY, if any 
-		/// </summary>
-		public string OrderByPropertyName { get; set; } = "";
+        /// <summary>
+        /// Paging properties
+        /// </summary>
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
 
-		/// <summary>
-		/// Set to true if you want to order DESCENDING
-		/// </summary>
-		public bool OrderByDescending { get; set; } = false;
+        /// <summary>
+        /// Specify the property to ORDER BY, if any 
+        /// </summary>
+        public string OrderByPropertyName { get; set; } = "";
 
-		/// <summary>
-		/// A custome query that returns a list of entities with the current filter settings.
-		/// </summary>
-		/// <param name="AllItems"></param>
-		/// <returns></returns>
-		public IEnumerable<TEntity> GetFilteredList(IEnumerable<TEntity> AllItems)
-		{
-			// Convert to IQueryable
-			var query = AllItems.AsQueryable<TEntity>();
+        /// <summary>
+        /// Set to true if you want to order DESCENDING
+        /// </summary>
+        public bool OrderByDescending { get; set; } = false;
 
-			// the expression will be used for each FilterProperty
-			Expression<Func<TEntity, bool>> expression = null;
+        public async Task<int> GetTotalCount(IQueryable<TEntity> AllItems)
+        {
+            var query = ApplyFilters(AllItems);
+            return await query.CountAsync();
+        }
 
+        public async Task<(IEnumerable<TEntity>, int)> GetFilteredList(IQueryable<TEntity> AllItems)
+        {
+            var query = ApplyFilters(AllItems);
 
-			ProcessProperties(ref query, ref expression);
+            // Include the specified properties
+            if (IncludePropertyNames != null && IncludePropertyNames.Any())
+            {
+                foreach (var includeProperty in IncludePropertyNames)
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
 
+            // Calculate Total Count before pagination
+            var totalCount = await query.CountAsync();
 
-			// Include the specified properties
-			foreach (var includeProperty in IncludePropertyNames)
-			{
-				query = query.Include(includeProperty);
-			}
+            // Order by
+            if (!string.IsNullOrEmpty(OrderByPropertyName))
+            {
+                var parameter = Expression.Parameter(typeof(TEntity), "x");
+                var property = Expression.PropertyOrField(parameter, OrderByPropertyName);
+                var lambda = Expression.Lambda(property, parameter);
 
-			// order by
-			if (OrderByPropertyName != "")
-			{
-				PropertyInfo prop = typeof(TEntity).GetProperty(OrderByPropertyName);
-				if (prop != null)
-				{
-					if (OrderByDescending)
-						query = query.OrderByDescending(x => prop.GetValue(x, null));
-					else
-						query = query.OrderBy(x => prop.GetValue(x, null));
-				}
-			}
+                string methodName = OrderByDescending ? "OrderByDescending" : "OrderBy";
 
-			// execute and return the list
-			return query.ToList();
+                var resultExpression = Expression.Call(typeof(Queryable), methodName,
+                    new Type[] { typeof(TEntity), property.Type },
+                    query.Expression, Expression.Quote(lambda));
 
-			void ProcessProperties(ref IQueryable<TEntity> query, ref Expression<Func<TEntity, bool>> expression)
-			{
-				// Process each property
-				foreach (var filterProperty in FilterProperties)
-				{
-					// use reflection to get the property info
-					PropertyInfo prop = typeof(TEntity).GetProperty(filterProperty.Name);
+                query = query.Provider.CreateQuery<TEntity>(resultExpression);
+            }
 
-					// string
-					if (prop.PropertyType == typeof(string))
-					{
-						string value = filterProperty.Value.ToString();
-						if (filterProperty.CaseSensitive == false)
-							value = value.ToLower();
+            // Apply Pagination
+            if (PageSize > 0)
+            {
+                int skip = (PageNumber - 1) * PageSize;
+                query = query.Skip(skip).Take(PageSize);
+            }
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							if (filterProperty.CaseSensitive == false)
-								expression = s => s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString().ToLower() == value;
-							else
-								expression = s => s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString() == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							if (filterProperty.CaseSensitive == false)
-								expression = s => s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString().ToLower() != value;
-							else
-								expression = s => s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString() != value;
-						else if (filterProperty.Operator == FilterOperator.StartsWith)
-							if (filterProperty.CaseSensitive == false)
-								expression = s => s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString().ToLower().StartsWith(value);
-							else
-								expression = s => s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString().StartsWith(value);
-						else if (filterProperty.Operator == FilterOperator.EndsWith)
-							if (filterProperty.CaseSensitive == false)
-								expression = s => s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString().ToLower().EndsWith(value);
-							else
-								expression = s => s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString().EndsWith(value);
-						else if (filterProperty.Operator == FilterOperator.Contains)
-							if (filterProperty.CaseSensitive == false)
-								expression = s => s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString().ToLower().Contains(value);
-							else
-								expression = s => s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString().Contains(value);
-					}
-					// Int16
-					else if (prop.PropertyType == typeof(Int16))
-					{
-						int value = Convert.ToInt16(filterProperty.Value);
+            // Execute and return the (list, count)
+            var items = await query.ToListAsync();
+            return (items, totalCount);
+        }
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							expression = s => Convert.ToInt16(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							expression = s => Convert.ToInt16(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) != value;
-						else if (filterProperty.Operator == FilterOperator.LessThan)
-							expression = s => Convert.ToInt16(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) < value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThan)
-							expression = s => Convert.ToInt16(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) > value;
-						else if (filterProperty.Operator == FilterOperator.LessThanOrEqual)
-							expression = s => Convert.ToInt16(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) <= value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThanOrEqual)
-							expression = s => Convert.ToInt16(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) >= value;
-					}
-					// Int32
-					else if (prop.PropertyType == typeof(Int32))
-					{
-						int value = Convert.ToInt32(filterProperty.Value);
+        private IQueryable<TEntity> ApplyFilters(IQueryable<TEntity> query)
+        {
+            if (FilterProperties != null && FilterProperties.Any())
+            {
+                var parameter = Expression.Parameter(typeof(TEntity), "x");
+                Expression combinedExpression = null;
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							expression = s => Convert.ToInt32(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							expression = s => Convert.ToInt32(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) != value;
-						else if (filterProperty.Operator == FilterOperator.LessThan)
-							expression = s => Convert.ToInt32(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) < value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThan)
-							expression = s => Convert.ToInt32(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) > value;
-						else if (filterProperty.Operator == FilterOperator.LessThanOrEqual)
-							expression = s => Convert.ToInt32(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) <= value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThanOrEqual)
-							expression = s => Convert.ToInt32(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) >= value;
-					}
-					// Int64
-					else if (prop.PropertyType == typeof(Int64))
-					{
-						Int64 value = Convert.ToInt64(filterProperty.Value);
+                foreach (var filterProperty in FilterProperties)
+                {
+                    var propertyName = filterProperty.Name;
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							expression = s => Convert.ToInt64(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							expression = s => Convert.ToInt64(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) != value;
-						else if (filterProperty.Operator == FilterOperator.LessThan)
-							expression = s => Convert.ToInt64(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) < value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThan)
-							expression = s => Convert.ToInt64(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) > value;
-						else if (filterProperty.Operator == FilterOperator.LessThanOrEqual)
-							expression = s => Convert.ToInt64(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) <= value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThanOrEqual)
-							expression = s => Convert.ToInt64(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) >= value;
-					}
-					// UInt16
-					else if (prop.PropertyType == typeof(UInt16))
-					{
-						UInt16 value = Convert.ToUInt16(filterProperty.Value);
+                    // Use reflection to get the property info
+                    PropertyInfo propertyInfo = typeof(TEntity).GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+                    if (propertyInfo == null)
+                    {
+                        // Handle the case where the property does not exist
+                        continue;
+                    }
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							expression = s => Convert.ToUInt16(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							expression = s => Convert.ToUInt16(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) != value;
-						else if (filterProperty.Operator == FilterOperator.LessThan)
-							expression = s => Convert.ToUInt16(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) < value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThan)
-							expression = s => Convert.ToUInt16(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) > value;
-						else if (filterProperty.Operator == FilterOperator.LessThanOrEqual)
-							expression = s => Convert.ToUInt16(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) <= value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThanOrEqual)
-							expression = s => Convert.ToUInt16(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) >= value;
-					}
-					// UInt32
-					else if (prop.PropertyType == typeof(UInt32))
-					{
-						UInt32 value = Convert.ToUInt32(filterProperty.Value);
+                    var propertyType = propertyInfo.PropertyType;
+                    var operatorType = filterProperty.Operator;
+                    var caseSensitive = filterProperty.CaseSensitive;
+                    var filterValue = ConvertValue(filterProperty.Value, propertyType);
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							expression = s => Convert.ToUInt32(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							expression = s => Convert.ToUInt32(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) != value;
-						else if (filterProperty.Operator == FilterOperator.LessThan)
-							expression = s => Convert.ToUInt32(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) < value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThan)
-							expression = s => Convert.ToUInt32(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) > value;
-						else if (filterProperty.Operator == FilterOperator.LessThanOrEqual)
-							expression = s => Convert.ToUInt32(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) <= value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThanOrEqual)
-							expression = s => Convert.ToUInt32(s.GetType().GetProperty(filterProperty.Name).GetValue(s)) >= value;
-					}
-					// UInt64
-					else if (prop.PropertyType == typeof(UInt64))
-					{
-						UInt64 value = Convert.ToUInt64(filterProperty.Value);
+                    if (filterValue == null)
+                        continue;
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							expression = s => Convert.ToUInt64(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							expression = s => Convert.ToUInt64(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) != value;
-						else if (filterProperty.Operator == FilterOperator.LessThan)
-							expression = s => Convert.ToUInt64(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) < value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThan)
-							expression = s => Convert.ToUInt64(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) > value;
-						else if (filterProperty.Operator == FilterOperator.LessThanOrEqual)
-							expression = s => Convert.ToUInt64(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) <= value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThanOrEqual)
-							expression = s => Convert.ToUInt64(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) >= value;
-					}
-					// DateTime
-					else if (prop.PropertyType == typeof(DateTime))
-					{
-						DateTime value = DateTime.Parse(filterProperty.Value);
+                    Expression propertyExpression = Expression.Property(parameter, propertyInfo);
+                    
+                    if (IsNullableType(propertyType))
+                    {
+                        propertyExpression = Expression.Property(propertyExpression, "Value");
+                        propertyType = Nullable.GetUnderlyingType(propertyType);
+                    }
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							expression = s => DateTime.Parse(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							expression = s => DateTime.Parse(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) != value;
-						else if (filterProperty.Operator == FilterOperator.LessThan)
-							expression = s => DateTime.Parse(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) < value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThan)
-							expression = s => DateTime.Parse(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) > value;
-						else if (filterProperty.Operator == FilterOperator.LessThanOrEqual)
-							expression = s => DateTime.Parse(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) <= value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThanOrEqual)
-							expression = s => DateTime.Parse(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) >= value;
-					}
-					// decimal
-					else if (prop.PropertyType == typeof(decimal))
-					{
-						decimal value = Convert.ToDecimal(filterProperty.Value);
+                    ConstantExpression constant = Expression.Constant(filterValue, propertyType);
+                    Expression filterExpression = null;
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							expression = s => Convert.ToDecimal(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							expression = s => Convert.ToDecimal(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) != value;
-						else if (filterProperty.Operator == FilterOperator.LessThan)
-							expression = s => Convert.ToDecimal(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) < value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThan)
-							expression = s => Convert.ToDecimal(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) > value;
-						else if (filterProperty.Operator == FilterOperator.LessThanOrEqual)
-							expression = s => Convert.ToDecimal(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) <= value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThanOrEqual)
-							expression = s => Convert.ToDecimal(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) >= value;
-					}
-					// Single
-					else if (prop.PropertyType == typeof(Single))
-					{
-						Single value = Convert.ToSingle(filterProperty.Value);
+                    switch (operatorType)
+                    {
+                        case QueryFilterOperator.Equals:
+                            filterExpression = Expression.Equal(propertyExpression, constant);
+                            break;
+                        case QueryFilterOperator.NotEquals:
+                            filterExpression = Expression.NotEqual(propertyExpression, constant);
+                            break;
+                        case QueryFilterOperator.Contains:
+                        case QueryFilterOperator.StartsWith:
+                        case QueryFilterOperator.EndsWith:
+                            if (propertyType != typeof(string))
+                                continue;
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							expression = s => Convert.ToSingle(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							expression = s => Convert.ToSingle(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) != value;
-						else if (filterProperty.Operator == FilterOperator.LessThan)
-							expression = s => Convert.ToSingle(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) < value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThan)
-							expression = s => Convert.ToSingle(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) > value;
-						else if (filterProperty.Operator == FilterOperator.LessThanOrEqual)
-							expression = s => Convert.ToSingle(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) <= value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThanOrEqual)
-							expression = s => Convert.ToSingle(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) >= value;
-					}
-					// Double
-					else if (prop.PropertyType == typeof(Single))
-					{
-						Double value = Convert.ToDouble(filterProperty.Value);
+                            MethodInfo method = operatorType switch
+                            {
+                                QueryFilterOperator.Contains => typeof(string).GetMethod("Contains", new[] { typeof(string) }),
+                                QueryFilterOperator.StartsWith => typeof(string).GetMethod("StartsWith", new[] { typeof(string) }),
+                                QueryFilterOperator.EndsWith => typeof(string).GetMethod("EndsWith", new[] { typeof(string) }),
+                                _ => null
+                            };
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							expression = s => Convert.ToDouble(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							expression = s => Convert.ToDouble(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) != value;
-						else if (filterProperty.Operator == FilterOperator.LessThan)
-							expression = s => Convert.ToDouble(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) < value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThan)
-							expression = s => Convert.ToDouble(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) > value;
-						else if (filterProperty.Operator == FilterOperator.LessThanOrEqual)
-							expression = s => Convert.ToDouble(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) <= value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThanOrEqual)
-							expression = s => Convert.ToDouble(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) >= value;
-					}
-					// Boolean
-					else if (prop.PropertyType == typeof(bool))
-					{
-						bool value = Convert.ToBoolean(filterProperty.Value);
+                            if (method == null)
+                                continue;
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							expression = s => Convert.ToBoolean(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							expression = s => Convert.ToBoolean(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) != value;
-					}
-					// Byte
-					else if (prop.PropertyType == typeof(Byte))
-					{
-						Byte value = Convert.ToByte(filterProperty.Value);
+                            if (!caseSensitive)
+                            {
+                                propertyExpression = Expression.Call(propertyExpression, typeof(string).GetMethod("ToLower", System.Type.EmptyTypes));
+                                constant = Expression.Constant(filterValue.ToString().ToLower(), typeof(string));
+                            }
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							expression = s => Convert.ToByte(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							expression = s => Convert.ToByte(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) != value;
-						else if (filterProperty.Operator == FilterOperator.LessThan)
-							expression = s => Convert.ToByte(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) < value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThan)
-							expression = s => Convert.ToByte(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) > value;
-						else if (filterProperty.Operator == FilterOperator.LessThanOrEqual)
-							expression = s => Convert.ToByte(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) <= value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThanOrEqual)
-							expression = s => Convert.ToByte(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) >= value;
-					}
-					// Char
-					else if (prop.PropertyType == typeof(Char))
-					{
-						Char value = Convert.ToChar(filterProperty.Value);
+                            filterExpression = Expression.Call(propertyExpression, method, constant);
+                            break;
+                        case QueryFilterOperator.LessThan:
+                            filterExpression = Expression.LessThan(propertyExpression, constant);
+                            break;
+                        case QueryFilterOperator.GreaterThan:
+                            filterExpression = Expression.GreaterThan(propertyExpression, constant);
+                            break;
+                        case QueryFilterOperator.LessThanOrEqual:
+                            filterExpression = Expression.LessThanOrEqual(propertyExpression, constant);
+                            break;
+                        case QueryFilterOperator.GreaterThanOrEqual:
+                            filterExpression = Expression.GreaterThanOrEqual(propertyExpression, constant);
+                            break;
+                        default:
+                            continue;
+                    }
 
-						if (filterProperty.Operator == FilterOperator.Equals)
-							expression = s => Convert.ToChar(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) == value;
-						else if (filterProperty.Operator == FilterOperator.NotEquals)
-							expression = s => Convert.ToChar(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) != value;
-						else if (filterProperty.Operator == FilterOperator.LessThan)
-							expression = s => Convert.ToChar(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) < value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThan)
-							expression = s => Convert.ToChar(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) > value;
-						else if (filterProperty.Operator == FilterOperator.LessThanOrEqual)
-							expression = s => Convert.ToChar(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) <= value;
-						else if (filterProperty.Operator == FilterOperator.GreaterThanOrEqual)
-							expression = s => Convert.ToChar(s.GetType().GetProperty(filterProperty.Name).GetValue(s).ToString()) >= value;
-					}
-					// Add expression creation code for other data types here.
+                    if (filterExpression == null)
+                        continue;
 
-					// apply the expression
-					query = query.Where(expression);
+                    combinedExpression = combinedExpression == null
+                        ? filterExpression
+                        : Expression.AndAlso(combinedExpression, filterExpression);
+                }
 
-				}
-			}
-		}
-	}
+                if (combinedExpression != null)
+                {
+                    var lambda = Expression.Lambda<Func<TEntity, bool>>(combinedExpression, parameter);
+                    query = query.Where(lambda);
+                }
+            }
+
+            return query;
+        }
+
+        /// <summary>
+        /// Converts the string value to the specified type.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private object ConvertValue(string value, Type type)
+        {
+            try
+            {
+                if (type == typeof(string))
+                {
+                    return value;
+                }
+                else if (type.IsEnum)
+                {
+                    return Enum.Parse(type, value, ignoreCase: true);
+                }
+                else if (type == typeof(Guid))
+                {
+                    return Guid.Parse(value);
+                }
+                else
+                {
+                    return Convert.ChangeType(value, type);
+                }
+            }
+            catch
+            {
+                // Handle conversion errors (log if necessary)
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Checks if a type is nullable.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private bool IsNullableType(Type type)
+        {
+            return Nullable.GetUnderlyingType(type) != null;
+        }
+    }
 }

@@ -11,7 +11,8 @@ namespace BlazingGidde.Shared.Repository
     /// Provides a generic LINQ query filter with support for serialization.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    public class LinqQueryFilter<TEntity> where TEntity : class
+    public class LinqQueryFilter<TEntity> : IQueryFilter<TEntity>
+    where TEntity : class
     {
         #region Constructors
 
@@ -85,7 +86,7 @@ namespace BlazingGidde.Shared.Repository
         /// </summary>
         /// <param name="query">The queryable source.</param>
         /// <returns>A task representing the asynchronous operation, with a result of the filtered list.</returns>
-        public async Task<IEnumerable<TEntity>> GetFilteredList(IQueryable<TEntity> query)
+        public async Task<(IEnumerable<TEntity>, int)> GetFilteredList(IQueryable<TEntity> query)
         {
             var serializer = new ExpressionSerializer(new JsonSerializer());
 
@@ -104,6 +105,8 @@ namespace BlazingGidde.Shared.Repository
             {
                 query = query.Where(deserializedExpression);
             }
+
+            var totalCount = await query.CountAsync();
 
             // Include the specified properties
             if (IncludePropertyNames != null)
@@ -126,7 +129,7 @@ namespace BlazingGidde.Shared.Repository
             query = query.Skip(Skip).Take(Take);
 
             // Execute the query and return the list
-            return await query.ToListAsync();
+            return (await query.ToListAsync(), totalCount);
         }
 
         /// <summary>
@@ -152,6 +155,8 @@ namespace BlazingGidde.Shared.Repository
             // Return the total count
             return await query.CountAsync();
         }
+
+
 
         #endregion
     }

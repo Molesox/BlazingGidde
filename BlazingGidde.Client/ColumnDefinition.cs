@@ -7,14 +7,16 @@ public  class ColumnDefinition<TEntity>
     public string FieldName { get; set; } = string.Empty;
     public PropertyInfo Property { get; set; }
     public bool IsEditable { get; set; }
+    public bool IsSearchable { get; set; }
 
     public Func<TEntity, object?> PropertyValue { get; }
     public Func<TEntity, object> PropertyValueEdit { get; }
 
-    public ColumnDefinition(Expression<Func<TEntity, object?>> expression, string title, bool isEditable = false)
+    public ColumnDefinition(Expression<Func<TEntity, object?>> expression, string title, bool isEditable = false, bool isSearchable = false)
     {
         Title = title;
         IsEditable = isEditable;
+        IsSearchable = isSearchable;
 
         var member = expression.Body as MemberExpression ?? (expression.Body as UnaryExpression)?.Operand as MemberExpression;
         if (member is null)

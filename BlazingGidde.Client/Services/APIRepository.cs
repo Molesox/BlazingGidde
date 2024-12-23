@@ -13,8 +13,8 @@ namespace BlazingGidde.Client.Services
 		: IApiRepository<TEntity, Tkey, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoResponse>
 		where TEntity : class, IModelBase<Tkey>
 		where TReadDto : class
-		where TCreateDto : class
-		where TUpdateDto : class
+		where TCreateDto : class, IModelBase<Tkey>
+		where TUpdateDto : class, IModelBase<Tkey>
 		where TCreateDtoResponse : class
 		where TUpdateDtoResponse : class
 	{
@@ -64,8 +64,36 @@ namespace BlazingGidde.Client.Services
 				return default;
 			}
 		}
+	
+		public async Task<QueryFilterResponse<TReadDto>> Get(QueryFilter<TEntity> queryFilter)
+		{
+            try
+            {
+				var url = $"{controllerName}/getwithfilter";
+				var response = await http.PostAsJsonAsync(url, queryFilter);
+				response.EnsureSuccessStatusCode();
 
-		public async Task<IEnumerable<TEntity>> Get(LinqQueryFilter<TEntity> linqQueryFilter)
+				var responseBody = await response.Content.ReadAsStringAsync();
+				var apiResponse = JsonSerializer.Deserialize<APIEntityResponse<QueryFilterResponse<TReadDto>>>(responseBody, new JsonSerializerOptions
+				{
+					PropertyNameCaseInsensitive = true
+				});
+
+				if (apiResponse?.Success == true)
+				{
+
+					return apiResponse.Items!;
+				}
+				return new QueryFilterResponse<TReadDto>();
+			}
+			catch (Exception)
+            {
+				// Optionally log the exception
+				return new QueryFilterResponse<TReadDto>();
+			}
+		}
+
+		public async Task<QueryFilterResponse<TReadDto>> Get(LinqQueryFilter<TEntity> linqQueryFilter)
 		{
             try
             {
@@ -74,21 +102,40 @@ namespace BlazingGidde.Client.Services
 				response.EnsureSuccessStatusCode();
 
 				var responseBody = await response.Content.ReadAsStringAsync();
-				var apiResponse = JsonSerializer.Deserialize<APIListOfEntityResponse<TEntity>>(responseBody, new JsonSerializerOptions
+				var apiResponse = JsonSerializer.Deserialize<APIEntityResponse<QueryFilterResponse<TReadDto>>>(responseBody, new JsonSerializerOptions
 				{
 					PropertyNameCaseInsensitive = true
 				});
 
 				if (apiResponse?.Success == true)
 				{
-					return apiResponse.Items;
+					return apiResponse.Items!;
 				}
-				return Enumerable.Empty<TEntity>();
+				return new QueryFilterResponse<TReadDto>();
 			}
 			catch (Exception)
             {
 				// Optionally log the exception
-				return Enumerable.Empty<TEntity>();
+				return new QueryFilterResponse<TReadDto>();
+			}
+		}
+
+		public async Task<int> GetTotalCount(QueryFilter<TEntity> queryFilter)
+		{
+            try
+            {
+				var url = $"{controllerName}/GetTotalCount";
+				var response = await http.PostAsJsonAsync(url, queryFilter);
+				response.EnsureSuccessStatusCode();
+
+				var apiResponse = await response.Content.ReadFromJsonAsync<APIEntityResponse<CountDto>>();
+
+				return apiResponse?.Success == true ? apiResponse.Items?.Counter ?? 0 : 0;
+			}
+			catch (Exception)
+            {
+				// Optionally log the exception
+				return 0;
 			}
 		}
 
@@ -108,33 +155,6 @@ namespace BlazingGidde.Client.Services
             {
 				// Optionally log the exception
 				return 0;
-			}
-		}
-
-		public async Task<IEnumerable<TEntity>> Get(QueryFilter<TEntity> queryFilter)
-		{
-            try
-            {
-				var url = $"{controllerName}/getwithfilter";
-				var response = await http.PostAsJsonAsync(url, queryFilter);
-				response.EnsureSuccessStatusCode();
-
-				var responseBody = await response.Content.ReadAsStringAsync();
-				var apiResponse = JsonSerializer.Deserialize<APIListOfEntityResponse<TEntity>>(responseBody, new JsonSerializerOptions
-				{
-					PropertyNameCaseInsensitive = true
-				});
-
-				if (apiResponse?.Success == true)
-				{
-					return apiResponse.Items;
-				}
-				return [];
-			}
-			catch (Exception)
-            {
-				// Optionally log the exception
-				return [];
 			}
 		}
 
@@ -205,12 +225,11 @@ namespace BlazingGidde.Client.Services
 	}
 
 
-    public class APIRepository<TEntity, Tkey, TReadDto>
-        : APIRepository<TEntity, Tkey, TReadDto, TReadDto, TReadDto, TReadDto, TReadDto>
+    public class APIRepository<TEntity, Tkey, TReadDto, TCreateDto>
+        : APIRepository<TEntity, Tkey, TReadDto, TCreateDto, TReadDto, TReadDto, TReadDto>
         where TEntity : class, IModelBase<Tkey>
         where TReadDto : class, IReadDto<Tkey>
-
-
+		where TCreateDto : class, IModelBase<Tkey>
     {
         public APIRepository(HttpClient _http, string _controllerName) :
 		 base(_http, _controllerName)

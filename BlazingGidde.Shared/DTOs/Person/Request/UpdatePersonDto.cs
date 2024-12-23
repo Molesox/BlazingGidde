@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BlazingGidde.Shared.DTOs.Person.Request;
 
-public record UpdatePersonDto<Tkey> : CreatePersonDto, IUpdateDto<Tkey>
+public record UpdatePersonDto : CreatePersonDto, IUpdateDto<int>
 {
-    public Tkey Id { get; set; }
 }

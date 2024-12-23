@@ -149,21 +149,21 @@ namespace BlazingGidde.Server.Controllers
         }
 
         [HttpPost("getwithfilter")]
-        public virtual Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithFilter([FromBody] QueryFilter<TEntity> Filter)
+        public virtual Task<ActionResult<APIEntityResponse<QueryFilterResponse<TReadDto>>>> GetWithFilter([FromBody] QueryFilter<TEntity> Filter)
         {
             var correlationId = HttpContext.TraceIdentifier;
 
             return ExecuteAsync(async () =>
             {
-                ValidateFilter(Filter, correlationId);
+                
                 var result = await _repository.Get(Filter);
-
+                var readDtos = result.Item1.Map().ToANew<List<TReadDto>>();
                 _logger.LogInformation(
                     "Request {CorrelationId}: Fetched {EntityName} with provided filter",
                     correlationId,
                     typeof(TEntity).Name);
 
-                return new APIListOfEntityResponse<TEntity> { Success = true, Items = result.ToList() };
+                return new APIEntityResponse<QueryFilterResponse<TReadDto>> { Success = true, Items = new QueryFilterResponse<TReadDto>{Items= readDtos, TotalCount = result.Item2 } };
             },
             $"Request {correlationId}: Fetched {typeof(TEntity).Name} with filter",
             $"Request {correlationId}: Failed to fetch {typeof(TEntity).Name} with filter");
@@ -179,7 +179,7 @@ namespace BlazingGidde.Server.Controllers
         }
 
         [HttpPost("getwithLinqfilter")]
-        public virtual Task<ActionResult<APIListOfEntityResponse<TEntity>>> GetWithLinqFilter([FromBody] LinqQueryFilter<TEntity> linqQueryFilter)
+        public virtual Task<ActionResult<APIEntityResponse<QueryFilterResponse<TReadDto>>>> GetWithLinqFilter([FromBody] LinqQueryFilter<TEntity> linqQueryFilter)
         {
             var correlationId = HttpContext.TraceIdentifier;
 
@@ -187,13 +187,13 @@ namespace BlazingGidde.Server.Controllers
             {
                 ValidateLinqFilter(linqQueryFilter, correlationId);
                 var result = await _repository.Get(linqQueryFilter);
-
+                var readDtos = result.Item1.Map().ToANew<List<TReadDto>>();
                 _logger.LogInformation(
                     "Request {CorrelationId}: Fetched {EntityName} with LINQ filter",
                     correlationId,
                     typeof(TEntity).Name);
 
-                return new APIListOfEntityResponse<TEntity> { Success = true, Items = result.ToList() };
+                return new APIEntityResponse<QueryFilterResponse<TReadDto>> { Success = true, Items = new QueryFilterResponse<TReadDto>() { Items = readDtos, TotalCount = result.Item2 } };
             },
             $"Request {correlationId}: Fetched {typeof(TEntity).Name} with LINQ filter",
             $"Request {correlationId}: Failed to fetch {typeof(TEntity).Name} with LINQ filter");
@@ -234,7 +234,33 @@ namespace BlazingGidde.Server.Controllers
             $"Request {correlationId}: Failed to fetch total count for {typeof(TEntity).Name}");
         }
 
-        protected virtual void ValidateQueryFilter(LinqQueryFilter<TEntity> queryFilter, string correlationId)
+        [HttpPost("GetTotalCount")]
+        public virtual Task<ActionResult<APIEntityResponse<CountDto>>> GetTotalCount([FromBody] QueryFilter<TEntity> queryFilter)
+        {
+            var correlationId = HttpContext.TraceIdentifier;
+
+            return ExecuteAsync(async () =>
+            {
+                ValidateQueryFilter(queryFilter, correlationId);
+                var count = await _repository.GetTotalCount(queryFilter);
+
+                _logger.LogInformation(
+                    "Request {CorrelationId}: Fetched total count for {EntityName}, count = {Count}",
+                    correlationId,
+                    typeof(TEntity).Name,
+                    count);
+
+                return new APIEntityResponse<CountDto>
+                {
+                    Success = true,
+                    Items = new CountDto { Counter = count }
+                };
+            },
+            $"Request {correlationId}: Fetched total count for {typeof(TEntity).Name}",
+            $"Request {correlationId}: Failed to fetch total count for {typeof(TEntity).Name}");
+        }
+
+        protected virtual void ValidateQueryFilter(object queryFilter, string correlationId)
         {
             if (queryFilter == null)
             {
@@ -409,14 +435,15 @@ namespace BlazingGidde.Server.Controllers
         }
     }
 
-    public class BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto>
-        : BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TReadDto, TReadDto, TReadDto, TReadDto>
+    public class BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto>
+        : BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TCreateDto, TReadDto, TReadDto>
         where TEntity : class, IModelBase<Tkey>
         where TReadDto : class, IReadDto<Tkey>
+        where TCreateDto : class, ICreateDto<Tkey>
         where TDataContext : DbContext
     {
         public BlazingGiddeBaseController(IRepository<TEntity> repository,
-          ILogger<BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TReadDto, TReadDto, TReadDto, TReadDto>> logger)
+          ILogger<BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TCreateDto, TReadDto, TReadDto>> logger)
            : base(repository, logger)
         { }
     }
@@ -426,7 +453,7 @@ namespace BlazingGidde.Server.Controllers
         where TEntity : class, IModelBase<Tkey>
         where TDataContext : DbContext
     {
-        public BlazingGiddeBaseController(IRepository<TEntity> repository, 
+        public BlazingGiddeBaseController(IRepository<TEntity> repository,
         ILogger<BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TEntity, TEntity, TEntity, TEntity, TEntity>> logger)
             : base(repository, logger)
         { }

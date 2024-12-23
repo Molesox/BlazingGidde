@@ -15,9 +15,54 @@
 
 <PageTitle>Application Users</PageTitle>
 
-<GenericGrid TEntity="FlowUser" Tkey="string" Title="My Users"
-             Repository="@UserManager"
-             Columns="@myColumns">
+<CustomGrid TEntity="FlowUser" Tkey="string" Repository="@UserManager"
+ TCreateDto="FlowUser" TUpdateDto="FlowUser"
+    TReadDto="FlowUser">
+
+    <GridColumns>
+        <!-- ID Column -->
+        <GridColumn TItem="FlowUser" HeaderText="ID" PropertyName="Id">
+            <ChildContent Context="item">@item.Id</ChildContent>
+        </GridColumn>
+
+        <!-- User Name Column -->
+        <GridColumn TItem="FlowUser" HeaderText="User Name" PropertyName="UserName">
+            <ChildContent Context="item">@item.UserName</ChildContent>
+        </GridColumn>
+
+        <!-- Email Column -->
+        <GridColumn TItem="FlowUser" HeaderText="Email" PropertyName="Email">
+            <ChildContent Context="item">@item.Email</ChildContent>
+        </GridColumn>
+
+        <!-- Phone Number Column -->
+        <GridColumn TItem="FlowUser" HeaderText="Phone Number" PropertyName="PhoneNumber">
+            <ChildContent Context="item">@item.PhoneNumber</ChildContent>
+        </GridColumn>
+
+        <!-- Lockout Enabled Column -->
+        <GridColumn TItem="FlowUser" HeaderText="Lockout Enabled" PropertyName="LockoutEnabled">
+            <ChildContent Context="item">@item.LockoutEnabled</ChildContent>
+        </GridColumn>
+
+        <!-- Two-Factor Enabled Column -->
+        <GridColumn TItem="FlowUser" HeaderText="Two-Factor Enabled" PropertyName="TwoFactorEnabled">
+            <ChildContent Context="item">@item.TwoFactorEnabled</ChildContent>
+        </GridColumn>
+
+        <!-- Actions Column -->
+        @* <GridColumn TItem="FlowUser" HeaderText="Actions">
+            <ChildContent Context="item">
+                <button class="btn btn-primary btn-sm me-2" @onclick="() => EditUser(item)">
+                    <span class="material-icons">edit</span>
+                </button>
+                <button class="btn btn-danger btn-sm" @onclick="() => DeleteUser(item.Id)">
+                    <span class="material-icons">delete</span>
+                </button>
+            </ChildContent>
+        </GridColumn> *@
+    </GridColumns>
+
     <EditFormTemplate Context="user">
         <div class="card">
             <div class="card-header">
@@ -93,9 +138,9 @@
                                         <td>@role</td>
                                         <td>
 
-	                                        <button class="btn btn-danger btn-sm" @onclick="() => RemoveRole(user.Id, role)">
-		                                        <span class="material-icons">delete</span>
-	                                        </button>
+                                            <button class="btn btn-danger btn-sm" @onclick="() => RemoveRole(user.Id, role)">
+                                                <span class="material-icons">delete</span>
+                                            </button>
                                         </td>
                                     </tr>
                                 }
@@ -110,10 +155,10 @@
             </div>
         </div>
     </EditFormTemplate>
-</GenericGrid>
+</CustomGrid>
 
 @code {
-    private List<ColumnDefinition<FlowUser>> myColumns = new();
+
     private IEnumerable<IdentityRole>? _roles;
     private string? selectedRole;
     private Dictionary<string, List<string>> userRoles = new();
@@ -122,15 +167,7 @@
     {
         _roles = await RoleManager.GetAll();
         await LoadUserRoles();
-        myColumns = new List<ColumnDefinition<FlowUser>>
-        {
-            new ColumnDefinition<FlowUser>(x => x.Id, "ID"),
-            new ColumnDefinition<FlowUser>(x => x.UserName, "User Name", isEditable: true),
-            new ColumnDefinition<FlowUser>(x => x.Email, "Email", isEditable: true),
-            new ColumnDefinition<FlowUser>(x => x.PhoneNumber, "Phone Number", isEditable: true),
-            new ColumnDefinition<FlowUser>(x => x.LockoutEnabled, "Lockout Enabled", isEditable: true),
-            new ColumnDefinition<FlowUser>(x => x.TwoFactorEnabled, "2FA Enabled", isEditable: true)
-        };
+
     }
 
     private async Task AssignRole(string userId)

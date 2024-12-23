@@ -1,5 +1,7 @@
 using BlazingGidde.Server.Data;
 using BlazingGidde.Shared.API;
+using BlazingGidde.Shared.DTOs.Person;
+using BlazingGidde.Shared.DTOs.Person.Request;
 using BlazingGidde.Shared.Models.PersonMain;
 using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -11,14 +13,14 @@ namespace BlazingGidde.Server.Controllers.Identity
     [Route("[controller]")]
     [ApiController]
     [Authorize]
-    public class PersonController : BlazingGiddeBaseController<Person, int, ApplicationDbContext>
+    public class PersonController : BlazingGiddeBaseController<Person, int, ApplicationDbContext, PersonDto, CreatePersonDto>
     {
         private readonly IRepository<Phone> _repositoryPhones;
         private readonly IRepository<Email> _repositoryEmails;
         public PersonController(IRepository<Person> repository,
         IRepository<Phone> phonesRepository,
         IRepository<Email> emailsRepository,
-        ILogger<BlazingGiddeBaseController<Person, int, ApplicationDbContext>> logger)
+        ILogger<BlazingGiddeBaseController<Person, int, ApplicationDbContext, PersonDto, CreatePersonDto>> logger)
         : base(repository, logger)
         {
             _repositoryPhones = phonesRepository;
@@ -35,7 +37,7 @@ namespace BlazingGidde.Server.Controllers.Identity
                 return Ok(new APIListOfEntityResponse<Phone>
                 {
                     Success = true,
-                    Items = phones
+                    Items = phones.Item1
                 });
             }
             catch (Exception ex)
@@ -55,7 +57,7 @@ namespace BlazingGidde.Server.Controllers.Identity
                 return Ok(new APIListOfEntityResponse<Email>
                 {
                     Success = true,
-                    Items = emails
+                    Items = emails.Item1
                 });
             }
             catch (Exception ex)

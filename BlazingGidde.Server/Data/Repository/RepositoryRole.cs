@@ -45,18 +45,12 @@ namespace BlazingGidde.Server.Data.Repository
 			return await _roleManager.FindByIdAsync(id.ToString() ?? string.Empty);
 		}
 
-		public async Task<IEnumerable<FlowRole>> Get(QueryFilter<FlowRole> queryFilter)
+		public async Task<(IEnumerable<FlowRole>, int)> Get(IQueryFilter<FlowRole> queryFilter)
 		{
-			var all = await _roleManager.Roles.ToListAsync();
-			return queryFilter.GetFilteredList(all);
+			return await queryFilter.GetFilteredList(_roleManager.Roles);
 		}
 
-		public async Task<IEnumerable<FlowRole>> Get(LinqQueryFilter<FlowRole> linqQueryFilter)
-		{
-			return await linqQueryFilter.GetFilteredList(_roleManager.Roles);
-		}
-
-		public async Task<int> GetTotalCount(LinqQueryFilter<FlowRole> queryFilter)
+		public async Task<int> GetTotalCount(IQueryFilter<FlowRole> queryFilter)
 		{
 			return await queryFilter.GetTotalCount(_roleManager.Roles);
 		}

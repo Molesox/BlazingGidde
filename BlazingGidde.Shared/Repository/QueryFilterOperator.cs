@@ -6,7 +6,7 @@ namespace BlazingGidde.Shared.Repository
 	/// <summary>
 	/// Specify the compare operator
 	/// </summary>
-	public enum FilterOperator
+	public enum QueryFilterOperator
 	{
 		Equals,
 		NotEquals,
@@ -18,4 +18,5 @@ namespace BlazingGidde.Shared.Repository
 		LessThanOrEqual,
 		GreaterThanOrEqual
 	}
+
 }

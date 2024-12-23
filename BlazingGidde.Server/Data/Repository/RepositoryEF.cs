@@ -60,33 +60,20 @@ namespace BlazingGidde.Server.Data.Repository
 		/// Get method for retrieving entities according to a QueryFilter.
 		/// </summary>
 		/// <returns>An IEnumerable of entities.</returns>
-		public virtual async Task<IEnumerable<TEntity>> Get(QueryFilter<TEntity> queryFilter)
+		public virtual async Task<(IEnumerable<TEntity>, int)> Get(IQueryFilter<TEntity> queryFilter)
 		{
-			var allitems = (await GetAll()).ToList();
-			return queryFilter.GetFilteredList(allitems);
+			return await queryFilter.GetFilteredList(dbSet);
 		}
-
-		/// <summary>
-		/// Generic get method for retrieving entities.
-		/// </summary>
-		/// <param name="queryLinq"></param>
-		/// <returns></returns>
-		public virtual async Task<IEnumerable<TEntity>> Get(LinqQueryFilter<TEntity> linqQueryFilter)
-		{
-			return await linqQueryFilter.GetFilteredList(dbSet);
-		}
-		
 
 		/// <summary>
 		/// Retrieves the total count of entities that match the specified LINQ query filter.
 		/// </summary>
-		/// <param name="linqQueryFilter">The LINQ query filter to apply for counting entities.</param>
+		/// <param name="queryFilter">The LINQ query filter to apply for counting entities.</param>
 		/// <returns>The total number of entities matching the filter.</returns>
-		public virtual async Task<int> GetTotalCount(LinqQueryFilter<TEntity> linqQueryFilter)
+		public virtual async Task<int> GetTotalCount(IQueryFilter<TEntity> queryFilter)
 		{
-			return await linqQueryFilter.GetTotalCount(dbSet);
+			return await queryFilter.GetTotalCount(dbSet);
 		}
-
 		/// <summary>
 		/// Retrieves all entities from the repository.
 		/// </summary>
