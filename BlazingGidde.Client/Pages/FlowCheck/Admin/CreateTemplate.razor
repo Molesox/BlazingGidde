@@ -50,8 +50,11 @@
 
     private void CreateNewTemplate(TemplateCode checklistType)
     {
-        // Navegar a la página de creación de plantilla usando el TemplateCode como parámetro
-        NavigationManager.NavigateTo($"/create-template/{checklistType.ToString()}");
+        var selectedTemplate = mytemplate.FirstOrDefault(t => t.Code == checklistType);
+        if (selectedTemplate != null)
+        {
+            NavigationManager.NavigateTo($"/create-template/{checklistType}?name={selectedTemplate.Name}&imgUrl={selectedTemplate.ImgUrl}&createUser={selectedTemplate.CreateUser}");
+        }
     }
 
 }

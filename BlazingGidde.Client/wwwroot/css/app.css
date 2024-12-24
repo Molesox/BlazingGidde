@@ -16,6 +16,19 @@ a, .btn-link {
 	color: #fff;
 	background-color: #1b6ec2;
 	border-color: #1861ac;
+	margin: 15px;
+}
+
+.btn-success {
+	background-color: #28a745;
+	border-color: #218838;
+	margin: 15px;
+}
+
+.btn-danger {
+	background-color: #dc3545;
+	border-color: #c82333;
+	margin: 15px;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -99,3 +112,34 @@ a, .btn-link {
 code {
 	color: #c02d76;
 }
+
+/* Estilos específicos para la página de crear plantilla */
+.create-template-container {
+	
+	padding: 1rem;
+	border-radius: 8px;
+}
+
+.form-group {
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+.create-template-container h3 {
+	color: #333;
+}
+
+.create-template-container .form-group label {
+	font-weight: bold;
+	margin-bottom: 15px;
+}
+
+.create-template-container img {
+	max-height: 50px;
+	margin-left: 10px;
+}
+
+.create-template-container .element-item {
+	margin-top: 10px;
+}
+

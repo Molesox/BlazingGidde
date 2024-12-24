@@ -28,5 +28,4 @@ public class CustomTemplateItem : IModelBase<int>
     /// <summary>
     /// Gets or sets the template code. 
     /// </summary>
-    public TemplateCode TemplateCode { get; set; }
 }
