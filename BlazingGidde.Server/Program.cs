@@ -8,7 +8,6 @@ using BlazingGidde.Shared.Models.Patois;
 using BlazingGidde.Shared.Models.PersonMain;
 using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog.Templates;
@@ -17,7 +16,6 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using AgileObjects.AgileMapper;
-using BlazingGidde.Shared.Models.Identity;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,20 +47,33 @@ builder.Services.AddDefaultIdentity<FlowUser>()
     .AddRoles<FlowRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddTransient<IRepository<Person>, RepositoryEF<Person, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<Email>, RepositoryEF<Email, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<Phone>, RepositoryEF<Phone, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<DictionaryEntry>, RepositoryEF<DictionaryEntry, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<CustomTemplateItem>, RepositoryEF<CustomTemplateItem, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<Incidency>, RepositoryEF<Incidency, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<Template>, RepositoryEF<Template, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<TemplateItem>, RepositoryEF<TemplateItem, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<TemplateKind>, RepositoryEF<TemplateKind, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<TemplateType>, RepositoryEF<TemplateType, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<BreakeableItem>, RepositoryEF<BreakeableItem, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<GazItem>, RepositoryEF<GazItem, ApplicationDbContext>>();
-builder.Services.AddTransient<IRepository<FlowUser>, RepositoryUser>();
-builder.Services.AddTransient<IRepository<FlowRole>, RepositoryRole>();
+var entityTypes = new Type[]
+{
+    typeof(Person),
+    typeof(Email),
+    typeof(Phone),
+    typeof(DictionaryEntry),
+    typeof(CustomTemplateItem),
+    typeof(Incidency),
+    typeof(Template),
+    typeof(TemplateItem),
+    typeof(TemplateKind),
+    typeof(TemplateType),
+    typeof(BreakeableItem),
+    typeof(GazItem),
+    typeof(FlowUser),
+    typeof(FlowRole)
+};
+
+foreach (var entityType in entityTypes)
+{
+    var repositoryInterface = typeof(IRepository<>).MakeGenericType(entityType);
+    var repositoryImplementation = typeof(RepositoryEF<,>).MakeGenericType(entityType, typeof(ApplicationDbContext));
+    builder.Services.AddTransient(repositoryInterface, repositoryImplementation);
+}
+
+builder.Services.AddTransient<IUserRepository<FlowUser>, RepositoryUser>();
+builder.Services.AddTransient<IRoleRepository<FlowRole>, RepositoryRole>();
 builder.Services.AddTransient<UserRoleService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>

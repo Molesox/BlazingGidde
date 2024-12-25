@@ -87,12 +87,12 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// <summary>
         /// The AddressType associated with this Address.
         /// </summary>
-        public virtual AddressType AddressType { get; set; } = new();
+        public virtual AddressType AddressType { get; set; }
 
         /// <summary>
         /// The Person associated with this Address.
         /// </summary>
-        public virtual Person Person { get; set; } = new();
+        public virtual Person Person { get; set; }
 
         #endregion
     }

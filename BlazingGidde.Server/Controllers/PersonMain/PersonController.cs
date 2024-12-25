@@ -33,11 +33,11 @@ namespace BlazingGidde.Server.Controllers.Identity
             try
             {
                 var linqFilter = new LinqQueryFilter<Phone>(p => p.PersonId == id);
-                var phones = await _repositoryPhones.Get(linqFilter);
+                var phones =  _repositoryPhones.Get(linqFilter);
                 return Ok(new APIListOfEntityResponse<Phone>
                 {
                     Success = true,
-                    Items = phones.Item1
+                    Items = phones
                 });
             }
             catch (Exception ex)
@@ -53,11 +53,11 @@ namespace BlazingGidde.Server.Controllers.Identity
             try
             {
                 var linqFilter = new LinqQueryFilter<Email>(p => p.PersonId == id);
-                var emails = await _repositoryEmails.Get(linqFilter);
+                var emails =  _repositoryEmails.Get(linqFilter);
                 return Ok(new APIListOfEntityResponse<Email>
                 {
                     Success = true,
-                    Items = emails.Item1
+                    Items = emails
                 });
             }
             catch (Exception ex)

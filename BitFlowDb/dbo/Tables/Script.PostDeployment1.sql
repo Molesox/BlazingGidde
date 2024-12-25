@@ -1,4 +1,4 @@
--- this file contains sql statements that will be executed after the build script.
+-- This file contains SQL statements that will be executed after the build script.
 
 if not exists (select 1 from [dbo].[aspnetroles])
 begin
@@ -32,5 +32,49 @@ begin
     ( 'verificación código de barras', '/BAR.png', 40, null, sysdatetime(), 'system', null),
     ( 'control de manipuladores', '/controlmanipuladores.png', 20, null, sysdatetime(), 'system', null);
 end
+go
 
+-- Insert into AddressType
+if not exists (select 1 from [Person].[AddressType])
+begin
+    insert into [Person].[AddressType] (Code, Name, SortKey, CreateDate, CreateUser, UpdateDate, UpdateUser)
+    values
+    ('H', 'Home', 1, sysdatetime(), 'system', null, null),
+    ('W', 'Work', 2, sysdatetime(), 'system', null, null),
+    ('O', 'Other', 3, sysdatetime(), 'system', null, null);
+end
+go
+
+-- Insert into EmailType
+if not exists (select 1 from [Person].[EmailType])
+begin
+    insert into [Person].[EmailType] (Code, Name, SortKey, CreateDate, CreateUser, UpdateDate, UpdateUser)
+    values
+    ('P', 'Personal', 1, sysdatetime(), 'system', null, null),
+    ('W', 'Work', 2, sysdatetime(), 'system', null, null),
+    ('O', 'Other', 3, sysdatetime(), 'system', null, null);
+end
+go
+
+-- Insert into PersonType
+if not exists (select 1 from [Person].[PersonType])
+begin
+    insert into [Person].[PersonType] (Code, Name, SortKey, CreateDate, CreateUser, UpdateDate, UpdateUser)
+    values
+    ('IN', 'Individual', 1, sysdatetime(), 'system', null, null),
+    ('CO', 'Company', 2, sysdatetime(), 'system', null, null),
+    ('OT', 'Other', 3, sysdatetime(), 'system', null, null);
+end
+go
+
+-- Insert into PhoneType
+if not exists (select 1 from [Person].[PhoneType])
+begin
+    insert into [Person].[PhoneType] (Code, Name, SortKey, CreateDate, CreateUser, UpdateDate, UpdateUser)
+    values
+    ('H', 'Home', 1, sysdatetime(), 'system', null, null),
+    ('M', 'Mobile', 2, sysdatetime(), 'system', null, null),
+    ('W', 'Work', 3, sysdatetime(), 'system', null, null),
+    ('O', 'Other', 4, sysdatetime(), 'system', null, null);
+end
 go

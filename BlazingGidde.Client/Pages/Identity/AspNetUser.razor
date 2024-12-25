@@ -6,6 +6,7 @@
 @using BlazingGidde.Shared.DTOs.Common
 @using BlazingGidde.Shared.DTOs.FlowCheck
 @using BlazingGidde.Shared.DTOs.FlowCheck.Request
+@using BlazingGidde.Shared.Models.PersonMain
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 
@@ -21,18 +22,18 @@
  TCreateDto="CreateFlowUserDto" TReadDto="FlowUserDto">
 
     <GridColumns>
-        <!-- ID Column -->
+        <!-- ID Column (Read-Only) -->
         <GridColumn TItem="FlowUserDto" HeaderText="ID" PropertyName="Id">
             <ChildContent Context="item">@item.Id</ChildContent>
         </GridColumn>
 
-        <!-- User Name Column -->
-        <GridColumn TItem="FlowUserDto" HeaderText="User Name" PropertyName="UserName">
-	        <ChildContent Context="item">@item.PersonLastName</ChildContent>
+        <!-- User Name Columns -->
+        <GridColumn TItem="FlowUserDto" HeaderText="First Name" PropertyName="PersonFirstName">
+            <ChildContent Context="item">@item.PersonFirstName</ChildContent>
         </GridColumn>
 
-        <GridColumn TItem="FlowUserDto" HeaderText="User Name" PropertyName="UserName">
-	        <ChildContent Context="item">@item.PersonFirstName</ChildContent>
+        <GridColumn TItem="FlowUserDto" HeaderText="Last Name" PropertyName="PersonLastName">
+            <ChildContent Context="item">@item.PersonLastName</ChildContent>
         </GridColumn>
 
         <!-- Email Column -->
@@ -54,132 +55,156 @@
         <GridColumn TItem="FlowUserDto" HeaderText="Two-Factor Enabled" PropertyName="TwoFactorEnabled">
             <ChildContent Context="item">@item.TwoFactorEnabled</ChildContent>
         </GridColumn>
-
-        
     </GridColumns>
 
     <EditFormTemplate Context="user">
-    <div class="card">
-        <div class="card-header">
-            <h5>User Information</h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <!-- Column 1 -->
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">Id</label>
-                        <InputText class="form-control" @bind-Value="user.Id"/>
+        <div class="card">
+            <div class="card-header">
+                <h5>User Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Column 1 -->
+                    <div class="col-md-6">
+                        <!-- ID (Read-Only) -->
+                        <div class="mb-3">
+                            <label class="form-label">ID</label>
+                            <InputText class="form-control" @bind-Value="user.Id" readonly />
+                        </div>
+
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <InputText class="form-control" @bind-Value="user.PersonTitle" />
+                            <ValidationMessage For="@(() => user.PersonTitle)" />
+                        </div>
+
+                        <!-- First Name -->
+                        <div class="mb-3">
+                            <label class="form-label">First Name</label>
+                            <InputText class="form-control" @bind-Value="user.PersonFirstName" />
+                            <ValidationMessage For="@(() => user.PersonFirstName)" />
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <InputText class="form-control" @bind-Value="user.PhoneNumber" />
+                            <ValidationMessage For="@(() => user.PhoneNumber)" />
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Title</label>
-                        <InputText class="form-control" @bind-Value="user.PersonTitle"/>
-                        <ValidationMessage For="@(() => user.PersonTitle)" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">First Name</label>
-                        <InputText class="form-control" @bind-Value="user.PersonFirstName"/>
-                        <ValidationMessage For="@(() => user.PersonFirstName)" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Phone Number</label>
-                        <InputText class="form-control" @bind-Value="user.PhoneNumber"/>
-                        <ValidationMessage For="@(() => user.PhoneNumber)" />
-                    </div>
-                </div>
-                <!-- Column 2 -->
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label class="form-label">Culture</label>
-                        <InputText class="form-control" @bind-Value="user.PersonCulture"/>
-                        <ValidationMessage For="@(() => user.PersonCulture)" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Last Name</label>
-                        <InputText class="form-control" @bind-Value="user.PersonLastName"/>
-                        <ValidationMessage For="@(() => user.PersonLastName)" />
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        <InputText class="form-control" @bind-Value="user.Email" type="email"/>
-                        <ValidationMessage For="@(() => user.Email)" />
+
+                    <!-- Column 2 -->
+                    <div class="col-md-6">
+                        <!-- Culture -->
+                        <div class="mb-3">
+                            <label class="form-label">Culture</label>
+                            <InputText class="form-control" @bind-Value="user.PersonCulture" />
+                            <ValidationMessage For="@(() => user.PersonCulture)" />
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="mb-3">
+                            <label class="form-label">Last Name</label>
+                            <InputText class="form-control" @bind-Value="user.PersonLastName" />
+                            <ValidationMessage For="@(() => user.PersonLastName)" />
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <InputText class="form-control" @bind-Value="user.Email" type="email" />
+                            <ValidationMessage For="@(() => user.Email)" />
+                        </div>
+
+                        <!-- Person Type Dropdown -->
+                        <div class="mb-3">
+                            <label class="form-label">Person Type</label>
+                            <InputSelect class="form-control" @bind-Value="user.PersonPersonTypeId">
+                                <option value="1" disabled>Select a Person Type</option>
+                                @foreach (var type in PersonTypes)
+                                {
+                                    <option value="@((int)type)">@type.ToString()</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => user.PersonPersonTypeId)" />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="card mt-4">
-        <div class="card-header">
-            <h5>Role Management</h5>
+        <!-- Role Management Section -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5>Role Management</h5>
+            </div>
+            <div class="card-body">
+                <div>
+                    <h6>Assign Role</h6>
+                    <div class="input-group mb-3">
+                        <InputSelect class="form-control" @bind-Value="selectedRole">
+                            <option value="" disabled>Select a Role</option>
+                            @if (_roles != null)
+                            {
+                                @foreach (var role in _roles)
+                                {
+                                    <option value="@role.Name">@role.Name</option>
+                                }
+                            }
+                        </InputSelect>
+                        <button class="btn btn-primary" @onclick="() => AssignRole(user.Id)">Assign</button>
+                    </div>
+                </div>
+
+                <div>
+                    <h6>Current Roles</h6>
+                    @if (userRoles.ContainsKey(user.Id) && userRoles[user.Id].Any())
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Role</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var role in userRoles[user.Id])
+                                {
+                                    <tr>
+                                        <td>@role</td>
+                                        <td>
+                                            <button class="btn btn-danger btn-sm" @onclick="() => RemoveRole(user.Id, role)">
+                                                <span class="material-icons">delete</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>No roles assigned.</p>
+                    }
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <div>
-                <h6>Assign Role</h6>
-                <div class="input-group mb-3">
-                    <InputSelect class="form-control" @bind-Value="selectedRole">
-                        <option value="" disabled>Select a Role</option>
-                        @if (_roles != null)
-							{
-								@foreach (var role in _roles)
-								{
-										<option value="@role.Name">@role.Name</option>
-								}
-							}
-					</InputSelect>
-					<button class="btn btn-primary" @onclick="() => AssignRole(user.Id)">Assign</button>
-				</div>
-			</div>
-
-			<div>
-				<h6>Current Roles</h6>
-					@if (userRoles.ContainsKey(user.Id) && userRoles[user.Id].Any())
-					{
-						<table class="table">
-							<thead>
-							<tr>
-								<th>Role</th>
-								<th>Actions</th>
-							</tr>
-							</thead>
-							<tbody>
-								@foreach (var role in userRoles[user.Id])
-								{
-									<tr>
-										<td>@role</td>
-										<td>
-											<button class="btn btn-danger btn-sm" @onclick="() => RemoveRole(user.Id, role)">
-												<span class="material-icons">delete</span>
-											</button>
-										</td>
-									</tr>
-								}
-							</tbody>
-						</table>
-					}
-					else
-					{
-						<p>No roles assigned.</p>
-					}
-			</div>
-		</div>
-	</div>
-</EditFormTemplate>
-
-
+    </EditFormTemplate>
 </CustomGrid>
 
 @code {
-
     private IEnumerable<IdentityRole>? _roles;
     private string? selectedRole;
     private Dictionary<string, List<string>> userRoles = new();
+
+    // Define available Person Types based on the enum
+    private List<PersonMainEnum> PersonTypes = Enum.GetValues(typeof(PersonMainEnum)).Cast<PersonMainEnum>().ToList();
 
     protected override async Task OnInitializedAsync()
     {
         _roles = await RoleManager.GetAll();
         await LoadUserRoles();
-
     }
 
     private async Task AssignRole(string userId)

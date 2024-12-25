@@ -2,16 +2,21 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using BlazingGidde.Shared.Models.FlowCheck;
+using AgileObjects.AgileMapper;
+using AgileObjects.AgileMapper.Extensions;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BlazingGidde.Server.Data.Repository
 {
-    public class RepositoryUser : IRepository<FlowUser>
+	public class RepositoryUser : IUserRepository<FlowUser>
 	{
 		private readonly UserManager<FlowUser> _userManager;
+		private readonly IRepository<FlowUser> _userRepository;
 
-		public RepositoryUser(UserManager<FlowUser> userManager)
+		public RepositoryUser(UserManager<FlowUser> userManager, IRepository<FlowUser> userRepository)
 		{
 			_userManager = userManager;
+			_userRepository = userRepository;
 		}
 
 		public async Task<bool> Delete(FlowUser entityToDelete)
@@ -44,9 +49,9 @@ namespace BlazingGidde.Server.Data.Repository
 			return await _userManager.FindByIdAsync(id.ToString() ?? string.Empty);
 		}
 
-		public async Task<(IEnumerable<FlowUser>,int)> Get(IQueryFilter<FlowUser> queryFilter)
+		public IQueryable<FlowUser> Get(IQueryFilter<FlowUser> queryFilter)
 		{
-			return await queryFilter.GetFilteredList(_userManager.Users);
+			return queryFilter.GetFilteredList(_userManager.Users);
 		}
 
 		public async Task<int> GetTotalCount(IQueryFilter<FlowUser> queryFilter)
@@ -56,21 +61,32 @@ namespace BlazingGidde.Server.Data.Repository
 
 		public async Task<FlowUser?> Insert(FlowUser entity)
 		{
+			entity.UserName = entity.Email;
+			entity.Person.PersonType = null;
 			var result = await _userManager.CreateAsync(entity);
-			return result.Succeeded ? entity : null;
+			return entity;
 		}
 
 		public async Task<FlowUser?> Update(FlowUser entityToUpdate)
 		{
-			var user = await _userManager.FindByIdAsync(entityToUpdate.Id);
-			if (user == null) return null;
 
-			user.Email = entityToUpdate.Email;
-			user.UserName = entityToUpdate.UserName;
-			user.PhoneNumber = entityToUpdate.PhoneNumber;
+			var identityUser = await _userManager.FindByIdAsync(entityToUpdate.Id);
+			if (identityUser == null) return null;
 
-			var result = await _userManager.UpdateAsync(user);
-			return result.Succeeded ? user : null;
+			identityUser.UserName = entityToUpdate.UserName;
+			identityUser.Email = entityToUpdate.Email;
+
+			var result = await _userManager.UpdateAsync(identityUser);
+
+			if (!result.Succeeded) return null;
+			var person = await _userRepository.GetByID(entityToUpdate.Id);
+			if (person != null)
+			{
+				person = entityToUpdate.Map().Over(person);
+				person.Person.PersonType = null;
+				return await _userRepository.Update(person);
+			}
+			return null;
 		}
 	}
 }

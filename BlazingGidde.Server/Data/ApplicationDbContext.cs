@@ -49,18 +49,24 @@ namespace BlazingGidde.Server.Data
 
 		public virtual DbSet<DictionaryEntry> DictionaryEntries { get; set; }
 
-        #endregion
+		#endregion
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder
-            .LogTo(Console.WriteLine)
-            .EnableSensitiveDataLogging();
-        }
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		{
+			optionsBuilder
+			.LogTo(Console.WriteLine)
+			.EnableSensitiveDataLogging();
+		}
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+
+			modelBuilder.Entity<Person>()
+				.HasOne(p => p.PersonType)
+				.WithMany(t => t.Persons)
+				.HasForeignKey(p => p.PersonTypeId)
+				.IsRequired();
 
 			modelBuilder.Entity<Template>().UseTpcMappingStrategy();
 

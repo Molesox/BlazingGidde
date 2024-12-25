@@ -46,12 +46,12 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// <summary>
         /// The EmailType associated with this Email.
         /// </summary>
-        public virtual EmailType EmailType { get; set; } = new();
+        public virtual EmailType EmailType { get; set; }
 
         /// <summary>
         /// The Person associated with this Email.
         /// </summary>
-        public virtual Person Person { get; set; } = new();
+        public virtual Person Person { get; set; }
 
         #endregion
     }

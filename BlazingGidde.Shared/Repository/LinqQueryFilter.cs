@@ -81,12 +81,13 @@ namespace BlazingGidde.Shared.Repository
 
         #region Methods
 
+       
         /// <summary>
-        /// Applies the filter, ordering, includes, and paging to the query and returns the result as a list asynchronously.
+        /// Applies the filter, ordering, includes, and paging to the query and returns the resulting <see cref="IQueryable{TEntity}"/>.
         /// </summary>
         /// <param name="query">The queryable source.</param>
-        /// <returns>A task representing the asynchronous operation, with a result of the filtered list.</returns>
-        public async Task<(IEnumerable<TEntity>, int)> GetFilteredList(IQueryable<TEntity> query)
+        /// <returns>The filtered, ordered, and paged <see cref="IQueryable{TEntity}"/>.</returns>
+        public IQueryable<TEntity> GetFilteredList(IQueryable<TEntity> query)
         {
             var serializer = new ExpressionSerializer(new JsonSerializer());
 
@@ -106,8 +107,6 @@ namespace BlazingGidde.Shared.Repository
                 query = query.Where(deserializedExpression);
             }
 
-            var totalCount = await query.CountAsync();
-
             // Include the specified properties
             if (IncludePropertyNames != null)
             {
@@ -126,12 +125,14 @@ namespace BlazingGidde.Shared.Repository
             }
 
             // Apply paging
-            query = query.Skip(Skip).Take(Take);
+            if (Take > 0)
+            {
+                query = query.Skip(Skip).Take(Take);
+            }
 
-            // Execute the query and return the list
-            return (await query.ToListAsync(), totalCount);
+            return query;
         }
-
+        
         /// <summary>
         /// Gets the total count of items that match the filter asynchronously.
         /// </summary>

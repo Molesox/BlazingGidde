@@ -11,6 +11,7 @@ using AgileObjects.AgileMapper.Extensions;
 namespace BlazingGidde.Client.Shared;
 
 public partial class CustomGrid<TEntity, Tkey, TReadDto, TCreateDto> : ComponentBase
+	where Tkey : IEquatable<Tkey>
 	where TEntity : class, IModelBase<Tkey>
 	where TReadDto : class, IModelBase<Tkey>
 	where TCreateDto : class, IModelBase<Tkey>

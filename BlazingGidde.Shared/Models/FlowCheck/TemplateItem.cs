@@ -20,7 +20,7 @@ public class TemplateItem : ModelBase
         /// <summary>
         /// Gets or sets the parent template.
         /// </summary>
-        public Template Template { get; set; } = new();
+        public Template Template { get; set; }
 
         /// <summary>
         /// Gets or sets the possible related incidency.

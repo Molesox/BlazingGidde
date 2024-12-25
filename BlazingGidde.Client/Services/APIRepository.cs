@@ -13,6 +13,7 @@ namespace BlazingGidde.Client.Services
 		: IApiRepository<TEntity, Tkey, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoResponse>
 		where TEntity : class, IModelBase<Tkey>
 		where TReadDto : class
+		where Tkey : IEquatable<Tkey>
 		where TCreateDto : class, IModelBase<Tkey>
 		where TUpdateDto : class, IModelBase<Tkey>
 		where TCreateDtoResponse : class
@@ -227,6 +228,7 @@ namespace BlazingGidde.Client.Services
     public class APIRepository<TEntity, Tkey, TReadDto, TCreateDto>
         : APIRepository<TEntity, Tkey, TReadDto, TCreateDto, TCreateDto, TReadDto, TReadDto>
         where TEntity : class, IModelBase<Tkey>
+		where Tkey : IEquatable<Tkey>
         where TReadDto : class, IReadDto<Tkey>
 		where TCreateDto : class, IModelBase<Tkey>
     {
@@ -238,6 +240,7 @@ namespace BlazingGidde.Client.Services
 	 public class APIRepository<TEntity, Tkey>
         : APIRepository<TEntity, Tkey, TEntity, TEntity, TEntity, TEntity, TEntity>
         where TEntity : class, IModelBase<Tkey>
+		where Tkey : IEquatable<Tkey>
     {
         public APIRepository(HttpClient _http, string _controllerName) :
 		 base(_http, _controllerName)

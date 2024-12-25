@@ -16,6 +16,7 @@ namespace BlazingGidde.Server.Controllers
         where TEntity : class, IModelBase<Tkey>
         where TReadDto : class
         where TCreateDto : class
+        where Tkey : IEquatable<Tkey>
         where TUpdateDto : class, IModelBase<Tkey>
         where TCreateDtoResponse : class
         where TUpdateDtoReponse : class
@@ -30,12 +31,37 @@ namespace BlazingGidde.Server.Controllers
             _repository = repository;
             _logger = logger;
         }
-
+        /// <summary>
+        /// Executes an asynchronous operation with optional model state validation.
+        /// </summary>
+        /// <typeparam name="TResponse">The type of the response.</typeparam>
+        /// <param name="func">The function representing the operation.</param>
+        /// <param name="successMessage">The success message for logging.</param>
+        /// <param name="errorMessage">The error message for logging.</param>
+        /// <param name="validateModel">Flag indicating whether to validate the model state.</param>
+        /// <returns>An ActionResult containing the response.</returns>
         protected async Task<ActionResult<TResponse>> ExecuteAsync<TResponse>(
             Func<Task<TResponse>> func,
             string successMessage,
-            string errorMessage)
+            string errorMessage,
+            bool validateModel = false) // New parameter for model validation
         {
+            if (validateModel && !ModelState.IsValid)
+            {
+                // Log the validation errors
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                              .Select(e => e.ErrorMessage)
+                                              .ToList();
+                _logger.LogWarning("Model validation failed: {Errors}", string.Join("; ", errors));
+
+                // Return a BadRequest with the validation errors
+                return BadRequest(new
+                {
+                    Success = false,
+                    ErrorMessages = errors
+                });
+            }
+
             try
             {
                 var result = await func();
@@ -79,6 +105,7 @@ namespace BlazingGidde.Server.Controllers
                 typeof(TEntity).Name);
         }
 
+
         [HttpGet("{Id}")]
         public virtual Task<ActionResult<APIEntityResponse<TReadDto>>> GetById([FromRoute] Tkey Id)
         {
@@ -88,7 +115,6 @@ namespace BlazingGidde.Server.Controllers
             {
                 ValidateId(Id, correlationId);
                 LogFetchByIdStart(Id, correlationId);
-
                 var entity = await _repository.GetByID(Id);
                 if (entity == null)
                 {
@@ -155,15 +181,17 @@ namespace BlazingGidde.Server.Controllers
 
             return ExecuteAsync(async () =>
             {
+                var query = PrepareQuery(_repository.Get(Filter));
+                var items = await MapToReadDto(query).ToListAsync();
+
+                LogFetchSuccess(items.Count, correlationId);
                 
-                var result = await _repository.Get(Filter);
-                var readDtos = result.Item1.Map().ToANew<List<TReadDto>>();
                 _logger.LogInformation(
                     "Request {CorrelationId}: Fetched {EntityName} with provided filter",
                     correlationId,
                     typeof(TEntity).Name);
 
-                return new APIEntityResponse<QueryFilterResponse<TReadDto>> { Success = true, Items = new QueryFilterResponse<TReadDto>{Items= readDtos, TotalCount = result.Item2 } };
+                return new APIEntityResponse<QueryFilterResponse<TReadDto>> { Success = true, Items = new QueryFilterResponse<TReadDto> { Items = items, TotalCount = items.Count } };
             },
             $"Request {correlationId}: Fetched {typeof(TEntity).Name} with filter",
             $"Request {correlationId}: Failed to fetch {typeof(TEntity).Name} with filter");
@@ -186,14 +214,17 @@ namespace BlazingGidde.Server.Controllers
             return ExecuteAsync(async () =>
             {
                 ValidateLinqFilter(linqQueryFilter, correlationId);
-                var result = await _repository.Get(linqQueryFilter);
-                var readDtos = result.Item1.Map().ToANew<List<TReadDto>>();
+
+                var query = PrepareQuery(_repository.Get(linqQueryFilter));
+                var items = await MapToReadDto(query).ToListAsync();
+
+                LogFetchSuccess(items.Count, correlationId);
                 _logger.LogInformation(
                     "Request {CorrelationId}: Fetched {EntityName} with LINQ filter",
                     correlationId,
                     typeof(TEntity).Name);
 
-                return new APIEntityResponse<QueryFilterResponse<TReadDto>> { Success = true, Items = new QueryFilterResponse<TReadDto>() { Items = readDtos, TotalCount = result.Item2 } };
+                return new APIEntityResponse<QueryFilterResponse<TReadDto>> { Success = true, Items = new QueryFilterResponse<TReadDto>() { Items = items, TotalCount = items.Count } };
             },
             $"Request {correlationId}: Fetched {typeof(TEntity).Name} with LINQ filter",
             $"Request {correlationId}: Failed to fetch {typeof(TEntity).Name} with LINQ filter");
@@ -292,7 +323,8 @@ namespace BlazingGidde.Server.Controllers
                 return new APIEntityResponse<TCreateDtoResponse> { Success = true, Items = readDto };
             },
             $"Request {correlationId}: Inserted {typeof(TEntity).Name}",
-            $"Request {correlationId}: Failed to insert {typeof(TEntity).Name}");
+            $"Request {correlationId}: Failed to insert {typeof(TEntity).Name}",
+            validateModel: true);
         }
 
         protected virtual void ValidateEntityForInsert(TCreateDto entity, string correlationId)
@@ -345,8 +377,9 @@ namespace BlazingGidde.Server.Controllers
 
                 return new APIEntityResponse<TUpdateDtoReponse> { Success = true, Items = updatedDto };
             },
-            $"Request {correlationId}: Updated {typeof(TEntity).Name} with ID {nameof(entity.Id)}",
-            $"Request {correlationId}: Failed to update {typeof(TEntity).Name} with ID {nameof(entity.Id)}");
+            $"Request {correlationId}: Updated {typeof(TEntity).Name} with ID {entity.Id}",
+            $"Request {correlationId}: Failed to update {typeof(TEntity).Name} with ID {entity.Id}",
+            validateModel: true);
         }
 
         protected virtual void ValidateEntityForUpdate(TUpdateDto entity, string correlationId)
@@ -437,6 +470,7 @@ namespace BlazingGidde.Server.Controllers
 
     public class BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto>
         : BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TCreateDto, TReadDto, TReadDto>
+        where Tkey : IEquatable<Tkey>
         where TEntity : class, IModelBase<Tkey>
         where TReadDto : class, IReadDto<Tkey>
         where TCreateDto : class, ICreateDto<Tkey>
@@ -450,6 +484,7 @@ namespace BlazingGidde.Server.Controllers
 
     public class BlazingGiddeBaseController<TEntity, Tkey, TDataContext>
         : BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TEntity, TEntity, TEntity, TEntity, TEntity>
+        where Tkey : IEquatable<Tkey>
         where TEntity : class, IModelBase<Tkey>
         where TDataContext : DbContext
     {

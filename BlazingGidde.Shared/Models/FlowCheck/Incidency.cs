@@ -22,5 +22,5 @@ public class Incidency : IModelBase<int>
 	/// Gets or set the template parent.
 	/// </summary>
 	[ForeignKey(nameof(TemplateItem.Id))]
-    public TemplateItem Template { get; set; } = new();
+    public TemplateItem Template { get; set; }
 }

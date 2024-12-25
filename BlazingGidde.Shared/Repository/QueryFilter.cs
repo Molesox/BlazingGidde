@@ -52,50 +52,44 @@ namespace BlazingGidde.Shared.Repository
             var query = ApplyFilters(AllItems);
             return await query.CountAsync();
         }
+public IQueryable<TEntity> GetFilteredList(IQueryable<TEntity> AllItems)
+{
+    var query = ApplyFilters(AllItems);
 
-        public async Task<(IEnumerable<TEntity>, int)> GetFilteredList(IQueryable<TEntity> AllItems)
+    // Include the specified properties
+    if (IncludePropertyNames != null && IncludePropertyNames.Any())
+    {
+        foreach (var includeProperty in IncludePropertyNames)
         {
-            var query = ApplyFilters(AllItems);
-
-            // Include the specified properties
-            if (IncludePropertyNames != null && IncludePropertyNames.Any())
-            {
-                foreach (var includeProperty in IncludePropertyNames)
-                {
-                    query = query.Include(includeProperty);
-                }
-            }
-
-            // Calculate Total Count before pagination
-            var totalCount = await query.CountAsync();
-
-            // Order by
-            if (!string.IsNullOrEmpty(OrderByPropertyName))
-            {
-                var parameter = Expression.Parameter(typeof(TEntity), "x");
-                var property = Expression.PropertyOrField(parameter, OrderByPropertyName);
-                var lambda = Expression.Lambda(property, parameter);
-
-                string methodName = OrderByDescending ? "OrderByDescending" : "OrderBy";
-
-                var resultExpression = Expression.Call(typeof(Queryable), methodName,
-                    new Type[] { typeof(TEntity), property.Type },
-                    query.Expression, Expression.Quote(lambda));
-
-                query = query.Provider.CreateQuery<TEntity>(resultExpression);
-            }
-
-            // Apply Pagination
-            if (PageSize > 0)
-            {
-                int skip = (PageNumber - 1) * PageSize;
-                query = query.Skip(skip).Take(PageSize);
-            }
-
-            // Execute and return the (list, count)
-            var items = await query.ToListAsync();
-            return (items, totalCount);
+            query = query.Include(includeProperty);
         }
+    }
+
+    // Order by
+    if (!string.IsNullOrEmpty(OrderByPropertyName))
+    {
+        var parameter = Expression.Parameter(typeof(TEntity), "x");
+        var property = Expression.PropertyOrField(parameter, OrderByPropertyName);
+        var lambda = Expression.Lambda(property, parameter);
+
+        string methodName = OrderByDescending ? "OrderByDescending" : "OrderBy";
+
+        var resultExpression = Expression.Call(typeof(Queryable), methodName,
+            new Type[] { typeof(TEntity), property.Type },
+            query.Expression, Expression.Quote(lambda));
+
+        query = query.Provider.CreateQuery<TEntity>(resultExpression);
+    }
+
+    // Apply Pagination
+    if (PageSize > 0)
+    {
+        int skip = (PageNumber - 1) * PageSize;
+        query = query.Skip(skip).Take(PageSize);
+    }
+
+    return query;
+}
 
         private IQueryable<TEntity> ApplyFilters(IQueryable<TEntity> query)
         {

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BlazingGidde.Server.Data.Repository
 {
-    public class RepositoryRole : IRepository<FlowRole>
+    public class RepositoryRole : IRoleRepository<FlowRole>
 	{
 		private readonly RoleManager<FlowRole> _roleManager;
 
@@ -45,9 +45,9 @@ namespace BlazingGidde.Server.Data.Repository
 			return await _roleManager.FindByIdAsync(id.ToString() ?? string.Empty);
 		}
 
-		public async Task<(IEnumerable<FlowRole>, int)> Get(IQueryFilter<FlowRole> queryFilter)
+		public IQueryable<FlowRole> Get(IQueryFilter<FlowRole> queryFilter)
 		{
-			return await queryFilter.GetFilteredList(_roleManager.Roles);
+			return queryFilter.GetFilteredList(_roleManager.Roles);
 		}
 
 		public async Task<int> GetTotalCount(IQueryFilter<FlowRole> queryFilter)

@@ -60,9 +60,9 @@ namespace BlazingGidde.Server.Data.Repository
 		/// Get method for retrieving entities according to a QueryFilter.
 		/// </summary>
 		/// <returns>An IEnumerable of entities.</returns>
-		public virtual async Task<(IEnumerable<TEntity>, int)> Get(IQueryFilter<TEntity> queryFilter)
+		public IQueryable<TEntity> Get(IQueryFilter<TEntity> queryFilter)
 		{
-			return await queryFilter.GetFilteredList(dbSet);
+			return  queryFilter.GetFilteredList(dbSet);
 		}
 
 		/// <summary>

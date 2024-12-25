@@ -8,7 +8,7 @@ namespace BlazingGidde.Shared.Repository
     public interface IQueryFilter<TEntity> 
     where TEntity : class
     {
-        public  Task<(IEnumerable<TEntity>,int)> GetFilteredList(IQueryable<TEntity> AllItems);
+        public   IQueryable<TEntity> GetFilteredList(IQueryable<TEntity> AllItems);
 
         public Task<int> GetTotalCount(IQueryable<TEntity> AllItems);
     }

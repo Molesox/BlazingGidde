@@ -8,6 +8,7 @@ namespace BlazingGidde.Client.Services
     public interface IApiRepository<TEntity, Tkey, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoResponse>
     where TEntity : class, IModelBase<Tkey>
     where TReadDto : class
+    where Tkey : IEquatable<Tkey>
     where TCreateDto : class, IModelBase<Tkey>
     where TUpdateDto : class, IModelBase<Tkey>
     where TCreateDtoResponse : class

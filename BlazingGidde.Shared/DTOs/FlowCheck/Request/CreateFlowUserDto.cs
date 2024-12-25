@@ -12,6 +12,10 @@ namespace BlazingGidde.Shared.DTOs.FlowCheck.Request
 
 		public string Id { get; set; }
 
+		public int PersonId { get; set; }
+
+		public int PersonPersonTypeId { get; set; }
+
 		[Required]
 		[StringLength(20)]
 		public string PersonCulture { get; set; }

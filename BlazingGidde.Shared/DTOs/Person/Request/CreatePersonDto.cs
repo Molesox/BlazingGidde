@@ -7,6 +7,7 @@ namespace BlazingGidde.Shared.DTOs.Person.Request;
 public record CreatePersonDto : ICreateDto<int>
 {
     public int PersonId { get; set; }
+    
     public int PersonTypeId { get; set; }
 
     [Required]

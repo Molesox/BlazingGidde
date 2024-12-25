@@ -16,7 +16,7 @@ public class FlowUser : IdentityUser, IApplicationUserBase, IModelBase<string>
 
 	#region Interface implementation
 
-	public Person Person { get; set; } = new();
+	public Person Person { get; set; }
 	
 	#region Auditables
 

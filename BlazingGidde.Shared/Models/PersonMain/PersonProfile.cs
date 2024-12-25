@@ -46,7 +46,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// <summary>
         /// The Person associated with this PersonProfile.
         /// </summary>
-        public virtual Person Person { get; set; } = new();
+        public virtual Person Person { get; set; }
 
         #endregion
     }

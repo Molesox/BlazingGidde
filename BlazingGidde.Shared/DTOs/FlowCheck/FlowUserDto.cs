@@ -11,11 +11,20 @@ namespace BlazingGidde.Shared.DTOs.FlowCheck
 	{
 		public string Id { get; set; }
 
+		public int PersonId { get; set; }
+
+		public int PersonPersonTypeId { get; set; }
+
 		public string PersonFirstName { get; set; }
 
 		public string PersonLastName { get; set; }
 
 		public string PersonTitle { get; set; }
+
+		public string PersonCulture { get; set; }
+
+		public string PersonPhonesPhoneNumber { get; set; }
+		public int  PersonPhonesPhoneTypeId { get; set; }
 
 		public string Email { get; set; }
 

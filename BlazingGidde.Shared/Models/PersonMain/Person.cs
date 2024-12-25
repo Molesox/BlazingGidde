@@ -89,7 +89,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// <summary>
         /// Gets or sets the skip person type property.
         /// </summary>
-        public virtual PersonType PersonType { get; set; } = new();
+        public virtual PersonType PersonType { get; set; }
 
         /// <summary>
         /// The collection of Addresses associated with this Person.

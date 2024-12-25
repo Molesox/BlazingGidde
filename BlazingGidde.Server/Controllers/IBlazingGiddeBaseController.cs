@@ -9,6 +9,7 @@ namespace BlazingGidde.Server.Controllers
 {
 	public interface IBlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>
 		where TEntity : class, IModelBase<Tkey>
+		where Tkey : IEquatable<Tkey>
         where TReadDto : class
         where TCreateDto : class
         where TUpdateDto : class, IModelBase<Tkey>

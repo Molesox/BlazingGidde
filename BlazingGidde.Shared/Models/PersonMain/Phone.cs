@@ -47,12 +47,12 @@ namespace BlazingGidde.Shared.Models.PersonMain
 		/// <summary>
 		/// The PhoneType associated with this Phone.
 		/// </summary>
-		public virtual PhoneType PhoneType { get; set; } = new();
+		public virtual PhoneType PhoneType { get; set; }
 
 		/// <summary>
 		/// The Person associated with this Phone.
 		/// </summary>
-		public virtual Person Person { get; set; } = new();
+		public virtual Person Person { get; set; }
 
 		#endregion
 	}

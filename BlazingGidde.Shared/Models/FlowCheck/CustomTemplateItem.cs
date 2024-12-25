@@ -23,7 +23,7 @@ public class CustomTemplateItem : IModelBase<int>
     /// <summary>
     /// The skip parent template kind property.
     /// </summary>
-    public TemplateKind TemplateKind { get; set; } = new();
+    public TemplateKind TemplateKind { get; set; }
 
     /// <summary>
     /// Gets or sets the template code. 

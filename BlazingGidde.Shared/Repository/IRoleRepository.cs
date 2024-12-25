@@ -7,7 +7,7 @@ namespace BlazingGidde.Shared.Repository
 	/// The IRepository interface provides the standard operations to be performed on a data repository for a given type.
 	/// </summary>
 	/// <typeparam name="TEntity">Type of entity that this repository works with.</typeparam>
-	public interface IRepository<TEntity>
+	public interface IRoleRepository<TEntity> : IRepository<TEntity>
 	 where TEntity : class
 	{
 		#region Methods

@@ -33,10 +33,14 @@ namespace BlazingGidde.Server.Controllers.Identity
 		public async Task<IActionResult> Post([FromBody] RegisterModel model)
 		{
 			var newUser = new FlowUser { UserName = model.Email, Email = model.Email, PhoneNumber = model.PhoneNumber };
+			newUser.Person = new Person
+			{
+				FirstName = model.FirstName,
+				LastName = model.LastName,
+				Emails = [new Email { EmailAddress = model.Email, IsDefault = true, EmailTypeId = 1 }],
+				PersonTypeId = 1,
+			};
 
-			newUser.Person.FirstName = model.FirstName;
-			newUser.Person.LastName = model.LastName;
-			newUser.Person.Emails.Add(new Email { EmailAddress = model.Email, IsDefault = true });
 
 			var result = await _userManager.CreateAsync(newUser, model.Password!);
 
