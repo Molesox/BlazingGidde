@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using System.Text.Encodings.Web;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Components.Web;
+using BlazingGidde.Shared.Models;
 
 
 namespace BlazingGidde.Server.Services
@@ -22,8 +23,8 @@ namespace BlazingGidde.Server.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task <string> RenderTemplateAsync<TComponent,TModel>(TModel model)
-            where TComponent : IComponent
+        public async Task <string> RenderTemplateAsync<TComponent>(EmailViewModel model)
+          
         {
             var htmlRenderer = new HtmlRenderer(_serviceProvider, NullLoggerFactory.Instance);
 
