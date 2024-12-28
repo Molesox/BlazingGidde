@@ -1,9 +1,5 @@
-﻿@namespace BlazingGidde.Shared.EmailTemplates
-@typeparam TModel
+﻿@using BlazingGidde.Shared.Models
 
-@code {
-    [Parameter] public TModel Model { get; set; } = default!;
-}
 
 <!DOCTYPE html>
 <html>
@@ -17,3 +13,7 @@
     <footer>@Model.Signature</footer>
 </body>
 </html>
+
+@code {
+    [Parameter] public EmailViewModel Model { get; set; } = default!;
+}

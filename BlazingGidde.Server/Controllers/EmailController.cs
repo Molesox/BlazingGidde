@@ -1,10 +1,10 @@
-﻿using BlazingGidde.Server.Services;
+﻿
+using BlazingGidde.Server.Services;
 using BlazingGidde.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-//using BlazingGidde.Shared.EmailTemplates;
-using SendGrid;
-using SendGrid.Helpers.Mail;
+using BlazingGidde.Server.Components;
+
+
 
 
 namespace BlazingGidde.Server.Controllers
@@ -32,7 +32,7 @@ namespace BlazingGidde.Server.Controllers
             };
 
             //esta line de bajo no la he conseguido arreglar
-            //string emailHtml = await _templateRenderer.RenderTemplateAsync<WelcomeEmail, EmailViewModel>(model);
+            string emailHtml = await _templateRenderer.RenderTemplateAsync<EmailTemplate>(model);
 
             //await SendEmailAsync("pintajarto@@gmail.com", model.Subject, emailHtml);
 
@@ -41,11 +41,7 @@ namespace BlazingGidde.Server.Controllers
 
         private async Task SendEmailAsync(string toEmailAddress, string subject, string body)
         {
-             var client = new SendGridClient("YOUR_SENDGRID_API_KEY");
-             var from = new EmailAddress("pintajarto@gmail.com", "David Tortosa");
-             var to = new EmailAddress(toEmailAddress);
-             var msg = MailHelper.CreateSingleEmail(from, to, subject, body, body);
-            var response = await client.SendEmailAsync(msg);
+            
 
             await Task.CompletedTask;
 
