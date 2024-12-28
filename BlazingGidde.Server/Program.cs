@@ -76,6 +76,8 @@ builder.Services.AddTransient<IUserRepository<FlowUser>, RepositoryUser>();
 builder.Services.AddTransient<IRoleRepository<FlowRole>, RepositoryRole>();
 builder.Services.AddTransient<UserRoleService>();
 
+builder.Services.AddSingleton<TemplateRenderer>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
