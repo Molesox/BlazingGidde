@@ -8,5 +8,7 @@ public class AspNetRoleManager : APIRepository<FlowRole, string>
 	{
 		public AspNetRoleManager(HttpClient _http)
 			: base(_http, "AppRoles")
-		{ }
+		{
+
+		}
 	}

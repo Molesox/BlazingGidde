@@ -2,69 +2,22 @@
 @inherits LayoutComponentBase
 
 <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
-@if (isDark)
-{
-    <style>
-    :root {
-        --bb-sidebar-width: 270px;
-        --bb-sidebar-background-color: var(--bs-dark);
-        --bb-sidebar-top-row-background-color: rgba(var(--bs-white-rgb), 0.1);
-        --bb-sidebar-top-row-border-color: var(--bs-gray-500);
-        --bb-sidebar-title-text-color: var(--bs-white);
-        --bb-sidebar-navbar-toggler-icon-color: var(--bs-white);
-        --bb-sidebar-navbar-toggler-background-color: rgba(var(--bs-white-rgb), 0.1);
-        --bb-sidebar-content-border-color: var(--bs-gray-600);
-        --bb-sidebar-nav-item-text-color: rgba(var(--bs-white-rgb), 0.9);
-        --bb-sidebar-nav-item-text-active-color-rgb: var(--bs-white-rgb);
-        --bb-sidebar-nav-item-text-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.9);
-        --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.9);
-        --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.1);
-        --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.1);
-    }
-    </style>
-}
-else
-{
-    <style>
-    :root {
-        --bb-sidebar-width: 270px;
-        --bb-sidebar-background-color: var(--bs-white);
-        --bb-sidebar-top-row-background-color: var(--bs-gray-100);
-        --bb-sidebar-top-row-border-color: var(--bs-gray-300);
-        --bb-sidebar-title-text-color: var(--bs-body-color);
-        --bb-sidebar-brand-image-width: 28px;
-        --bb-sidebar-brand-image-height: 28px;
-        --bb-sidebar-navbar-toggler-icon-color: var(--bs-body-color);
-        --bb-sidebar-navbar-toggler-background-color: var(--bs-gray-100);
-        --bb-sidebar-content-border-color: var(--bs-gray-300);
-        --bb-sidebar-nav-item-text-color: var(--bs-body-color);
-        --bb-sidebar-nav-item-text-active-color-rgb: var(--bs-body-color-rgb);
-        --bb-sidebar-nav-item-text-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.9);
-        --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.9);
-        --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.08);
-        --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.08);
-    }
-
-    </style>
-}
-
-
 
 <div class="bb-page">
+
     <AuthorizeView>
-        <Sidebar Href="/" @ref="sidebar" ImageSrc="logo-alpsoft.png" Title="Alpcore"
-            DataProvider="SidebarDataProvider" WidthUnit="Unit.Px" Width="250"/>
+        <Sidebar Href="/" @ref="sidebar" ImageSrc="logo-alpsoft.png" Title="Alpcore" DataProvider="SidebarDataProvider" WidthUnit="Unit.Px" Width="250"/>
     </AuthorizeView>
 
     <main>
         <div class="bb-top-row px-4 d-flex justify-content-between">
+
             <AuthorizeView>
                 <Icon Name="IconName.List" role="button" @onclick="ToggleSidebar" />
             </AuthorizeView>
+
             <div class="d-flex justify-content-end align-items-center">
                 <LoginDisplay />
-                <ThemeSwitcher OnThemeChanged="OnThemeChanged" Position="DropdownMenuPosition.End"
-                    Class="ps-3 ps-lg-2" />
             </div>
         </div>
 
@@ -74,7 +27,7 @@ else
 
         <footer>
             <span>© 2024 AlpSoft SA. All rights reserved.</span>
-            <span class="version">Version 1.0.0</span>
+            <span class="version">Version beta 0.0.2</span>
         </footer>
     </main>
 
@@ -97,33 +50,19 @@ else
         navItems = new List<NavItem>
         {
             new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
-            new NavItem { Id = "2", Href = "/person", IconName = IconName.PersonFill, Text = "Person" },
-            new NavItem { Id = "3", Href = "/patois", IconName = IconName.EaselFill, Text = "Patois" },
+            new NavItem { Id = "2", Text = "FlowChek", IconName = IconName.CheckCircle },
+            new NavItem { Id = "3", Href = "/checklist", IconName = IconName.Check, ParentId = "2", Text = "CheckList" },
+
+            new NavItem { Id = "3", Href="/templates-kind", Text = "Tipos de plantilla", IconName = IconName.CheckCircle },
+
             new NavItem { Id = "4", Text = "Admin", IconName = IconName.ShieldShaded},
             new NavItem { Id = "5", Href = "/appusers", IconName=IconName.PeopleFill, ParentId = "4", Text = "Users" },
             new NavItem { Id = "6", Href = "/FlowRoles",IconName=IconName.PersonFillGear, ParentId = "4", Text = "Roles" },
-
-            // Agregar los nuevos elementos del menú FlowChek después de la sección de administración
-            new NavItem { Id = "7", Text = "FlowChek", IconName = IconName.CheckCircle },
-            new NavItem { Id = "8", Href = "/new-checklist", IconName = IconName.Check, ParentId = "7", Text = "Nuevo CheckList" },
-            new NavItem { Id = "9", Href = "/consult-templates", IconName = IconName.Book, ParentId = "7", Text = "Consultar Plantillas" },
-            new NavItem { Id = "10", Href = "/consult-checklist", IconName = IconName.Search, ParentId = "7", Text = "Consultar CheckList" },
-
-            // Agregar el menú de Administración después de FlowChek si es necesario
-            new NavItem { Id = "11", Text = "Administración", IconName = IconName.ShieldShaded },
-            new NavItem { Id = "12", Href = "/create-template", IconName = IconName.Plus, ParentId = "11", Text = "Crear Plantilla" },
-            new NavItem { Id = "13", Href = "/modify-template", IconName = IconName.Pencil, ParentId = "11", Text = "Modificar Plantilla" },
         };
 
         return navItems;
     }
 
     private void ToggleSidebar() => sidebar.ToggleSidebar();
-    private bool isDark;
-
-    private void OnThemeChanged(string themeName)
-    {
-        isDark = themeName == "dark";
-    }
 
 }

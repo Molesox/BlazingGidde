@@ -17,21 +17,23 @@
     </div>
 </div>
 
-<Grid TItem="TReadDto" Class="table table-hover table-bordered table-striped" DataProvider="DataProvider"
-    AllowFiltering="true" AllowPaging="true" AllowSorting="true" Responsive="true">
+<Grid TItem="TReadDto"  Unit="Unit.Px" DataProvider="DataProvider"
+      Class="table table-hover table-bordered"
+
+    AllowFiltering="true" AllowPaging="true" AllowSorting="true" Responsive="true" FixedHeader="true" AutoHidePaging="true">
     <GridColumns>
-        @GridColumns
-        <GridColumn TItem="TReadDto" HeaderText="Actions" Width="150px">
+        <GridColumn Freeze="true" Filterable="false" TextAlignment="Alignment.Center" TItem="TReadDto" HeaderText="Actions">
             <ChildContent Context="item">
-                <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" Class="me-2"
+                <Button Color="ButtonColor.Secondary"  Outline="true" Size="ButtonSize.Small" Class="me-2"
                     @onclick="() => OpenEditModal(item)">
                     <Icon Name="IconName.Pencil" />
                 </Button>
-                <Button Color="ButtonColor.Danger" Size="ButtonSize.Small" @onclick="() => DeleteItem(item)">
-                    <Icon Name="IconName.Basket" />
+                <Button Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => DeleteItem(item)">
+                <Icon Name="IconName.Trash"/>
                 </Button>
             </ChildContent>
         </GridColumn>
+        @GridColumns
     </GridColumns>
 </Grid>
 

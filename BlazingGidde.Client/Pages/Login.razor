@@ -4,24 +4,63 @@
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
 
-<div style="display: flex; justify-content: center; align-items: center;">
-    <Card Class="mb-4" Style="width:30rem;">
-        <img class="rounded-top" src="logo-alpsoft.png" alt="placeholder" />
+<style>
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+        box-sizing: border-box;
+        gap: 1rem;
+    }
+
+    .login-image img {
+        height: auto;
+        border-radius: 8px;
+    }
+
+    .login-card {
+        width: 30rem;
+    }
+
+    .login-image img {
+        width: 20rem;
+        height: 20rem;
+    }
+
+</style>
+
+<div class="login-container">
+    <!-- Image Section -->
+    <div class="login-image">
+        <img src="logo-alpsoft.png" alt="Company Logo" />
+    </div>
+
+    <!-- Card Login Section -->
+    <Card Class="mb-4 login-card">
         <CardBody>
             <CardTitle>Login</CardTitle>
-            <CardSubTitle Class="mb-2 text-muted">Enter your informations</CardSubTitle>
+            <CardSubTitle Class="mb-2 text-muted">Enter your information</CardSubTitle>
             <EditForm Model="_loginModel" OnValidSubmit="HandleLogin">
                 <DataAnnotationsValidator />
 
+                @if (!string.IsNullOrEmpty(_error))
+                {
+                    <div class="alert alert-danger">@_error</div>
+                }
+
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <InputText id="email" class="form-control" placeholder="Saisissez votre adresse mail" @bind-Value="_loginModel.Email" Type="email" />
+                    <InputText id="email" class="form-control" placeholder="Enter your email address"
+                        @bind-Value="_loginModel.Email" Type="email" />
                     <ValidationMessage For="@(() => _loginModel.Email)" />
                 </div>
 
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <InputText id="password" class="form-control" placeholder="Entrez votre mot de passe" @bind-Value="_loginModel.Password" Type="password" />
+                    <InputText id="password" class="form-control" placeholder="Enter your password"
+                        @bind-Value="_loginModel.Password" Type="password" />
                     <ValidationMessage For="@(() => _loginModel.Password)" />
                 </div>
 
@@ -30,14 +69,14 @@
                     <label for="rememberMe" class="form-check-label">Remember Me</label>
                 </div>
 
-                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true">Entrer</Button>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true">Login</Button>
             </EditForm>
         </CardBody>
     </Card>
 </div>
 
 @code {
-	[Inject] protected ToastService? ToastService { get; set; }
+    [Inject] protected ToastService? ToastService { get; set; }
 
     private LoginModel _loginModel = new();
     private string _error = "";

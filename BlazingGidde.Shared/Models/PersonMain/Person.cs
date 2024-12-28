@@ -92,7 +92,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
         public virtual PersonType PersonType { get; set; }
 
         /// <summary>
-        /// The collection of Addresses associated with this Person.
+        /// The collection of Addresses assocxbiated with this Person.
         /// </summary>
         [ForeignKey("PersonId")]
         public virtual ICollection<Address>? Addresses { get; set; } = new List<Address>();
