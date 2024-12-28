@@ -1,0 +1,159 @@
+﻿@page "/create-template/BREAK"
+@using BlazingGidde.Shared.Models.FlowCheck
+@inject TemplateKindManager templateService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<h3>Crear Nueva Plantilla de Rompibles</h3>
+
+<EditForm Model="@templateKind" OnValidSubmit="@SubmitTemplate">
+    <div class="create-template-container">
+        <div class="form-group">
+            <label for="templateName">Nombre de la Plantilla</label>
+            <InputText id="templateName" class="form-control" @bind-Value="templateKind.Name" />
+        </div>
+
+        <div class="form-group">
+            <label for="templateCreateUser">Creado por</label>
+            <InputText id="templateCreateUser" class="form-control" @bind-Value="templateKind.CreateUser" />
+        </div>
+
+        <div class="form-group">
+            <label for="version">Versión</label>
+            <InputNumber id="version" class="form-control" @bind-Value="templateKind.Version" />
+        </div>
+
+        <div class="form-group">
+            <label>Fecha de Creación</label>
+            <p>@templateKind.CreateDate.ToShortDateString()</p>
+        </div>
+
+        <h4>Elementos de la Plantilla</h4>
+        @if (templateKind.CustomTemplateItems.Count > 0)
+        {
+            <ul>
+                @foreach (var item in templateKind.CustomTemplateItems)
+                {
+                    <li class="element-item">
+                        @item.Name
+                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                            <img src="@item.ImageUrl" alt="@item.Name" class="element-image" />
+                        }
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>No hay elementos añadidos.</p>
+        }
+
+        @if (isAddingItem)
+        {
+            <div class="form-group">
+                <label>Nombre del Elemento</label>
+                <InputText class="form-control" @bind-Value="newCustomTemplateItem.Name" />
+
+                <label class="mt-4">Imagen del Elemento</label>
+                <InputFile OnChange="@((e) => OnInputFileChange(e, newCustomTemplateItem))" />
+                @if (!string.IsNullOrEmpty(newCustomTemplateItem.ImageUrl))
+                {
+                    <img src="@newCustomTemplateItem.ImageUrl" class="element-image-preview" />
+                }
+            </div>
+            <div class="button-group">
+
+                <button class="btn btn-success" @onclick="AddItem">Añadir Elemento</button>
+                <button class="btn btn-danger" @onclick="CancelAddItem">Cancelar</button>
+            </div>
+        }
+        else
+        {
+            <button class="btn btn-primary" @onclick="StartAddingItem">Añadir Nuevo Elemento</button>
+        }
+        @if (!isAddingItem)
+        {
+            <button type="submit" class="btn btn-success">Guardar Plantilla</button>
+        }
+
+    </div>
+</EditForm>
+
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        var query = NavigationManager.ToAbsoluteUri(NavigationManager.Uri).Query;
+        var queryParams = System.Web.HttpUtility.ParseQueryString(query);
+
+        templateKind.TemplateType = new TemplateType
+            {
+                Name = queryParams["name"],
+                ImgUrl = queryParams["imgUrl"],
+                CreateUser = queryParams["createUser"]
+            };
+    }
+
+    private TemplateKind templateKind = new()
+        {
+            Name = "",
+            Version = 1,
+            CreateDate = DateTime.Now,
+            CreateUser = "",
+            TemplateType = new TemplateType(),
+            CustomTemplateItems = new List<CustomTemplateItem>()
+        };
+
+    private CustomTemplateItem newCustomTemplateItem = new();
+
+    private bool isAddingItem = false;
+
+    private void StartAddingItem()
+    {
+        isAddingItem = true;
+        newCustomTemplateItem = new CustomTemplateItem();
+    }
+
+    private void CancelAddItem()
+    {
+        isAddingItem = false;
+    }
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs e, CustomTemplateItem item)
+    {
+        var imageFile = e.File;
+        if (imageFile != null)
+        {
+            var buffer = new byte[imageFile.Size];
+            await imageFile.OpenReadStream().ReadAsync(buffer);
+            item.ImageUrl = $"data:{imageFile.ContentType};base64,{Convert.ToBase64String(buffer)}";
+        }
+    }
+
+    private async Task SubmitTemplate()
+    {
+        await templateService.Insert(templateKind);
+        await JSRuntime.InvokeVoidAsync("alert", "Plantilla guardada exitosamente.");
+        NavigationManager.NavigateTo("/create-template");
+    }
+
+    private async void AddItem()
+    {
+        if (!string.IsNullOrWhiteSpace(newCustomTemplateItem.Name) &&
+            !string.IsNullOrEmpty(newCustomTemplateItem.ImageUrl))
+        {
+            newCustomTemplateItem.TemplateKind = templateKind;
+
+            templateKind.CustomTemplateItems.Add(newCustomTemplateItem);
+            isAddingItem = false;
+            newCustomTemplateItem = new CustomTemplateItem();
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Por favor, completa todos los campos antes de añadir el elemento.");
+        }
+    }
+
+}
