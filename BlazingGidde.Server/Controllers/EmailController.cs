@@ -2,10 +2,10 @@
 using BlazingGidde.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using BlazingGidde.Shared;
+//using BlazingGidde.Shared.EmailTemplates;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using BlazingGidde.Shared.EmailTemplates;
+
 
 namespace BlazingGidde.Server.Controllers
 {
@@ -28,13 +28,13 @@ namespace BlazingGidde.Server.Controllers
                 Subject = "¡Bienvenido!",
                 Greeting = "Hola,",
                 Body = "Gracias por registrarte.",
-                Signature = "El equipo de Blazor"
+                Signature = "El equipo sin nombre"
             };
 
             //esta line de bajo no la he conseguido arreglar
             //string emailHtml = await _templateRenderer.RenderTemplateAsync<WelcomeEmail, EmailViewModel>(model);
 
-            //await SendEmailAsync("destinatario@example.com", model.Subject, emailHtml);
+            //await SendEmailAsync("pintajarto@@gmail.com", model.Subject, emailHtml);
 
             return Ok("¡Correo enviado!");
         }

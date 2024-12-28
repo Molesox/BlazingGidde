@@ -1,0 +1,45 @@
+﻿@page "/breakeable-template"
+@layout TemplateKindLayout
+@using BlazingGidde.Client.Shared
+
+<div>
+    <div class="grid-container">
+        @foreach (var item in Items)
+        {
+            <div class="grid-item"></div>
+        }
+    </div>
+
+    <button @onclick="AddItem">Add Item</button>
+</div>
+
+<style>
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
+
+    .grid-item {
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: center;
+        background-color: #f9f9f9;
+    }
+
+    button {
+        margin-top: 10px;
+
+    }
+</style>
+
+@code {
+    List<BreakeableItem> Items { get; set; } = new List<BreakeableItem> (8);
+
+    void AddItem()
+    {
+        Items.Add(new BreakeableItem { });
+    }
+
+   
+}
