@@ -51,13 +51,16 @@
         {
             new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
             new NavItem { Id = "2", Text = "FlowChek", IconName = IconName.CheckCircle },
-            new NavItem { Id = "3", Href = "/checklist", IconName = IconName.Check, ParentId = "2", Text = "CheckList" },
+            new NavItem { Id = "3", Href = "/checklist", IconName = IconName.Check, ParentId = "2", Text = "Nuevo" },
+            new NavItem { Id = "4", Href = "/templates", IconName = IconName.Book, ParentId = "2", Text = "Consultar" },
 
-            new NavItem { Id = "3", Href="/templates-kind", Text = "Tipos de plantilla", IconName = IconName.CheckCircle },
+            new NavItem { Id = "5", Text = "Plantillas", IconName = IconName.CheckCircle },
+            new NavItem { Id = "6", Href="/templates-type",  IconName = IconName.Type, ParentId = "5", Text = "Tipos de plantilla" },
+            new NavItem { Id = "7", Href="/templates-kind",  IconName = IconName.Search, ParentId = "5", Text = "Plantillas" },
 
-            new NavItem { Id = "4", Text = "Admin", IconName = IconName.ShieldShaded},
-            new NavItem { Id = "5", Href = "/appusers", IconName=IconName.PeopleFill, ParentId = "4", Text = "Users" },
-            new NavItem { Id = "6", Href = "/FlowRoles",IconName=IconName.PersonFillGear, ParentId = "4", Text = "Roles" },
+            new NavItem { Id = "8", Text = "Admin", IconName = IconName.ShieldShaded},
+            new NavItem { Id = "9", Href = "/appusers", IconName=IconName.PeopleFill, ParentId = "8", Text = "Users" },
+            new NavItem { Id = "10", Href = "/FlowRoles",IconName=IconName.PersonFillGear, ParentId = "8", Text = "Roles" },
         };
 
         return navItems;

@@ -6,6 +6,7 @@ using BlazingGidde.Server.Components;
 
 
 
+
 namespace BlazingGidde.Server.Controllers
 {
     [Route("api/email")]
@@ -27,13 +28,13 @@ namespace BlazingGidde.Server.Controllers
                 Subject = "¡Bienvenido!",
                 Greeting = "Hola,",
                 Body = "Gracias por registrarte.",
-                Signature = "El equipo de Blazor"
+                Signature = "El equipo sin nombre"
             };
 
             //esta line de bajo no la he conseguido arreglar
             string emailHtml = await _templateRenderer.RenderTemplateAsync<EmailTemplate>(model);
 
-            //await SendEmailAsync("destinatario@example.com", model.Subject, emailHtml);
+            //await SendEmailAsync("pintajarto@@gmail.com", model.Subject, emailHtml);
 
             return Ok("¡Correo enviado!");
         }

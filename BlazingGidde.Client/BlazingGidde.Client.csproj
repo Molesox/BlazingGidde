@@ -30,8 +30,4 @@
 		<ProjectReference Include="..\BlazingGidde.Shared\BlazingGidde.Shared.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Pages\FlowCheck\Common\" />
-	</ItemGroup>
-
 </Project>

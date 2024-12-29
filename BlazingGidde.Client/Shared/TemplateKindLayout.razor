@@ -1,0 +1,56 @@
+﻿@inherits LayoutComponentBase
+@layout MainLayout
+<h3>@type.Name</h3>
+
+<div class="row row-cols-3 g-3">
+    <div class="col">
+        <div class="form-group">
+            <label for="name">Nombre</label>
+            <InputText id="name" class="form-control" @bind-Value="kind.Name"></InputText>
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            <label for="version">Versión</label>
+            <NumberInput id="version" class="form-control" Disabled="true" @bind-Value="kind.Version"></NumberInput>
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            <label for="date">Fecha</label>
+            <DateInput id="date" class="form-control" Disabled="true" @bind-Value="kind.CreateDate"></DateInput>
+        </div>
+    </div>
+</div>
+
+@Body
+
+<Button Color="ButtonColor.Secondary" Variant="Outline" Class="me-2" @onclick="Cancel">
+    <Icon Name="IconName.XCircle" Class="me-1" />Cancelar
+</Button>
+<Button Color="ButtonColor.Primary" Variant="Outline" @onclick="Save">
+    <Icon Name="IconName.Save" Class="me-1" />Guardar
+</Button>
+
+@code {
+    [Parameter]
+    public TemplateType type { get; set; } = new();
+
+    TemplateKind kind { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        kind.Version = 1;
+        kind.CreateDate = DateTime.UtcNow;
+    }
+
+    private Task Cancel(MouseEventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+
+    private Task Save(MouseEventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+}
