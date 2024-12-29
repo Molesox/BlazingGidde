@@ -87,7 +87,7 @@
 
     private void CreateNewTemplate(TemplateCode code)
     {
-        NavigationManager.NavigateTo($"/create-template/{code.ToString()}");
+        NavigationManager.NavigateTo($"/{code.ToString().ToLower()}-template");
 
     }
 

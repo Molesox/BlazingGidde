@@ -16,6 +16,11 @@ public class TemplateKind : ModelBase
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
+    /// The description of the program to which it belongs.
+    /// </summary>
+    public string ProgramDescription{ get; set; }
+
+    /// <summary>
     /// The default number of TemplateItems associated with this template instance.
     /// </summary>
     public int DefaultItemCount { get; set; }
@@ -26,9 +31,14 @@ public class TemplateKind : ModelBase
     public TemplateType TemplateType { get; set; }
 
     /// <summary>
-    /// Gets ors sets the iteration of the template kind. (nb of editions)
+    /// Gets or sets the iteration of the template kind. (nb of editions)
     /// </summary>
     public int Version { get; set; }
+
+    /// <summary>
+    /// Gets ors sets the section of the template kind.
+    /// </summary>
+    public string Section { get; set; }
 
     /// <summary>
     /// The skip property of associated filled Templates.
