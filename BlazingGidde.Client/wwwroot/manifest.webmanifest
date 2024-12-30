@@ -9,12 +9,12 @@
   "prefer_related_applications": false,
   "icons": [
 	{
-	  "src": "logo-alpsoft.png",
+	  "src": "OnaSoft-logo.svg",
 	  "type": "image/png",
 	  "sizes": "512x512"
 	},
 	{
-	  "src": "logo-alpsoft.png",
+	  "src": "OnaSoft-logo.svg",
 	  "type": "image/png",
 	  "sizes": "192x192"
 	}

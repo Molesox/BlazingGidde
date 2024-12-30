@@ -1,0 +1,37 @@
+﻿<style>
+    .card {
+        border-radius: 0;
+    }
+</style>
+
+<div class="sidebar @StateCssClass">
+    <DxAccordion SelectionMode="NavigationSelectionMode.Single" 
+                 UrlMatchMode="NavigationUrlMatchMode.CurrentPath" 
+                 CssClass="app-sidebar">
+        <Items>
+            <DxAccordionItem NavigateUrl="./" Text="Overview" />
+            <DxAccordionItem Text="FlowCheck" AllowSelection="false">
+                <Items>
+                    <DxAccordionItem Text="Nuevo" />
+                    <DxAccordionItem Text="Consultar" />
+                </Items>
+            </DxAccordionItem>
+            <DxAccordionItem Text="Plantillas" AllowSelection="false">
+                <Items>
+                    <DxAccordionItem Text="Tipos de plantillas" />
+                    <DxAccordionItem Text="Plantillas" />
+                </Items>
+            </DxAccordionItem>
+            <DxAccordionItem Text="Admin" AllowSelection="false">
+                <Items>
+                    <DxAccordionItem NavigateUrl="/appusers" Text="Usuarios" />
+                    <DxAccordionItem Text="Roles" />
+                </Items>
+            </DxAccordionItem>
+        </Items>
+    </DxAccordion>
+</div>
+
+@code {
+    [Parameter] public string? StateCssClass { get; set; }
+}
