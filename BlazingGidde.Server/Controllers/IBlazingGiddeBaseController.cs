@@ -3,6 +3,7 @@ using BlazingGidde.Shared.DTOs;
 using BlazingGidde.Shared.DTOs.Common;
 using BlazingGidde.Shared.Models;
 using BlazingGidde.Shared.Repository;
+using DevExpress.Blazor.Internal;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlazingGidde.Server.Controllers
@@ -16,6 +17,8 @@ namespace BlazingGidde.Server.Controllers
         where TCreateDtoResponse : class
         where TUpdateDtoReponse : class
 	{
+		Task<object> Get(DataSourceLoadOptions loadOptions);
+		
 		Task<ActionResult<APIListOfEntityResponse<TReadDto>>> GetAll();
 
 		Task<ActionResult<APIEntityResponse<TReadDto>>> GetById(Tkey Id);

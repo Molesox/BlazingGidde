@@ -14,15 +14,12 @@
 <CustomGrid Tkey="string" TEntity="FlowRole" TCreateDto="FlowRole" TReadDto="FlowRole"
     Repository="@RoleManager">
     <GridColumns>
-       <GridColumn TItem="FlowRole"  HeaderText="Id" PropertyName="Id">
-                @context.Id
-        </GridColumn>
-        <GridColumn TItem="FlowRole" HeaderText="Employee Name" PropertyName="Name">
-                @context.Name
-        </GridColumn>
-        <GridColumn TItem="FlowRole" HeaderText="Normalized Name" PropertyName="NormalizedName">
-                @context.NormalizedName
-        </GridColumn>
+       <DxGridDataColumn Caption="Id" FieldName="Id">
+        </DxGridDataColumn>
+        <DxGridDataColumn  Caption="Employee Name" FieldName="Name">
+        </DxGridDataColumn>
+        <DxGridDataColumn  Caption="Normalized Name" FieldName="NormalizedName">
+        </DxGridDataColumn>
     </GridColumns>
 
     <EditFormTemplate Context="role">
