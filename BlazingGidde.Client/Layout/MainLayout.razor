@@ -9,19 +9,27 @@
             @if (IsMobileLayout)
             {
                 <DxGridLayoutRow Areas="header" Height="auto"></DxGridLayoutRow>
-                <DxGridLayoutRow Areas="sidebar" Height="auto"></DxGridLayoutRow>
+                @if (isAuthorized)
+                {
+                    <DxGridLayoutRow Areas="sidebar" Height="auto"></DxGridLayoutRow>
+                }
                 <DxGridLayoutRow Areas="content" />
             }
             else
             {
                 <DxGridLayoutRow Areas="header header" Height="auto" />
-                <DxGridLayoutRow Areas="@(IsSidebarExpanded ? "sidebar content" : "content content")" />
+                <DxGridLayoutRow Areas="@(isAuthorized && IsSidebarExpanded ? "sidebar content" : "content content")" />
             }
         </Rows>
         <Columns>
-            @if (!IsMobileLayout)
+            @if (!IsMobileLayout && isAuthorized)
             {
                 <DxGridLayoutColumn Width="auto" />
+                <DxGridLayoutColumn />
+            }
+            else
+            {
+                <DxGridLayoutColumn Width="0" />
                 <DxGridLayoutColumn />
             }
         </Columns>
@@ -31,18 +39,19 @@
                     <Header @bind-ToggleOn="@IsSidebarExpanded" />
                 </Template>
             </DxGridLayoutItem>
-            <DxGridLayoutItem Area="sidebar" CssClass="layout-item">
-                <Template>
-                    <NavMenu StateCssClass="@NavMenuCssClass" />
-                </Template>
-            </DxGridLayoutItem>
+            @if (isAuthorized)
+            {
+                <DxGridLayoutItem Area="sidebar" CssClass="layout-item">
+                    <Template>
+                        <NavMenu StateCssClass="@NavMenuCssClass" />
+                    </Template>
+                </DxGridLayoutItem>
+            }
             <DxGridLayoutItem Area="content" CssClass="content px-4 layout-item">
                 <Template>
                     <div class="main">
                         <div class="content">
-
                             @Body
-
                         </div>
                         <div class="content-footer"></div>
                     </div>
@@ -79,17 +88,34 @@
         }
     }
 
-    protected override void OnInitialized()
+    bool isAuthorized = false;
+
+    // Receive the authentication state via CascadingParameter
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
     {
+        // Subscribe to location changes
         NavigationManager.LocationChanged += OnLocationChanged;
+
+        // Get the initial authentication state
+        var authState = await AuthenticationStateTask;
+        isAuthorized = authState.User.Identity?.IsAuthenticated ?? false;
     }
-    async void OnLocationChanged(object? sender, LocationChangedEventArgs args)
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs args)
     {
         if (IsMobileLayout)
         {
             IsSidebarExpanded = false;
-            await InvokeAsync(StateHasChanged);
         }
+
+        // Update the authorization state on navigation
+        var authState = await AuthenticationStateTask;
+        isAuthorized = authState.User.Identity?.IsAuthenticated ?? false;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()

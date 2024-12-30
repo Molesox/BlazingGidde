@@ -23,12 +23,12 @@
     ShowFilterRow="true"
     Data="@Data"
     EditMode="GridEditMode.PopupEditForm"
+    AllowColumnReorder="true"
+    KeyFieldName="Id"
+    @ref="MyGrid" 
     >
     <Columns>
-         <DxGridCommandColumn>
-            <HeaderTemplate>
-                <a class="oi oi-plus" @onclick="@(() => MyGrid.StartEditNewRowAsync())" style="text-decoration: none;" href="javascript:void(0);"></a>
-            </HeaderTemplate>
+         <DxGridCommandColumn SaveButtonVisible="false">
             <CellDisplayTemplate>
                 <a class="oi oi-pencil" @onclick="@(() => MyGrid.StartEditRowAsync(context.VisibleIndex))" style="text-decoration: none;" href="javascript:void(0);"></a>
                 <a class="oi oi-x" @onclick="@(() => MyGrid.ShowDataItemDeleteConfirmation(context.DataItem))" style="text-decoration: none;" href="javascript:void(0);"></a>

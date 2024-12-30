@@ -4,9 +4,8 @@
 	padding: 2rem;
 	height: auto;
 	width: 60%;
-	background-color: var(--bs-secondary-bg);
 	border-radius: 8px;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	box-shadow: 2px 4px 8px 3px rgba(0, 0, 0, 0.8);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;

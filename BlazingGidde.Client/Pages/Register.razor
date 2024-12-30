@@ -4,93 +4,96 @@
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
 
-<style>
-    .register-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        padding: 20px;
-        box-sizing: border-box;
-        gap: 1rem;
-    }
-
-    .register-image img {
-        height: auto;
-        border-radius: 8px;
-    }
-
-    .register-card {
-        width: 30rem;
-    }
-
-    .register-image img {
-        width: 20rem;
-    }
-
-</style>
-
-<div class="register-container">
-
-    <div class="login-image">
-        <img src="OnaSoft-logo.svg" alt="Company Logo" />
-    </div>
-
-    <Card Class="mb-4" Style="width:20rem;">
-
-            <CardBody>
-                <CardTitle>Register</CardTitle>
-                <CardSubTitle Class="mb-2 text-muted">Create your account</CardSubTitle>
-                <EditForm Model="_registerModel" OnValidSubmit="HandleRegistration">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card">
+                <EditForm Model="@_registerModel" OnValidSubmit="@HandleValidSubmit" Context="EditFormContext">
                     <DataAnnotationsValidator />
-
-                    <div class="mb-3">
-                        <label for="FirstName" class="form-label">First Name</label>
-                        <InputText id="FirstName" class="form-control" placeholder="Enter your first name"
-                            @bind-Value="_registerModel.FirstName" Type="text" />
-                        <ValidationMessage For="@(() => _registerModel.FirstName)" />
+                    <div class="card-header text-center py-3">
+                        <img src="OnaSoft-logo.svg" alt="Company Logo" />
                     </div>
-                    <div class="mb-3">
-                        <label for="LastName" class="form-label">Last Name</label>
-                        <InputText id="LastName" class="form-control" placeholder="Enter your ast name"
-                            @bind-Value="_registerModel.LastName" Type="text" />
-                        <ValidationMessage For="@(() => _registerModel.LastName)" />
-                    </div>
+                    <div class="card-body">
+                        <DxFormLayout>
+                            <DxFormLayoutItem ColSpanMd="12">
+                                <label for="tbFirstname" class="d-none">FirstName</label>
+                                <DxTextBox @bind-Text="@_registerModel.FirstName" NullText="First name"
+                                    ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                    InputId="tbFirstname" />
+                                <div class="text-danger">
+                                    <ValidationMessage For="@(() => _registerModel.FirstName)" />
+                                </div>
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem ColSpanMd="12">
+                                <label for="tbLastname" class="d-none">LatName</label>
+                                <DxTextBox @bind-Text="@_registerModel.LastName" NullText="Last name"
+                                    ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                    InputId="tbLastname" />
+                                <div class="text-danger">
+                                    <ValidationMessage For="@(() => _registerModel.LastName)" />
+                                </div>
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem ColSpanMd="12">
+                                <label for="tbEmail" class="d-none">E-mail</label>
+                                <DxTextBox @bind-Text="@_registerModel.Email" NullText="E-mail"
+                                    ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" InputId="tbEmail" />
+                                <div class="text-danger">
+                                    <ValidationMessage For="@(() => _registerModel.Email)" />
+                                </div>
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem ColSpanMd="12">
+                                <label for="tbPassword" class="d-none">Password</label>
+                                <DxTextBox @bind-Text="@_registerModel.Password" NullText="Password" Password="true"
+                                    ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                    InputId="tbPassword" />
+                                <div class="text-danger">
+                                    <ValidationMessage For="@(() => _registerModel.Password)" />
+                                </div>
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem ColSpanMd="12">
+                                <label for="tbConfirmPassword" class="d-none">Confirm Password</label>
+                                <DxTextBox @bind-Text="@_registerModel.ConfirmPassword" NullText="Confirm Password"
+                                    Password="true" ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                    InputId="tbConfirmPassword" />
+                                <div class="text-danger">
+                                    <ValidationMessage For="@(() => _registerModel.ConfirmPassword)" />
+                                </div>
+                            </DxFormLayoutItem>
 
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <InputText id="email" class="form-control" placeholder="Enter your email address"
-                            @bind-Value="_registerModel.Email" Type="email" />
-                        <ValidationMessage For="@(() => _registerModel.Email)" />
+                            <DxFormLayoutItem ColSpanMd="12">
+                                <DxButton CssClass="w-100" RenderStyle="ButtonRenderStyle.Primary"
+                                    SubmitFormOnClick="true" Text="Register" />
+                            </DxFormLayoutItem>
+                            <DxFormLayoutItem ColSpanMd="12">
+                                <div class="text-center pt-2">
+                                    <div class="tm-8">
+                                        Already have an account?
+                                    </div>
+                                    <DxButton RenderStyle="ButtonRenderStyle.Link" Text="Login"
+                                        Click="GotoLoginFormClick" />
+                                </div>
+                            </DxFormLayoutItem>
+                        </DxFormLayout>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <InputText id="password" class="form-control" placeholder="Enter a password"
-                            @bind-Value="_registerModel.Password" Type="password" />
-                        <ValidationMessage For="@(() => _registerModel.Password)" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="confirmPassword" class="form-label">Confirm Password</label>
-                        <InputText id="confirmPassword" class="form-control" placeholder="Confirm your password"
-                            @bind-Value="_registerModel.ConfirmPassword" Type="password" />
-                        <ValidationMessage For="@(() => _registerModel.ConfirmPassword)" />
-                    </div>
-
-                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true">Register</Button>
                 </EditForm>
-            </CardBody>
-        </Card>
+            </div>
+        </div>
+    </div>
 </div>
 
+
 @code {
+
+    private string _error = "";
     [Inject] protected ToastService? ToastService { get; set; }
 
     private RegisterModel _registerModel = new();
-    private string _error = "";
 
-    private async Task HandleRegistration()
+    void GotoLoginFormClick()
+    {
+        NavigationManager.NavigateTo("/login");
+    }
+    async Task HandleValidSubmit()
     {
         var result = await AuthService.Register(_registerModel);
 
@@ -110,4 +113,5 @@
             await InvokeAsync(StateHasChanged);
         }
     }
+
 }
