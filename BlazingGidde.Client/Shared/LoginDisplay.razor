@@ -1,76 +1,23 @@
 ﻿@inject PersonMainManager personManager
 
-@if (isDark)
-{
-    <style>
-    :root {
-        --bb-sidebar-width: 270px;
-        --bb-sidebar-background-color: var(--bs-dark);
-        --bb-sidebar-top-row-background-color: rgba(var(--bs-white-rgb), 0.1);
-        --bb-sidebar-top-row-border-color: var(--bs-gray-500);
-        --bb-sidebar-title-text-color: var(--bs-white);
-        --bb-sidebar-navbar-toggler-icon-color: var(--bs-white);
-        --bb-sidebar-navbar-toggler-background-color: rgba(var(--bs-white-rgb), 0.1);
-        --bb-sidebar-content-border-color: var(--bs-gray-600);
-        --bb-sidebar-nav-item-text-color: rgba(var(--bs-white-rgb), 0.9);
-        --bb-sidebar-nav-item-text-active-color-rgb: var(--bs-white-rgb);
-        --bb-sidebar-nav-item-text-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.9);
-        --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.9);
-        --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.1);
-        --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.1);
-    }
-    </style>
-}
-else
-{
-    <style>
-    :root {
-        --bb-sidebar-width: 270px;
-        --bb-sidebar-background-color: var(--bs-white);
-        --bb-sidebar-top-row-background-color: var(--bs-gray-100);
-        --bb-sidebar-top-row-border-color: var(--bs-gray-300);
-        --bb-sidebar-title-text-color: var(--bs-body-color);
-        --bb-sidebar-brand-image-width: 28px;
-        --bb-sidebar-brand-image-height: 28px;
-        --bb-sidebar-navbar-toggler-icon-color: var(--bs-body-color);
-        --bb-sidebar-navbar-toggler-background-color: var(--bs-gray-100);
-        --bb-sidebar-content-border-color: var(--bs-gray-300);
-        --bb-sidebar-nav-item-text-color: var(--bs-body-color);
-        --bb-sidebar-nav-item-text-active-color-rgb: var(--bs-body-color-rgb);
-        --bb-sidebar-nav-item-text-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.9);
-        --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.9);
-        --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.08);
-        --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb), 0.08);
-    }
-
-    </style>
-}
-
 <AuthorizeView>
 
 	<Authorized>
 		<div class="login-display">
 			<span class="user-greeting">Hello, @context.User.Identity?.Name!</span>
-            <ThemeSwitcher OnThemeChanged="OnThemeChanged" Position="DropdownMenuPosition.End" Class="ps-3 ps-lg-2" />
-
-			<Button Color="ButtonColor.Danger" Size="ButtonSize.Small" Outline="true" @onclick="Logout">
-				Logout
-			</Button>
-
+			<DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"  
+			Text="Logout" @onclick="Logout"></DxButton>
 		</div>
 	</Authorized>
 
 	<NotAuthorized>
 		<div class="login-display">
 
-			<Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" Outline="true" @onclick="NavigateToRegister">
-				S'enregistrer
-			</Button>
-
-			<Button Color="ButtonColor.Primary" Size="ButtonSize.Small"  Outline="true" @onclick="NavigateToLogin">
-				Se connecter
-			</Button>
-
+			<DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary" 
+			Text="Registrarse" @onclick="NavigateToRegister"></DxButton>
+			
+			<DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary" 
+			Text="Conectar" @onclick="NavigateToLogin"></DxButton>
 		</div>
 	</NotAuthorized>
 
@@ -94,12 +41,6 @@ else
 	{
 		NavigationManager.NavigateTo("Login");
 	}
-	private bool isDark;
-
-    private void OnThemeChanged(string themeName)
-    {
-        isDark = themeName == "dark";
-    }
 }
 
 <style>
