@@ -3,6 +3,7 @@ using BlazingGidde.Client.Services;
 using BlazingGidde.Client.Services.FlowCheck;
 using BlazingGidde.Client.Services.FlowCheck.TemplateItems;
 using Blazored.LocalStorage;
+using DevExpress.Blazor;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -36,5 +37,6 @@ builder.Services.AddScoped<TemplateTypeManager>();
 
 
 builder.Services.AddBlazorBootstrap();
+builder.Services.AddDevExpressBlazor(configure => configure.BootstrapVersion = BootstrapVersion.v4);
 
 await builder.Build().RunAsync();
