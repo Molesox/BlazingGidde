@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore.Query;
 using AgileObjects.AgileMapper;
 using AgileObjects.AgileMapper.Extensions;
+using DevExpress.Blazor;
 
 namespace BlazingGidde.Client.Shared;
 
@@ -20,40 +21,15 @@ public partial class CustomGrid<TEntity, Tkey, TReadDto, TCreateDto> : Component
 	[Parameter] public RenderFragment<TCreateDto>? EditFormTemplate { get; set; }
 	[Parameter] public RenderFragment GridColumns { get; set; }
 	[Parameter] public string Title { get; set; } = "Item";
-
+	private DxGrid? MyGrid;
+	private object Data { get; set; }
 	private Modal modal = default!;
 	private bool isEditMode = false;
 	private TCreateDto? selectedItem = default!;
 
-	private async Task<GridDataProviderResult<TReadDto>> DataProvider(GridDataProviderRequest<TReadDto> request)
-	{
-		string sortString = request.Sorting?.FirstOrDefault()?.SortString ?? "";
-		SortDirection sortDirection = request.Sorting?.FirstOrDefault()?.SortDirection ?? SortDirection.None;
-
-		var query = new QueryFilter<TEntity>
-		{
-			OrderByDescending = sortDirection == SortDirection.Descending,
-			OrderByPropertyName = sortString,
-			FilterProperties = request.Filters.Select(filter => new FilterProperty
-			{
-				CaseSensitive = false,
-				Name = filter.PropertyName,
-				Operator = MapFilterOperator(filter.Operator) ?? QueryFilterOperator.Contains,
-				Value = filter.Value
-			}).ToList(),
-			PageSize = request.PageSize,
-			PageNumber = request.PageNumber
-		};
-
-		var result = await Repository.Get(query);
-		result.Items ??= new List<TReadDto>();
-
-		return new GridDataProviderResult<TReadDto>
-		{
-			Data = result.Items,
-			TotalCount = result.TotalCount
-		};
-	}
+	protected override void OnInitialized() {
+		Data = Repository.Get();
+    }
 
 	private async Task OpenAddModal()
 	{
@@ -104,22 +80,5 @@ public partial class CustomGrid<TEntity, Tkey, TReadDto, TCreateDto> : Component
 			await Repository.Delete(id);
 			await InvokeAsync(StateHasChanged); // Ensure the UI updates
 		}
-	}
-
-	public static QueryFilterOperator? MapFilterOperator(FilterOperator sourceOperator)
-	{
-		return sourceOperator switch
-		{
-			FilterOperator.Equals => QueryFilterOperator.Equals,
-			FilterOperator.NotEquals => QueryFilterOperator.NotEquals,
-			FilterOperator.LessThan => QueryFilterOperator.LessThan,
-			FilterOperator.LessThanOrEquals => QueryFilterOperator.LessThanOrEqual,
-			FilterOperator.GreaterThan => QueryFilterOperator.GreaterThan,
-			FilterOperator.GreaterThanOrEquals => QueryFilterOperator.GreaterThanOrEqual,
-			FilterOperator.Contains => QueryFilterOperator.Contains,
-			FilterOperator.StartsWith => QueryFilterOperator.StartsWith,
-			FilterOperator.EndsWith => QueryFilterOperator.EndsWith,
-			_ => null
-		};
 	}
 }

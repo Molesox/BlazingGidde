@@ -3,6 +3,7 @@ using BlazingGidde.Shared.DTOs;
 using BlazingGidde.Shared.DTOs.Common;
 using BlazingGidde.Shared.Models;
 using BlazingGidde.Shared.Repository;
+using DevExpress.Blazor;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -28,11 +29,26 @@ namespace BlazingGidde.Client.Services
 			controllerName = _controllerName;
 		}
 
+		public GridDevExtremeDataSource<TReadDto> Get(){
+			try
+			{
+
+				var url = new Uri(http.BaseAddress + controllerName);
+				return new GridDevExtremeDataSource<TReadDto>(http, url);
+			}
+			catch (System.Exception e)
+			{
+				var exception = e;
+				return null;
+			}
+		}
+
 		public async Task<IEnumerable<TReadDto>> GetAll()
 		{
             try
             {
-				var response = await http.GetFromJsonAsync<APIListOfEntityResponse<TReadDto>>(controllerName);
+				var url = $"{controllerName}/getall";
+				var response = await http.GetFromJsonAsync<APIListOfEntityResponse<TReadDto>>(url);
 				if (response?.Success == true)
 				{
 					return response.Items;

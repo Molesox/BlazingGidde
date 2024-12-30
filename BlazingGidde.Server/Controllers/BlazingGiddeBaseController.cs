@@ -5,6 +5,8 @@ using BlazingGidde.Shared.DTOs;
 using BlazingGidde.Shared.DTOs.Common;
 using BlazingGidde.Shared.Models;
 using BlazingGidde.Shared.Repository;
+
+using DevExtreme.AspNet.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -76,6 +78,22 @@ namespace BlazingGidde.Server.Controllers
         }
 
         [HttpGet]
+        public virtual async Task<object> Get(DataSourceLoadOptions loadOptions)
+        {
+            var correlationId = HttpContext.TraceIdentifier;
+
+            return await ExecuteAsync(async () =>
+            {
+                var query = PrepareQuery(_repository.GetQueryable());
+                var items = MapToReadDto(query);
+
+                return DataSourceLoader.Load(items, loadOptions);
+            },
+            $"Request {correlationId}: DxLoaded {typeof(TEntity).Name}",
+            $"Request {correlationId}: Failed to DxLoad {typeof(TEntity).Name}");
+        }
+
+        [HttpGet("getall")]
         public virtual async Task<ActionResult<APIListOfEntityResponse<TReadDto>>> GetAll()
         {
             var correlationId = HttpContext.TraceIdentifier;

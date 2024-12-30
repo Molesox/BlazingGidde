@@ -14,32 +14,20 @@
 
 <CustomGrid TEntity="Person" Tkey="int" Repository="@personManager" TCreateDto="CreatePersonDto" TReadDto="PersonDto" >
   <GridColumns>
-        <!-- Person ID Column -->
-        <GridColumn TItem="PersonDto" HeaderText="Person ID" PropertyName="PersonId">
-            <ChildContent Context="item">@item.PersonId</ChildContent>
-        </GridColumn>
+        <DxGridDataColumn Caption="Person ID" FieldName="PersonId">
+        </DxGridDataColumn>
         
-        <!-- First Name Column -->
-        <GridColumn TItem="PersonDto" HeaderText="First Name" PropertyName="FirstName">
-            <ChildContent Context="item">@item.FirstName</ChildContent>
-        </GridColumn>
+        <DxGridDataColumn Caption="First Name" FieldName="FirstName">
+        </DxGridDataColumn>
         
-        <!-- Last Name Column -->
-        <GridColumn TItem="PersonDto" HeaderText="Last Name" PropertyName="LastName">
-            <ChildContent Context="item">@item.LastName</ChildContent>
-        </GridColumn>
+        <DxGridDataColumn Caption="Last Name" FieldName="LastName">
+        </DxGridDataColumn>
         
-        <!-- Title Column -->
-        <GridColumn TItem="PersonDto" HeaderText="Title" PropertyName="Title">
-            <ChildContent Context="item">@item.Title</ChildContent>
-        </GridColumn>
+        <DxGridDataColumn Caption="Title" FieldName="Title">
+        </DxGridDataColumn>
         
-        <!-- Culture Column -->
-        <GridColumn TItem="PersonDto" HeaderText="Culture" PropertyName="Culture">
-            <ChildContent Context="item">@item.Culture</ChildContent>
-        </GridColumn>
-
- 
+        <DxGridDataColumn Caption="Culture" FieldName="Culture">
+        </DxGridDataColumn>
     </GridColumns>
 
     <EditFormTemplate Context="person">

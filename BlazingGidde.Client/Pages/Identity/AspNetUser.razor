@@ -18,43 +18,31 @@
 
 <PageTitle>Application Users</PageTitle>
 
+
 <CustomGrid TEntity="FlowUser" Tkey="string" Repository="@UserManager"
  TCreateDto="CreateFlowUserDto" TReadDto="FlowUserDto">
 
     <GridColumns>
-        <!-- ID Column (Read-Only) -->
-        <GridColumn TItem="FlowUserDto" HeaderText="ID" PropertyName="Id">
-            <ChildContent Context="item">@item.Id</ChildContent>
-        </GridColumn>
+        <DxGridDataColumn  Caption="ID" FieldName="Id">
+        </DxGridDataColumn>
 
-        <!-- User Name Columns -->
-        <GridColumn TItem="FlowUserDto" HeaderText="First Name" PropertyName="PersonFirstName">
-            <ChildContent Context="item">@item.PersonFirstName</ChildContent>
-        </GridColumn>
+        <DxGridDataColumn  Caption="First Name" FieldName="PersonFirstName">
+        </DxGridDataColumn>
 
-        <GridColumn TItem="FlowUserDto" HeaderText="Last Name" PropertyName="PersonLastName">
-            <ChildContent Context="item">@item.PersonLastName</ChildContent>
-        </GridColumn>
+        <DxGridDataColumn  Caption="Last Name" FieldName="PersonLastName">
+        </DxGridDataColumn>
 
-        <!-- Email Column -->
-        <GridColumn TItem="FlowUserDto" HeaderText="Email" PropertyName="Email">
-            <ChildContent Context="item">@item.Email</ChildContent>
-        </GridColumn>
+        <DxGridDataColumn  Caption="Email" FieldName="Email">
+        </DxGridDataColumn>
 
-        <!-- Phone Number Column -->
-        <GridColumn TItem="FlowUserDto" HeaderText="Phone Number" PropertyName="PhoneNumber">
-            <ChildContent Context="item">@item.PhoneNumber</ChildContent>
-        </GridColumn>
+        <DxGridDataColumn  Caption="Phone Number" FieldName="PhoneNumber">
+        </DxGridDataColumn>
 
-        <!-- Lockout Enabled Column -->
-        <GridColumn TItem="FlowUserDto" HeaderText="Lockout Enabled" PropertyName="LockoutEnabled">
-            <ChildContent Context="item">@item.LockoutEnabled</ChildContent>
-        </GridColumn>
+        <DxGridDataColumn  Caption="Lockout Enabled" FieldName="LockoutEnabled">
+        </DxGridDataColumn>
 
-        <!-- Two-Factor Enabled Column -->
-        <GridColumn TItem="FlowUserDto" HeaderText="Two-Factor Enabled" PropertyName="TwoFactorEnabled">
-            <ChildContent Context="item">@item.TwoFactorEnabled</ChildContent>
-        </GridColumn>
+        <DxGridDataColumn  Caption="Two-Factor Enabled" FieldName="TwoFactorEnabled">
+        </DxGridDataColumn>
     </GridColumns>
 
     <EditFormTemplate Context="user">
@@ -175,7 +163,7 @@
                                         <td>@role</td>
                                         <td>
                                             <button class="btn btn-danger btn-sm" @onclick="() => RemoveRole(user.Id, role)">
-                                                <span class="material-icons">delete</span>
+
                                             </button>
                                         </td>
                                     </tr>

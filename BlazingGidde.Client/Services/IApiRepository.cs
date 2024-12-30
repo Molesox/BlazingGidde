@@ -2,6 +2,7 @@ using BlazingGidde.Shared.DTOs;
 using BlazingGidde.Shared.DTOs.Common;
 using BlazingGidde.Shared.Models;
 using BlazingGidde.Shared.Repository;
+using DevExpress.Blazor;
 
 namespace BlazingGidde.Client.Services
 {
@@ -18,6 +19,8 @@ namespace BlazingGidde.Client.Services
 
 
         Task<TReadDto?> GetByID(object Id);
+
+        GridDevExtremeDataSource<TReadDto> Get();
 
 
         Task<QueryFilterResponse<TReadDto>> Get(QueryFilter<TEntity> queryFilter);
