@@ -23,11 +23,11 @@
                         <h5 class="card-title">@template.Name</h5>
                         <div class="d-flex justify-content-center gap-2 mt-3">
                             <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                                      Text="+" @onclick='() => CreateNewTemplate(template.Code)'></DxButton>
+                            Text="+" @onclick='() => CreateNewTemplate(template.Code)'></DxButton>
                             <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-                                      Text="E" @onclick='() => EditTemplate(template)'></DxButton>
+                            Text="E" @onclick='() => EditTemplate(template)'></DxButton>
                             <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
-                                      Text="D" @onclick='() => DeleteTemplate(template)'></DxButton>
+                            Text="D" @onclick='() => DeleteTemplate(template)'></DxButton>
                         </div>
                     </div>
                 </div>
@@ -36,38 +36,43 @@
     </div>
 </div>
 
-<Modal @ref="modal" Title="Edit Template Type" Size="ModalSize.Large" OnHide="CloseModal">
-    <BodyTemplate>
-        <EditForm Model="selectedItem" OnValidSubmit="SaveItem">
-            <DataAnnotationsValidator />
-            <div class="container-fluid p-3">
-                <h5 class="mb-3">Template Type Details</h5> 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Name</label>
-                        <InputText class="form-control" @bind-Value="selectedItem.Name" />
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Image URL</label>
-                        <InputText class="form-control" @bind-Value="selectedItem.ImgUrl" />
-                    </div>
-                </div>
-                <div class="d-flex justify-content-end mt-3">
-                    <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-                              Text="Close" @onclick="CloseModal"></DxButton>
-                    <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                              Text="Save" @onclick="CloseModal"></DxButton>
-                </div>
-            </div>
-        </EditForm>
-    </BodyTemplate>
-</Modal>
+<DxPopup
+@bind-Visible="@PopupVisible"
+ShowFooter ="true"
+HeaderText="Edit Template Type">
+    <BodyContentTemplate Context="popupContext">
+        <div class="d-flex flex-fill pt-1 pb-2 w-100">
+            <DxFormLayout>
+                <DxFormLayoutItem Caption="Nombre" CaptionPosition="CaptionPosition.Vertical" CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
+                    <DxTextBox @bind-Text="selectedItem.Name" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="URL Imagen" CaptionPosition="CaptionPosition.Vertical" CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
+                    <DxTextBox @bind-Text= "selectedItem.ImgUrl" />
+                </DxFormLayoutItem>
+            </DxFormLayout>
+
+        </div>
+    </BodyContentTemplate>
+    <FooterContentTemplate Context="bodyContext">
+        <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Secondary" 
+        Text="Cancelar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
+        <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Primary" 
+        Text="Guardar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
+    </FooterContentTemplate>
+
+</DxPopup>
+
+<DxDialogProvider/>
 
 @code {
+    [Inject] IDialogService DialogService { get; set; }
+
     private string searchTerm = "";
     private TemplateType? selectedItem { get; set; }
     private Modal modal = default!;
     public List<TemplateType> mytemplate = new List<TemplateType>();
+    private bool PopupVisible {get; set;}
+    private bool? Result { get; set; } = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -85,25 +90,42 @@
 
     }
 
-    private async Task EditTemplate(TemplateType templateType)
+    private void EditTemplate(TemplateType templateType)
     {
         selectedItem = templateType;
-        await modal?.ShowAsync();
+        PopupVisible = true;
     }
 
     private async Task DeleteTemplate(TemplateType templateType)
     {
         if (templateType != null)
         {
-            mytemplate.Remove(templateType);
-            await templateTypeManager.Delete(templateType);
-            await InvokeAsync(StateHasChanged);
+            var result = await OpenConfirmDialogAsync();
+            if(result)
+            {
+                mytemplate.Remove(templateType);
+                await templateTypeManager.Delete(templateType.Id);
+                await InvokeAsync(StateHasChanged);
+            }
         }
     }
 
-    private async Task CloseModal()
+    private async Task <bool> OpenConfirmDialogAsync()
     {
-        await modal?.HideAsync();
+        return await DialogService.ConfirmAsync(new MessageBoxOptions()
+            {
+                Text = "Esta seguro que desea borrar esta plantilla?",
+                OkButtonText = "Yes",
+                CancelButtonText = "No",
+                ShowIcon = false,
+                ShowCloseButton = false,
+                RenderStyle = MessageBoxRenderStyle.Danger,
+            });
+    }
+
+    private void CloseModal()
+    {
+        PopupVisible = false;
         selectedItem = null;
     }
 
