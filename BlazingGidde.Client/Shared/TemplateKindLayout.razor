@@ -2,61 +2,50 @@
 @layout MainLayout
 <h3>@type.Name</h3>
 
-<div class="row row-cols-3 g-3">
-    <div class="col-6">
-        <div class="form-group">
-            <label for="name">Nombre</label>
-            <InputText id="name" class="form-control" @bind-Value="kind.Name"></InputText>
-        </div>
-    </div>
-    <div class="col-3">
-        <div class="form-group">
-            <label for="version">Versión</label>
-            <NumberInput id="version" class="form-control" Disabled="true" @bind-Value="kind.Version"></NumberInput>
-        </div>
-    </div>
-    <div class="col-3">
-        <div class="form-group">
-            <label for="date">Fecha</label>
-            <DateInput id="date" class="form-control" Disabled="true" @bind-Value="kind.CreateDate"></DateInput>
-        </div>
-    </div>
+<div class="form-layout">
+    <DxFormLayout CaptionPosition="CaptionPosition.Vertical" CssClass="w-100">
+        <DxFormLayoutItem Caption="Nombre" ColSpanLg="6" ColSpanMd="12">
+            <DxTextBox @bind-Value="kind.Name" CssClass="form-control-uniform" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="Versión" ColSpanLg="3" ColSpanMd="6">
+            <DxTextBox @bind-Value="kind.Version" CssClass="form-control-uniform" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="Versión" ColSpanLg="3" ColSpanMd="6">
+            <DxDateEdit @bind-Date="@DateTimeValue" InputId="deOverview" CssClass="form-control-uniform" />
+        </DxFormLayoutItem>
+
+        <DxFormLayoutItem Caption="Descripción del programa" ColSpanLg="6" ColSpanMd="12">
+            <DxTextBox @bind-Value="kind.ProgramDescription" CssClass="form-control-uniform" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="Sección" ColSpanLg="6" ColSpanMd="12">
+            <DxTextBox @bind-Value="kind.Section" CssClass="form-control-uniform" />
+        </DxFormLayoutItem>
+    </DxFormLayout>
 </div>
-<div class="row row-cols-2 g-3">
-    <div class="col-6">
-        <div class="form-group">
-            <label for="name">Descripción del programa</label>
-            <InputText id="programDescription" class="form-control" @bind-Value="kind.ProgramDescription"></InputText>
-        </div>
-    </div>
-    <div class="col-3">
-        <div class="form-group">
-            <label for="version">Sección</label>
-            <InputText id="section" class="form-control" @bind-Value="kind.Section"></InputText>
-        </div>
-    </div>
+<div class="mt-3">
+    @Body
 </div>
 
-@Body
 
-<div class="mt-3 d-flex align-items-center">
-    <Button Color="ButtonColor.Secondary" Variant="Outline" Class="me-2 button-uniform" @onclick="Cancel">
-        <Icon Name="IconName.XCircle" Class="me-1" />Cancelar
-    </Button>
-    <Button Color="ButtonColor.Primary" Variant="Outline" Class="button-uniform" @onclick="Save">
-        <Icon Name="IconName.Save" Class="me-1" />Guardar
-    </Button>
+<div class="mt-3 d-flex flex-row flex-wrap">
+    <DxButton  RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
+              Click="Cancel" IconCssClass="" CssClass="button-uniform">Cancelar
+    </DxButton>
+    <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary" 
+        Click="Save" IconCssClass="">Guardar
+    </DxButton>
 </div>
 
 <style>
     .button-uniform {
-        margin: 10px;
+        margin-right: 10px;
     }
 
-    label{
-        margin-bottom: 10px;
+    .form-control-uniform {
+        height: 35px;
+        padding: 6px 12px; 
+        margin-top: 10px;
     }
-
 </style>
 
 
@@ -65,6 +54,8 @@
     public TemplateType type { get; set; } = new();
 
     TemplateKind kind { get; set; } = new();
+
+    DateTime DateTimeValue { get; set; } = DateTime.Now;
 
     protected override async Task OnInitializedAsync()
     {
