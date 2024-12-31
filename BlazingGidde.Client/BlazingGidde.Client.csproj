@@ -16,7 +16,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="AgileObjects.AgileMapper" Version="1.8.1" />
-		<PackageReference Include="blazor.Bootstrap" Version="3.2.0" />
 		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
 		<PackageReference Include="DevExpress.Blazor" Version="24.2.3" />		
 		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.11" />

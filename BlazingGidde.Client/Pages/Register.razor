@@ -85,7 +85,6 @@
 @code {
 
     private string _error = "";
-    [Inject] protected ToastService? ToastService { get; set; }
 
     private RegisterModel _registerModel = new();
 
@@ -106,7 +105,6 @@
             if (result.Errors is not null)
             {
                 _error = string.Join("<br>", result.Errors);
-                ToastService?.Notify(new(ToastType.Danger, $"Error: {_error}."));
             }
 
 

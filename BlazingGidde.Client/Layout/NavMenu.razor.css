@@ -6,7 +6,7 @@
     height: 100%;
     max-height: 100%;
     overflow: auto;
-    background-color: rgba(34, 34, 34, 0.03);
+    background-color: var(--bs-body-bg, var(--dxbl-body-bg, #fff));
 }
 
 .sidebar.collapse {
@@ -29,5 +29,24 @@
         height: auto;
         min-width: 100%;
         z-index: 1050;
+    }
+}
+
+::deep .app-sidebar {
+    --dxbl-treeview-spacing-x: 0.5rem;
+    --dxbl-treeview-spacing-y: 1rem;
+}
+
+::deep .app-sidebar > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > .dxbl-treeview-items-container > .dxbl-treeview-item > .dxbl-treeview-item-content > .dxbl-treeview-item-container {
+    --dxbl-treeview-font-weight: 600;
+}          
+
+::deep .app-sidebar > .dxbl-scroll-viewer > .dxbl-scroll-viewer-content > .dxbl-treeview-items-container > .dxbl-treeview-item > .dxbl-treeview-item-content > .dxbl-btn.dxbl-invisible {
+    display: none;
+}
+
+@media (max-width: 1199.98px) {
+    ::deep .app-sidebar {
+        padding-bottom: 0;
     }
 }

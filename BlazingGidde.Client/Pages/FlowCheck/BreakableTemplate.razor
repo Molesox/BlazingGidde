@@ -2,44 +2,78 @@
 @layout TemplateKindLayout
 @using BlazingGidde.Client.Shared
 
-<div>
-    <div class="grid-container">
+<div class="container my-4">
+    <div class="row">
         @foreach (var item in Items)
         {
-            <div class="grid-item"></div>
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column">
+                        <!-- Customize the card content as needed -->
+                        <h5 class="card-title">Item @item.Id</h5>
+                        <p class="card-text">This is a description for item @item.Id.</p>
+                        <div class="mt-auto">
+                            <DxButton Click="@(() => RemoveItem(item))" Text="Remove" CssClass="btn-danger btn-sm" />
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
     </div>
-
-    <button @onclick="AddItem">Add Item</button>
 </div>
 
-<style>
-    .grid-container {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-    }
-
-    .grid-item {
-        padding: 10px;
-        border: 1px solid #ccc;
-        text-align: center;
-        background-color: #f9f9f9;
-    }
-
-    button {
-        margin-top: 10px;
-
-    }
-</style>
+<!-- Floating Action Button -->
+<DxButton Click="AddItem" IconCssClass="fas fa-plus" CssClass="fab-button btn-primary" />
 
 @code {
-    List<BreakeableItem> Items { get; set; } = new List<BreakeableItem> (8);
+    // Initialize with 8 items
+    List<BreakableItem> Items { get; set; } = Enumerable.Range(1, 8).Select(i => new BreakableItem { Id = i }).ToList();
 
     void AddItem()
     {
-        Items.Add(new BreakeableItem { });
+        int newId = Items.Any() ? Items.Max(i => i.Id) + 1 : 1;
+        Items.Add(new BreakableItem { Id = newId });
     }
 
-   
+    void RemoveItem(BreakableItem item)
+    {
+        Items.Remove(item);
+    }
+
+    public class BreakableItem
+    {
+        public int Id { get; set; }
+        // Add other properties as needed
+    }
 }
+
+<style>
+    .fab-button {
+        position: fixed;
+        bottom: 30px;
+        /* Adjust the distance from the bottom */
+        right: 30px;
+        /* Adjust the distance from the right */
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        /* Ensure it's above other elements */
+        font-size: 24px;
+        padding: 0;
+    }
+
+    .fab-button .fas {
+        margin: 0;
+    }
+
+    /* Optional: Hover effect */
+    .fab-button:hover {
+        background-color: #0056b3;
+        /* Darker shade of primary color */
+    }
+</style>
