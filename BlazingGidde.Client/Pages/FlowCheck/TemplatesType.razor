@@ -9,9 +9,13 @@
 <div class="container mt-5">
     <h3 class="text-center mb-4">Templates Type</h3>
 
-    <div class="centered-container">
-        <DxTextBox CssClass="form-control" NullText="Search..." ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" @bind-Text="searchTerm" />
+    <div class="search-container">
+        <DxSearchBox NullText="Search..." InputDelay="@InputDelay" BindValueMode="@BindValueMode"
+                     CssClass="custom-search-box" @bind-Text="@SearchText" aria-label="Search">
+        </DxSearchBox>
+        
     </div>
+
 
     <div class="row gy-4">
         @foreach (var template in filteredTemplates)
@@ -37,17 +41,19 @@
 </div>
 
 <DxPopup
-@bind-Visible="@PopupVisible"
-ShowFooter ="true"
-HeaderText="Edit Template Type">
+    @bind-Visible="@PopupVisible"
+    ShowFooter ="true"
+    HeaderText="Edit Template Type">
     <BodyContentTemplate Context="popupContext">
         <div class="d-flex flex-fill pt-1 pb-2 w-100">
             <DxFormLayout>
-                <DxFormLayoutItem Caption="Nombre" CaptionPosition="CaptionPosition.Vertical" CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
-                    <DxTextBox @bind-Text="selectedItem.Name" />
+                <DxFormLayoutItem Caption="Nombre" CaptionPosition="CaptionPosition.Vertical" 
+                    CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
+                <DxTextBox @bind-Text="selectedItem.Name" />
                 </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="URL Imagen" CaptionPosition="CaptionPosition.Vertical" CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
-                    <DxTextBox @bind-Text= "selectedItem.ImgUrl" />
+                <DxFormLayoutItem Caption="URL Imagen" CaptionPosition="CaptionPosition.Vertical" 
+                    CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
+                <DxTextBox @bind-Text= "selectedItem.ImgUrl" />
                 </DxFormLayoutItem>
             </DxFormLayout>
 
@@ -55,9 +61,9 @@ HeaderText="Edit Template Type">
     </BodyContentTemplate>
     <FooterContentTemplate Context="bodyContext">
         <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Secondary" 
-        Text="Cancelar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
+            Text="Cancelar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
         <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Primary" 
-        Text="Guardar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
+            Text="Guardar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
     </FooterContentTemplate>
 
 </DxPopup>
@@ -67,12 +73,14 @@ HeaderText="Edit Template Type">
 @code {
     [Inject] IDialogService DialogService { get; set; }
 
-    private string searchTerm = "";
     private TemplateType? selectedItem { get; set; }
 
     public List<TemplateType> mytemplate = new List<TemplateType>();
     private bool PopupVisible {get; set;}
     private bool? Result { get; set; } = null;
+    private string SearchText { get; set; } = string.Empty;
+    private int? InputDelay { get; set; } = 300;
+    private BindValueMode BindValueMode { get; set; } = BindValueMode.OnInput;
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,9 +88,9 @@ HeaderText="Edit Template Type">
     }
 
     private IEnumerable<TemplateType> filteredTemplates =>
-    string.IsNullOrWhiteSpace(searchTerm)
-    ? mytemplate
-    : mytemplate.Where(t => t.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+        string.IsNullOrWhiteSpace(SearchText)
+            ? mytemplate
+            : mytemplate.Where(t => t.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
 
     private void CreateNewTemplate(TemplateCode code)
     {
@@ -134,10 +142,6 @@ HeaderText="Edit Template Type">
         if (selectedItem is null) return;
 
         templateTypeManager.Update(selectedItem);
-
-       
-
-
         CloseModal();
         await InvokeAsync(StateHasChanged);
     }
@@ -162,16 +166,16 @@ HeaderText="Edit Template Type">
         border-radius: 12px 12px 0 0;
     }
 
-    .centered-container {
+    .search-container {
         display: flex;
-        justify-content: center;
-        align-items: center; 
-        margin-bottom: 30px;
+        justify-content: center; /* Centrar horizontalmente */
+        align-items: center; /* Opcional: Centrar verticalmente */
+        margin-bottom: 30px; /* Espaciado con otros elementos */
     }
 
-    .form-control {
-        max-width: 500px; 
-        width: 100%; 
+    .custom-search-box {
+        max-width: 900px;
+        width: 100%;
     }
 
 
