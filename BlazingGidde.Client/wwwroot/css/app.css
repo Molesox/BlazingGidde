@@ -1,9 +1,10 @@
-
-html, body {
+html,
+body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-html, body {
+html,
+body {
     height: 100%;
     overflow: auto;
 }
@@ -18,6 +19,19 @@ html, body {
 
 .validation-message {
     color: red;
+}
+
+.rotate {
+    animation: rotation 2s infinite linear;
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 #blazor-error-ui {

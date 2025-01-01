@@ -37,4 +37,5 @@ builder.Services.AddScoped<TemplateTypeManager>();
 
 builder.Services.AddDevExpressBlazor(configure => configure.BootstrapVersion = BootstrapVersion.v5);
 
+
 await builder.Build().RunAsync();

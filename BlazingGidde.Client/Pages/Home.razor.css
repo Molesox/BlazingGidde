@@ -10,6 +10,12 @@
 	justify-content: center;
 	align-items: center;
 	min-width: 300px; /* Ensures proper size on narrow screens */
+	
+}
+.welcome-container:hover {
+	transition: transform 0.5s ease-in-out;
+    transform: scale(1.05); /* Slightly enlarge the container */
+    box-shadow: 4px 8px 16px 6px rgba(0, 0, 0, 0.6); /* Enhance the shadow on hover */
 }
 
 .welcome-image {

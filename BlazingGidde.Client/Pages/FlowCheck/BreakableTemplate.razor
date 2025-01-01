@@ -2,8 +2,6 @@
 @using BlazingGidde.Client.Shared
 @layout TemplateKindLayout
 
-
-
 <div class="container my-4">
     <div class="row">
         @foreach (var item in Items)
@@ -14,17 +12,17 @@
 
                         @if (!string.IsNullOrEmpty(item.ImageUrl))
                         {
-                            <img src="@item.ImageUrl" alt="Uploaded" style="max-width:100%;" />
+                            <img src="@item.ImageUrl" alt="Uploaded" class="fixed-size-image" />
                         }
                         else
                         {
                             <CustomTemplateItemComponent Id="@item.Id" @bind-Value="@item.ImageUrl" />
                         }
-
-                        <h5 class="card-title mt-2">Elemento @item.Id</h5>
-                        <DxTextBox @bind-Text="@item.Name" Placeholder="Nombre" />
-                        <div class="mt-auto">
-                            <DxButton Click="@(() => RemoveItem(item))" IconCssClass="oi oi-trash" RenderStyle="ButtonRenderStyle.Danger" />
+                        <div style="margin-top: 3px;" class="d-flex justify-content-between align-items-center">
+                            <DxTextBox @bind-Text="@item.Name" NullText=@($"Nombre{item.Id}") />
+                            <div class="mt-auto">
+                                <DxButton Click="@(() => RemoveItem(item))" IconCssClass="oi oi-trash" RenderStyle="ButtonRenderStyle.Danger" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -76,5 +74,15 @@
 
     .fab-button:hover {
         background-color: var(--bs-primary);
+    }
+
+    .fixed-size-image {
+        width: 100px; /* Set your desired width */
+        height: 100px; /* Set your desired height */
+        object-fit: cover; /* Ensures the image covers the area */
+    }
+
+    .card {
+        border-radius: 10px; /* Adjust the value as needed */
     }
 </style>

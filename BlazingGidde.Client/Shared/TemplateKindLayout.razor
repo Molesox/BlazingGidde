@@ -3,31 +3,23 @@
 
 <h3>@type.Name</h3>
 
-
 <DxStackLayout Orientation="Orientation.Vertical" CssClass="w-100 ch-480">
-   
     <Items>
         <DxStackLayoutItem Length="auto">
             <Template>
                 <DxFormLayout CaptionPosition="CaptionPosition.Vertical">
-
                     <DxFormLayoutItem ColSpanMd="6" Caption="Nombre">
                         <DxTextBox @bind-Text="kind.Name" />
                     </DxFormLayoutItem>
-
                     <DxFormLayoutItem ColSpanMd="3" Caption="Versión">
                         <DxSpinEdit @bind-Value="kind.Version" Enabled="false" />
                     </DxFormLayoutItem>
-
                     <DxFormLayoutItem ColSpanMd="3" Caption="Fecha">
                         <DxDateEdit @bind-Date="kind.CreateDate" Enabled="false" />
                     </DxFormLayoutItem>
-
-
                     <DxFormLayoutItem ColSpanMd="6" Caption="Descripción del programa">
                         <DxTextBox @bind-Text="kind.ProgramDescription" />
                     </DxFormLayoutItem>
-
                     <DxFormLayoutItem ColSpanMd="3" Caption="Sección">
                         <DxTextBox @bind-Text="kind.Section" />
                     </DxFormLayoutItem>
@@ -36,32 +28,23 @@
         </DxStackLayoutItem>
         <DxStackLayoutItem>
             <Template>
-           
-                 @Body
-
-
+                @Body
             </Template>
         </DxStackLayoutItem>
-        <DxStackLayoutItem Length="auto" >
+        <DxStackLayoutItem Length="auto">
             <Template>
-
-
+                <div style="margin-bottom: 20px;">
                     <DxButton RenderStyle="ButtonRenderStyle.Secondary" Click="Cancel">
                         Cancelar
                     </DxButton>
                     <DxButton style="margin-left: 4px;" RenderStyle="ButtonRenderStyle.Primary" Click="Save">
                         Guardar
                     </DxButton>
-
+                </div>
             </Template>
         </DxStackLayoutItem>
     </Items>
 </DxStackLayout>
-
-
-
-
-
 
 @code {
     [Parameter]

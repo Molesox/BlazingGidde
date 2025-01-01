@@ -1,17 +1,14 @@
 ﻿@using DevExpress.Blazor
-
 <div id="@Id" class="upload-container">
 
-    <div id="dropzone-external" class="card flex-box">
+    <div id="@($"dropzone-external-{Id}")" class="dropzone-external card flex-box">
         @if (UploadComplete)
         {
         }
         else if (TotalBytesRead != 0)
         {
-            <DxProgressBar CssClass="upload-progress"
-            Value="@TotalBytesRead"
-            MaxValue="@FileSize"
-            Label="@(TotalBytesRead == FileSize ? "Your image is almost ready..." : string.Empty)" />
+            <DxProgressBar CssClass="upload-progress" Value="@TotalBytesRead" MaxValue="@FileSize"
+                Label="@(TotalBytesRead == FileSize ? "Your image is almost ready..." : string.Empty)" />
         }
         else
         {
@@ -22,14 +19,13 @@
         }
     </div>
 
-    <DxFileInput Visible="false"
-    MaxFileSize="15000000"
-    FilesUploading="@OnFilesUploading"
+    <DxFileInput Visible="false" MaxFileSize="15000000" 
+    FilesUploading="@OnFilesUploading" 
     CssClass="dropZone-owner"
-    ExternalSelectButtonCssSelector="#dropzone-external"
-    ExternalDropZoneCssSelector="#dropzone-external"
-    ExternalDropZoneDragOverCssClass="dropzone-hover"
-    AcceptedFileTypes="@AllowedFileExtensions">
+        ExternalSelectButtonCssSelector="@($"#dropzone-external-{Id}")"
+        ExternalDropZoneCssSelector="@($"#dropzone-external-{Id}")" 
+        ExternalDropZoneDragOverCssClass="dropzone-hover"
+        AcceptedFileTypes="@AllowedFileExtensions">
     </DxFileInput>
 </div>
 
@@ -74,7 +70,6 @@
             while ((bytesRead = await stream.ReadAsync(FileBytes, TotalBytesRead, FileSize - TotalBytesRead)) != 0)
             {
                 TotalBytesRead += bytesRead;
-                await InvokeAsync(StateHasChanged);
             }
         }
         finally

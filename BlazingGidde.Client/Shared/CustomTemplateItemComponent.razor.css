@@ -1,5 +1,4 @@
-#dropzone-external {
-
+.dropzone-external {
     background-color: rgba(183, 183, 183, 0.1);
     border-style: dashed;
     padding: 10px;
@@ -8,12 +7,13 @@
     justify-content: center;
     align-items: center;
 }
-#dropzone-external > * {
+.dropzone-external > * {
     pointer-events: none;
 }
-#dropzone-external.dropzone-hover {
+.dropzone-external.dropzone-hover {
     border-style: solid;
 }
+
 .upload-container > span {
     font-size: 22px;
     font-weight: bold;
