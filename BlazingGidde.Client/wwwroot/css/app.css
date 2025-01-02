@@ -1,10 +1,12 @@
-html, body {
+html,
+body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-html, body {
+html,
+body {
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .valid.modified:not([type=checkbox]) {
@@ -17,6 +19,19 @@ html, body {
 
 .validation-message {
     color: red;
+}
+
+.rotate {
+    animation: rotation 2s infinite linear;
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 #blazor-error-ui {
@@ -37,34 +52,3 @@ html, body {
     right: 0.75rem;
     top: 0.5rem;
 }
-
-/* Estilos espec�ficos para la p�gina de crear plantilla */
-.create-template-container {
-	
-	padding: 1rem;
-	border-radius: 8px;
-}
-
-.form-group {
-	margin-top: 15px;
-	margin-bottom: 15px;
-}
-
-.create-template-container h3 {
-	color: #333;
-}
-
-.create-template-container .form-group label {
-	font-weight: bold;
-	margin-bottom: 15px;
-}
-
-.create-template-container img {
-	max-height: 50px;
-	margin-left: 10px;
-}
-
-.create-template-container .element-item {
-	margin-top: 10px;
-}
-

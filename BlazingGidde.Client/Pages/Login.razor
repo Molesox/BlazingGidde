@@ -70,12 +70,8 @@
         else
         {
             _error = result.Error!;
-            ToastService?.Notify(new(ToastType.Danger, $"Error: {_error}."));
         }
     }
-
-
-    [Inject] protected ToastService? ToastService { get; set; }
 
     private LoginModel _loginModel = new();
     private string _error = "";

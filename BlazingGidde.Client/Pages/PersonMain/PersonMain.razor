@@ -7,66 +7,89 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Components.Forms
+@using AgileObjects.AgileMapper.Extensions
+
 @inject PersonMainManager personManager
 @attribute [Authorize]
 
 <PageTitle>Application Person</PageTitle>
 
-<CustomGrid TEntity="Person" Tkey="int" Repository="@personManager" TCreateDto="CreatePersonDto" TReadDto="PersonDto" >
-  <GridColumns>
-        <DxGridDataColumn Caption="Person ID" FieldName="PersonId">
-        </DxGridDataColumn>
-        
-        <DxGridDataColumn Caption="First Name" FieldName="FirstName">
-        </DxGridDataColumn>
-        
-        <DxGridDataColumn Caption="Last Name" FieldName="LastName">
-        </DxGridDataColumn>
-        
-        <DxGridDataColumn Caption="Title" FieldName="Title">
-        </DxGridDataColumn>
-        
-        <DxGridDataColumn Caption="Culture" FieldName="Culture">
-        </DxGridDataColumn>
-    </GridColumns>
+<DxGrid Data="@Data" @ref="@Grid" EditMode="GridEditMode.PopupEditForm" CustomizeEditModel="Grid_CustomizeEditModel"
+	EditModelSaving="Grid_EditModelSaving">
+	<Columns>
+		<DxGridCommandColumn></DxGridCommandColumn>
+		<DxGridDataColumn Caption="Person ID" FieldName="PersonId">
+		</DxGridDataColumn>
 
-    <EditFormTemplate Context="person">
+		<DxGridDataColumn Caption="First Name" FieldName="FirstName">
+		</DxGridDataColumn>
 
-	    <div class="container-fluid p-3">
-		    <h5 class="mb-3">Person Details</h5>
-		    <div class="row mb-3">
-			    <div class="col-md-6">
-				    <label class="form-label fw-bold">Person ID</label>
-				    <InputNumber class="form-control" @bind-Value="person.PersonId"/>
-			    </div>
-			    <div class="col-md-6">
-				    <label class="form-label fw-bold">First Name</label>
-				    <InputText class="form-control" @bind-Value="person.FirstName"/>
-			    </div>
-		    </div>
-		    <div class="row mb-3">
-			    <div class="col-md-6">
-				    <label class="form-label fw-bold">Last Name</label>
-				    <InputText class="form-control" @bind-Value="person.LastName"/>
-			    </div>
-			    <div class="col-md-6">
-				    <label class="form-label fw-bold">Title</label>
-				    <InputText class="form-control" @bind-Value="person.Title"/>
-			    </div>
-		    </div>
-		    <div class="row mb-3">
-			    <div class="col-md-6">
-				    <label class="form-label fw-bold">Culture</label>
-				    <InputText class="form-control" @bind-Value="person.Culture"/>
-			    </div>
+		<DxGridDataColumn Caption="Last Name" FieldName="LastName">
+		</DxGridDataColumn>
 
-		    </div>
-		    <div class="row mb-3">
-			    <div class="col-md-6">
-				    <label class="form-label fw-bold">Remarks</label>
-				    <InputText class="form-control" @bind-Value="person.Remarks"/>
-			    </div>
-		    </div>
-	    </div>
-    </EditFormTemplate>
-</CustomGrid>
+		<DxGridDataColumn Caption="Title" FieldName="Title">
+		</DxGridDataColumn>
+
+		<DxGridDataColumn Caption="Culture" FieldName="Culture">
+		</DxGridDataColumn>
+	</Columns>
+
+	<EditFormTemplate Context="EditFormContext">
+		@{
+			var person = (CreatePersonDto)EditFormContext.EditModel;
+		}
+		<DxFormLayout CssClass="w-100">
+			<DxFormLayoutItem Caption="Id" ColSpanMd="6">
+				@EditFormContext.GetEditor("PersonId")
+			</DxFormLayoutItem>
+
+			<DxFormLayoutItem Caption="First Name:" ColSpanMd="6">
+				@EditFormContext.GetEditor("FirstName")
+			</DxFormLayoutItem>
+
+			<DxFormLayoutItem Caption="Last Name:" ColSpanMd="6">
+				@EditFormContext.GetEditor("LastName")
+			</DxFormLayoutItem>
+
+			<DxFormLayoutItem Caption="Title:" ColSpanMd="6">
+				@EditFormContext.GetEditor("Title")
+			</DxFormLayoutItem>
+
+			<DxFormLayoutItem Caption="Culture:" ColSpanMd="6">
+				@EditFormContext.GetEditor("Culture")
+			</DxFormLayoutItem>
+
+			<DxFormLayoutItem Caption="Remarks:" ColSpanMd="6">
+				@EditFormContext.GetEditor("Remarks")
+			</DxFormLayoutItem>
+		</DxFormLayout>
+	</EditFormTemplate>
+</DxGrid>
+
+@code {
+	IGrid Grid { get; set; }
+	object Data { get; set; }
+
+	protected override void OnInitialized()
+	{
+		Data = personManager.Get();
+	}
+
+	async Task Grid_EditModelSaving(GridEditModelSavingEventArgs e)
+	{
+		var editedProduct = (CreatePersonDto)e.EditModel;
+		var result = e.IsNew == false ? personManager.Update(editedProduct) : personManager.Insert(editedProduct);
+
+	}
+
+	async Task Grid_CustomizeEditModel(GridCustomizeEditModelEventArgs e)
+	{
+		var dataItem = (PersonDto)e.DataItem;
+		if (dataItem == null)
+			e.EditModel = new CreatePersonDto { };
+		else
+		{
+			e.EditModel = dataItem.Map().ToANew<CreatePersonDto>();
+		}
+	}
+}

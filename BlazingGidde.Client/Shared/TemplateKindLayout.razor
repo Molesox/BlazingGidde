@@ -1,53 +1,50 @@
 ﻿@inherits LayoutComponentBase
 @layout MainLayout
+
 <h3>@type.Name</h3>
 
-<div class="form-layout">
-    <DxFormLayout CaptionPosition="CaptionPosition.Vertical" CssClass="w-100">
-        <DxFormLayoutItem Caption="Nombre" ColSpanLg="6" ColSpanMd="12">
-            <DxTextBox @bind-Value="kind.Name" CssClass="form-control-uniform" />
-        </DxFormLayoutItem>
-        <DxFormLayoutItem Caption="Versión" ColSpanLg="3" ColSpanMd="6">
-            <DxTextBox @bind-Value="kind.Version" CssClass="form-control-uniform" />
-        </DxFormLayoutItem>
-        <DxFormLayoutItem Caption="Versión" ColSpanLg="3" ColSpanMd="6">
-            <DxDateEdit @bind-Date="@DateTimeValue" InputId="deOverview" CssClass="form-control-uniform" />
-        </DxFormLayoutItem>
-
-        <DxFormLayoutItem Caption="Descripción del programa" ColSpanLg="6" ColSpanMd="12">
-            <DxTextBox @bind-Value="kind.ProgramDescription" CssClass="form-control-uniform" />
-        </DxFormLayoutItem>
-        <DxFormLayoutItem Caption="Sección" ColSpanLg="6" ColSpanMd="12">
-            <DxTextBox @bind-Value="kind.Section" CssClass="form-control-uniform" />
-        </DxFormLayoutItem>
-    </DxFormLayout>
-</div>
-<div class="mt-3">
-    @Body
-</div>
-
-
-<div class="mt-3 d-flex flex-row flex-wrap">
-    <DxButton  RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-              Click="Cancel" IconCssClass="" CssClass="button-uniform">Cancelar
-    </DxButton>
-    <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary" 
-        Click="Save" IconCssClass="">Guardar
-    </DxButton>
-</div>
-
-<style>
-    .button-uniform {
-        margin-right: 10px;
-    }
-
-    .form-control-uniform {
-        height: 35px;
-        padding: 6px 12px; 
-        margin-top: 10px;
-    }
-</style>
-
+<DxStackLayout Orientation="Orientation.Vertical" CssClass="w-100 ch-480">
+    <Items>
+        <DxStackLayoutItem Length="auto">
+            <Template>
+                <DxFormLayout CaptionPosition="CaptionPosition.Vertical">
+                    <DxFormLayoutItem ColSpanMd="6" Caption="Nombre">
+                        <DxTextBox @bind-Text="kind.Name" />
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="3" Caption="Versión">
+                        <DxSpinEdit @bind-Value="kind.Version" Enabled="false" />
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="3" Caption="Fecha">
+                        <DxDateEdit @bind-Date="kind.CreateDate" Enabled="false" />
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="6" Caption="Descripción del programa">
+                        <DxTextBox @bind-Text="kind.ProgramDescription" />
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="3" Caption="Sección">
+                        <DxTextBox @bind-Text="kind.Section" />
+                    </DxFormLayoutItem>
+                </DxFormLayout>
+            </Template>
+        </DxStackLayoutItem>
+        <DxStackLayoutItem>
+            <Template>
+                @Body
+            </Template>
+        </DxStackLayoutItem>
+        <DxStackLayoutItem Length="auto">
+            <Template>
+                <div style="margin-bottom: 20px;">
+                    <DxButton RenderStyle="ButtonRenderStyle.Secondary" Click="Cancel">
+                        Cancelar
+                    </DxButton>
+                    <DxButton style="margin-left: 4px;" RenderStyle="ButtonRenderStyle.Primary" Click="Save">
+                        Guardar
+                    </DxButton>
+                </div>
+            </Template>
+        </DxStackLayoutItem>
+    </Items>
+</DxStackLayout>
 
 @code {
     [Parameter]
@@ -59,6 +56,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // Example defaults
         kind.Version = 1;
         kind.CreateDate = DateTime.UtcNow;
     }

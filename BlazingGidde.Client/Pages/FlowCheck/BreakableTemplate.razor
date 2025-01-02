@@ -1,197 +1,88 @@
 ﻿@page "/breakable-template"
-@layout TemplateKindLayout
 @using BlazingGidde.Client.Shared
+@layout TemplateKindLayout
 
-
-<div>
-    <div class="grid-container">
-        @for (int i = 0; i < Items.Count; i += 4)
+<div class="container my-4">
+    <div class="row">
+        @foreach (var item in Items)
         {
-            <div class="grid-row">
-                @for (int j = i; j < i + 4 && j < Items.Count; j++)
-                {
-                    var item = Items[j];
-                    <div class="upload-container">
-                        <span>Profile Picture</span>
-                        <div id="dropzone-external" class="card flex-box">
-                            @if (UploadComplete)
-                            {
-                                <img id="dropzone-image"
-                                     src="@($"data:{FileType};base64,{Convert.ToBase64String(FileBytes ?? Array.Empty<byte>())}")"
-                                     alt="DxFileInput uploaded image" />
-                            }
-                            else if (TotalBytesRead != 0)
-                            {
-                                <DxProgressBar CssClass="upload-progress" Value="@TotalBytesRead"
-                                               MaxValue="@FileSize"  Label="@(TotalBytesRead == FileSize ? "Your image is almost ready..." : string.Empty)" />
-                            }
-                            else
-                            {
-                                <div id="dropzone-text" class="flex-box">
-                                    <span>Drag & Drop the desired file</span>
-                                    <span>…or click to browse for a file instead.</span>
-                                </div>
-                            }
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column">
+
+                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                            <img src="@item.ImageUrl" alt="Uploaded" class="fixed-size-image" />
+                        }
+                        else
+                        {
+                            <CustomTemplateItemComponent Id="@item.Id" @bind-Value="@item.ImageUrl" />
+                        }
+                        <div style="margin-top: 3px;" class="d-flex justify-content-between align-items-center">
+                            <DxTextBox @bind-Text="@item.Name" NullText=@($"Nombre{item.Id}") />
+                            <div class="mt-auto">
+                                <DxButton Click="@(() => RemoveItem(item))" IconCssClass="oi oi-trash" RenderStyle="ButtonRenderStyle.Danger" />
+                            </div>
                         </div>
-                        <DxFileInput Visible="@false"
-                                     MaxFileSize="15000000"
-                                     FilesUploading="@OnFilesUploading"
-                                     CssClass="dropZone-owner"
-                                     ExternalSelectButtonCssSelector="#dropzone-external"
-                                     ExternalDropZoneCssSelector="#dropzone-external"
-                                     ExternalDropZoneDragOverCssClass="dropzone-hover"
-                                     AcceptedFileTypes="@AllowedFileExtensions">
-                        </DxFileInput>
                     </div>
-                }
+                </div>
             </div>
         }
     </div>
-
-    <button @onclick="PromptAddItems">Añadir Items</button>
 </div>
 
+<!-- Floating Action Button -->
+<DxButton Click="AddItem" IconCssClass="oi oi-plus" CssClass="fab-button btn-primary" />
+
 @code {
-    List<BreakeableItem> Items { get; set; } = new List<BreakeableItem>();
+    List<CustomTemplateItem> Items { get; set; } = Enumerable.Range(1, 8)
+    .Select(i => new CustomTemplateItem { Id = i })
+    .ToList();
 
-    async void PromptAddItems()
+    void AddItem()
     {
-        string input = await JSRuntime.InvokeAsync<string>("prompt", "¿Cuántos ítems quieres agregar?");
-        if (int.TryParse(input, out int count) && count > 0)
-        {
-            AddItems(count);
-        }
+        int newId = Items.Any() ? Items.Max(i => i.Id) + 1 : 1;
+        Items.Add(new CustomTemplateItem { Id = newId });
     }
 
-    void AddItems(int count)
+    void RemoveItem(CustomTemplateItem item)
     {
-        for (int i = 0; i < count; i++)
-        {
-            Items.Add(new BreakeableItem
-                {
-                    
-                });
-        }
-        StateHasChanged();
-    }
-
-    [Inject]
-    IJSRuntime JSRuntime { get; set; }
-
-    bool UploadComplete { get; set; } = false;
-    byte[] FileBytes { get; set; }
-    string FileType { get; set; }
-    readonly List<string> AllowedFileExtensions = new() { ".jpg", ".jpeg", ".gif", ".png" };
-    int FileSize { get; set; }
-    int TotalBytesRead { get; set; }
-    async Task OnFilesUploading(FilesUploadingEventArgs args)
-    {
-        UploadComplete = false;
-        var file = args.Files[0];
-        FileSize = (int)file.Size;
-        FileBytes = new byte[FileSize];
-        FileType = file.Type;
-        var stream = file.OpenReadStream(file.Size);
-        TotalBytesRead = 0;
-        try
-        {
-            int bytesReadAsyncCount;
-            while ((bytesReadAsyncCount = await stream.ReadAsync(FileBytes, TotalBytesRead, FileSize - TotalBytesRead)) != 0)
-            {
-                TotalBytesRead += bytesReadAsyncCount;
-                await InvokeAsync(StateHasChanged);
-            }
-        }
-        finally
-        {
-            stream.Close();
-        }
-        UploadComplete = true;
-        await InvokeAsync(StateHasChanged);
+        Items.Remove(item);
     }
 }
 
 <style>
-    .grid-container {
-        display: grid;
-        gap: 10px;
-    }
-
-    .grid-row {
+    .fab-button {
+        position: fixed;
+        bottom: 40px;
+        right: 40px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         display: flex;
-        justify-content: space-between;
-        color: black;
-    }
-
-    .grid-item {
-        flex: 1;
-        padding: 10px;
-        border: 1px solid #ccc;
-        text-align: center;
-        background-color: #f9f9f9;
-        margin: 5px;
-        height: 150px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
         align-items: center;
-    }
-
-        .grid-item img {
-            max-width: 100px;
-            height: auto;
-            margin-top: 5px;
-        }
-
-    button {
-        margin-top: 10px;
-    }
-
-    #dropzone-external {
-        width: 200px;
-        height: 200px;
-        background-color: rgba(183, 183, 183, 0.1);
-        border-width: 2px;
-        border-style: dashed;
-        padding: 10px;
-        display: flex;
-        flex-direction: column;
         justify-content: center;
-        align-items: center;
+        z-index: 1000;
+        font-size: 24px;
+        padding: 0;
     }
 
-        #dropzone-external > * {
-            pointer-events: none;
-        }
-
-        #dropzone-external.dropzone-hover {
-            border-style: solid;
-        }
-
-    .upload-container > span {
-        font-size: 22px;
-        font-weight: bold;
-        margin-bottom: 16px;
+    .fab-button .fas {
+        margin: 0;
     }
 
-    #dropzone-image {
-        max-width: 100%;
-        max-height: 100%;
+    .fab-button:hover {
+        background-color: var(--bs-primary);
     }
 
-    #dropzone-text > span {
-        opacity: 0.5;
+    .fixed-size-image {
+        width: 100px; /* Set your desired width */
+        height: 100px; /* Set your desired height */
+        object-fit: cover; /* Ensures the image covers the area */
     }
 
-    .upload-progress {
-        display: flex;
-        margin-top: 10px;
-    }
-
-    .flex-box {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+    .card {
+        border-radius: 10px; /* Adjust the value as needed */
     }
 </style>

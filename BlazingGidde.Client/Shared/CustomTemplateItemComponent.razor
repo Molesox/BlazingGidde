@@ -1,0 +1,88 @@
+﻿@using DevExpress.Blazor
+<div id="@Id" class="upload-container">
+
+    <div id="@($"dropzone-external-{Id}")" class="dropzone-external card flex-box">
+        @if (UploadComplete)
+        {
+        }
+        else if (TotalBytesRead != 0)
+        {
+            <DxProgressBar CssClass="upload-progress" Value="@TotalBytesRead" MaxValue="@FileSize"
+                Label="@(TotalBytesRead == FileSize ? "Your image is almost ready..." : string.Empty)" />
+        }
+        else
+        {
+            <div id="dropzone-text" class="flex-box">
+                <span>Drag & Drop the desired file</span>
+                <span>…or click to browse for a file instead.</span>
+            </div>
+        }
+    </div>
+
+    <DxFileInput Visible="false" MaxFileSize="15000000" 
+    FilesUploading="@OnFilesUploading" 
+    CssClass="dropZone-owner"
+        ExternalSelectButtonCssSelector="@($"#dropzone-external-{Id}")"
+        ExternalDropZoneCssSelector="@($"#dropzone-external-{Id}")" 
+        ExternalDropZoneDragOverCssClass="dropzone-hover"
+        AcceptedFileTypes="@AllowedFileExtensions">
+    </DxFileInput>
+</div>
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    // This is the "public" value we will expose to the parent
+    // containing the Base64-encoded image.
+    [Parameter]
+    public string? Value { get; set; }
+
+    // This event (or a two-way binding) notifies the parent that we have a new image.
+    [Parameter]
+    public EventCallback<string?> ValueChanged { get; set; }
+
+    // Internal state
+    private bool UploadComplete { get; set; } = false;
+    private byte[]? FileBytes { get; set; }
+    private string? FileType { get; set; }
+    private readonly List<string> AllowedFileExtensions = new() { ".jpg", ".jpeg", ".gif", ".png" };
+    private int FileSize { get; set; }
+    private int TotalBytesRead { get; set; }
+
+    private async Task OnFilesUploading(FilesUploadingEventArgs args)
+    {
+        UploadComplete = false;
+
+        // For simplicity, handle only the first file
+        var file = args.Files[0];
+        FileSize = (int)file.Size;
+        FileBytes = new byte[FileSize];
+        FileType = file.Type;
+
+        using var stream = file.OpenReadStream(file.Size);
+        TotalBytesRead = 0;
+
+        try
+        {
+            int bytesRead;
+            while ((bytesRead = await stream.ReadAsync(FileBytes, TotalBytesRead, FileSize - TotalBytesRead)) != 0)
+            {
+                TotalBytesRead += bytesRead;
+            }
+        }
+        finally
+        {
+            stream.Close();
+        }
+
+        // Mark upload as complete
+        UploadComplete = true;
+
+        // Build the Base64 string
+        Value = $"data:{FileType};base64,{Convert.ToBase64String(FileBytes ?? Array.Empty<byte>())}";
+        await ValueChanged.InvokeAsync(Value);
+
+    }
+}

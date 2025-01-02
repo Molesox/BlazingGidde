@@ -2,8 +2,23 @@
 
 <PageTitle>Bienvenue</PageTitle>
 
-<div class="welcome-container">
-	<img src="OnaSoft-O.svg" alt="Logo Alpsoft" class="welcome-image" />
+<div class="welcome-container" @onmouseover="AddRotateClass" @onmouseout="RemoveRotateClass" >
+	<img src="OnaSoft-O.svg" alt="Logo Alpsoft" class="welcome-image @(isRotating ? "rotate" : "")" />
 	<h1 class="welcome-text">Bienvenid@@</h1>
 	<p class="welcome-subtext">Descubre nuestra application </p>
 </div>
+
+
+@code {
+    private bool isRotating = false;
+
+    private void AddRotateClass()
+    {
+        isRotating = true;
+    }
+
+    private void RemoveRotateClass()
+    {
+        isRotating = false;
+    }
+}
