@@ -1,0 +1,37 @@
+﻿@page "/create-template/{code}"
+@layout TemplateKindLayout
+
+
+
+    <DynamicComponent Type="@CurrentEditForm" />
+
+
+
+@code {
+    [Parameter] public string Code { get; set; }
+
+    private TemplateCode TemplateCode { get; set; }
+
+    private Type? CurrentEditForm { get; set; }
+
+    private TemplateType CurrentTemplateType { get; set; }
+
+    private readonly Dictionary<TemplateCode, Type> templateMap = new()
+    {
+        { TemplateCode.BREAKABLE, typeof(BreakableTemplate) },
+        { TemplateCode.GAS, typeof(GasTemplate) },
+        { TemplateCode.LABELREADER, typeof(LabelReaderTemplate) },
+        { TemplateCode.MANIPULATORS, typeof(ManipulatorTemplate) },
+    };
+
+    protected override void OnParametersSet()
+    {
+        TemplateCode = Enum.Parse<TemplateCode>(Code, true);
+
+        templateMap.TryGetValue(TemplateCode, out var componentType);
+        CurrentEditForm = componentType ?? typeof(BreakableTemplate);
+        //var query = new QueryFilter<TemplateType>();
+
+        //CurrentTemplateType = templateTypeManager.Get(query); 
+    }
+}    

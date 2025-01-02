@@ -1,6 +1,7 @@
-﻿@page "/breakable-template"
+﻿
 @using BlazingGidde.Client.Shared
-@layout TemplateKindLayout
+
+
 
 <div class="container my-4">
     <div class="row">
@@ -31,14 +32,13 @@
     </div>
 </div>
 
-<!-- Floating Action Button -->
 <DxButton Click="AddItem" IconCssClass="oi oi-plus" CssClass="fab-button btn-primary" />
 
 @code {
     List<CustomTemplateItem> Items { get; set; } = Enumerable.Range(1, 8)
     .Select(i => new CustomTemplateItem { Id = i })
     .ToList();
-
+    
     void AddItem()
     {
         int newId = Items.Any() ? Items.Max(i => i.Id) + 1 : 1;
@@ -77,12 +77,12 @@
     }
 
     .fixed-size-image {
-        width: 100px; /* Set your desired width */
-        height: 100px; /* Set your desired height */
-        object-fit: cover; /* Ensures the image covers the area */
+        width: 100px; 
+        height: 100px; 
+        object-fit: cover; 
     }
 
     .card {
-        border-radius: 10px; /* Adjust the value as needed */
+        border-radius: 10px;
     }
 </style>

@@ -50,7 +50,7 @@
     [Parameter]
     public TemplateType type { get; set; } = new();
 
-    TemplateKind kind { get; set; } = new();
+    protected TemplateKind kind { get; set; } = new();
 
     DateTime DateTimeValue { get; set; } = DateTime.Now;
 
