@@ -94,7 +94,8 @@
 
     private void CreateNewTemplate(TemplateCode code)
     {
-        NavigationManager.NavigateTo($"/{code.ToString().ToLower()}-template");
+        var param = code.ToString().ToLower();
+        NavigationManager.NavigateTo($"/create-template/{param}");
 
     }
 

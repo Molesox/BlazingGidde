@@ -1,0 +1,59 @@
+﻿@page "/create-template/{code}"
+@using BlazingGidde.Client.Shared
+@layout TemplateKindLayout
+@inject TemplateTypeManager templateTypeManager
+
+<DynamicComponent Type="@CurrentEditForm" />
+
+@code {
+    [Parameter] public string Code { get; set; }
+
+    private TemplateCode TemplateCode { get; set; }
+
+    private Type? CurrentEditForm { get; set; }
+
+    private TemplateType? CurrentTemplateType { get; set; }
+
+    private TemplateKind CurrentTemplateKind { get; set; }
+
+    private readonly Dictionary<TemplateCode, Type> templateMap = new()
+    {
+        { TemplateCode.BREAKABLE, typeof(BreakableTemplate) },
+        { TemplateCode.GAS, typeof(GasTemplate) },
+        { TemplateCode.LABELREADER, typeof(LabelReaderTemplate) },
+        { TemplateCode.MANIPULATORS, typeof(ManipulatorTemplate) },
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        
+        if (Enum.TryParse(Code, true, out TemplateCode parsedCode))
+        {
+            TemplateCode = parsedCode;
+
+            
+            templateMap.TryGetValue(TemplateCode, out var componentType);
+            CurrentEditForm = componentType ?? typeof(BreakableTemplate);
+
+            var templateCodeString = TemplateCode.ToString().ToLower();
+            CurrentTemplateType = await templateTypeManager.GetByCode(templateCodeString); 
+            
+            if (CurrentTemplateType != null)
+            {
+                CurrentTemplateKind = new TemplateKind
+                    {
+                        Name = CurrentTemplateType.Name,
+                        TemplateCode = TemplateCode,
+                        Version = 1,
+                        CreateDate = DateTime.UtcNow,
+                        CreateUser = "dtc",
+                        TemplateType = CurrentTemplateType,
+                    };
+            }
+        }
+        else
+        {
+            // Manejar el caso en que el parámetro no es válido
+        }
+    }
+}

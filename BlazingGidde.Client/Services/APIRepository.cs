@@ -2,6 +2,7 @@
 using BlazingGidde.Shared.DTOs;
 using BlazingGidde.Shared.DTOs.Common;
 using BlazingGidde.Shared.Models;
+using BlazingGidde.Shared.Models.FlowCheck;
 using BlazingGidde.Shared.Repository;
 using DevExpress.Blazor;
 using System.Net;
@@ -175,7 +176,26 @@ namespace BlazingGidde.Client.Services
 			}
 		}
 
-		public async Task<TCreateDtoResponse?> Insert(TCreateDto createDto)
+        public async Task<TReadDto?> GetByCode(string code)
+        {
+            try
+            {
+                var url = $"{controllerName}/getbycode/{code}";
+                var response = await http.GetFromJsonAsync<APIEntityResponse<TReadDto>>(url);
+                if (response?.Success == true)
+                {
+                    return response.Items;
+                }
+                return default;
+            }
+            catch (Exception)
+            {
+                // Optionally log the exception
+                return default;
+            }
+        }
+
+        public async Task<TCreateDtoResponse?> Insert(TCreateDto createDto)
 		{
             try
             {

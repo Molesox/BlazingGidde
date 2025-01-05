@@ -1,12 +1,9 @@
-﻿
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @layout MainLayout
 @inject TemplateKindManager templateKindManager
 @inject TemplateTypeManager templateTypeManager
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
-
-<h3>@type.Name</h3>
 
 <DxStackLayout Orientation="Orientation.Vertical" CssClass="w-100 ch-480">
     <Items>
@@ -54,35 +51,22 @@
 </DxStackLayout>
 
 @code {
-    [Parameter]
-    public TemplateType type { get; set; } = new();
+    public List<TemplateType> type { get; set; } = new List<TemplateType>();
 
-    [Parameter]
     public List<CustomTemplateItem> Items { get; set; } = new();
 
     TemplateKind kind { get; set; } = new();
+
+    [Parameter] public TemplateType? CurrentTemplateType { get; set; }
 
     DateTime DateTimeValue { get; set; } = DateTime.Now;
 
     protected override async Task OnInitializedAsync()
     {
-        kind.TemplateType ??= new TemplateType();
-
-        if (string.IsNullOrEmpty(type.Name))
-        {
-            Console.WriteLine("type.Name está vacío o nulo.");
-        }
-        else
-        {
-            kind.TemplateType.Name = type.Name;
-            Console.WriteLine($"Se asignó kind.TemplateType.Name: {kind.TemplateType.Name}");
-        }
-
+        type = (await templateTypeManager.GetAll()).ToList();
         kind.Version = 1;
         kind.CreateDate = DateTime.UtcNow;
         kind.CreateUser = "dtc";
-        kind.TemplateType.Name = type.Name;
-
     }
 
     private async Task Cancel()
@@ -92,9 +76,6 @@
 
     private async Task Save()
     {
-        kind.CustomTemplateItems = Items;
-        kind.TemplateType = type;
-
         await templateKindManager.Insert(kind);
         await JSRuntime.InvokeVoidAsync("alert", "Plantilla guardada exitosamente.");
         NavigationManager.NavigateTo("/templates-type");
