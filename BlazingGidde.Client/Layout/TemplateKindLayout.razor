@@ -55,7 +55,7 @@
 
     public List<CustomTemplateItem> Items { get; set; } = new();
 
-    TemplateKind kind { get; set; } = new();
+    protected TemplateKind kind { get; set; } = new();
 
     [Parameter] public TemplateType? CurrentTemplateType { get; set; }
 

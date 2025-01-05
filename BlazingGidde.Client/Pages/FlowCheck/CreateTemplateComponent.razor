@@ -3,7 +3,11 @@
 @layout TemplateKindLayout
 @inject TemplateTypeManager templateTypeManager
 
-<DynamicComponent Type="@CurrentEditForm" />
+
+
+    <DynamicComponent Type="@CurrentEditForm" />
+
+
 
 @code {
     [Parameter] public string Code { get; set; }
@@ -26,18 +30,19 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        
+        TemplateCode = Enum.Parse<TemplateCode>(Code, true);
+
         if (Enum.TryParse(Code, true, out TemplateCode parsedCode))
         {
             TemplateCode = parsedCode;
 
             
-            templateMap.TryGetValue(TemplateCode, out var componentType);
-            CurrentEditForm = componentType ?? typeof(BreakableTemplate);
+        templateMap.TryGetValue(TemplateCode, out var componentType);
+        CurrentEditForm = componentType ?? typeof(BreakableTemplate);
 
             var templateCodeString = TemplateCode.ToString().ToLower();
             CurrentTemplateType = await templateTypeManager.GetByCode(templateCodeString); 
-            
+
             if (CurrentTemplateType != null)
             {
                 CurrentTemplateKind = new TemplateKind
@@ -56,4 +61,4 @@
             // Manejar el caso en que el parámetro no es válido
         }
     }
-}
+}    

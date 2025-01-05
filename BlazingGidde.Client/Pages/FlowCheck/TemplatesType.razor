@@ -10,10 +10,10 @@
     <h3 class="text-center mb-4">Templates Type</h3>
 
     <div class="search-container">
-        <DxSearchBox NullText="Search..." InputDelay="@InputDelay" BindValueMode="@BindValueMode"
-                     CssClass="custom-search-box" @bind-Text="@SearchText" aria-label="Search">
+        <DxSearchBox NullText="Buscar..." InputDelay="@InputDelay" BindValueMode="@BindValueMode"
+        CssClass="custom-search-box" @bind-Text="@SearchText" aria-label="Search">
         </DxSearchBox>
-        
+
     </div>
 
 
@@ -41,19 +41,19 @@
 </div>
 
 <DxPopup
-    @bind-Visible="@PopupVisible"
-    ShowFooter ="true"
-    HeaderText="Edit Template Type">
+@bind-Visible="@PopupVisible"
+ShowFooter ="true"
+HeaderText="Edit Template Type">
     <BodyContentTemplate Context="popupContext">
         <div class="d-flex flex-fill pt-1 pb-2 w-100">
             <DxFormLayout>
                 <DxFormLayoutItem Caption="Nombre" CaptionPosition="CaptionPosition.Vertical" 
-                    CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
-                <DxTextBox @bind-Text="selectedItem.Name" />
+                CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
+                    <DxTextBox @bind-Text="selectedItem.Name" />
                 </DxFormLayoutItem>
                 <DxFormLayoutItem Caption="URL Imagen" CaptionPosition="CaptionPosition.Vertical" 
-                    CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
-                <DxTextBox @bind-Text= "selectedItem.ImgUrl" />
+                CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
+                    <DxTextBox @bind-Text= "selectedItem.ImgUrl" />
                 </DxFormLayoutItem>
             </DxFormLayout>
 
@@ -61,9 +61,9 @@
     </BodyContentTemplate>
     <FooterContentTemplate Context="bodyContext">
         <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Secondary" 
-            Text="Cancelar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
+        Text="Cancelar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
         <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Primary" 
-            Text="Guardar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
+        Text="Guardar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
     </FooterContentTemplate>
 
 </DxPopup>
@@ -94,8 +94,7 @@
 
     private void CreateNewTemplate(TemplateCode code)
     {
-        var param = code.ToString().ToLower();
-        NavigationManager.NavigateTo($"/create-template/{param}");
+        NavigationManager.NavigateTo($"/{code.ToString().ToLower()}-template");
 
     }
 
