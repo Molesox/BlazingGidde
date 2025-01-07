@@ -51,6 +51,10 @@
 </DxStackLayout>
 
 @code {
+    [Parameter] public string TemplateCode { get; set; }
+
+    private TemplateType selectedTemplate;
+
     public List<TemplateType> type { get; set; } = new List<TemplateType>();
 
     public List<CustomTemplateItem> Items { get; set; } = new();
@@ -63,7 +67,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        type = (await templateTypeManager.GetAll()).ToList();
+        selectedTemplate = await templateTypeManager.GetByCode(TemplateCode);
         kind.Version = 1;
         kind.CreateDate = DateTime.UtcNow;
         kind.CreateUser = "dtc";

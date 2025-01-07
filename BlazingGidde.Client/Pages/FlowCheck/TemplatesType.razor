@@ -10,8 +10,8 @@
     <h3 class="text-center mb-4">Templates Type</h3>
 
     <div class="search-container">
-        <DxSearchBox NullText="Buscar..." InputDelay="@InputDelay" BindValueMode="@BindValueMode"
-        CssClass="custom-search-box" @bind-Text="@SearchText" aria-label="Search">
+        <DxSearchBox NullText="Search..." InputDelay="@InputDelay" BindValueMode="@BindValueMode"
+                     CssClass="custom-search-box" @bind-Text="@SearchText" aria-label="Search">
         </DxSearchBox>
 
     </div>
@@ -27,11 +27,11 @@
                         <h5 class="card-title">@template.Name</h5>
                         <div class="d-flex justify-content-center gap-2 mt-3">
                             <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                            Text="+" @onclick='() => CreateNewTemplate(template.Code)'></DxButton>
+                                      Text="+" @onclick='() => CreateNewTemplate(template.Code)'></DxButton>
                             <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-                            Text="E" @onclick='() => EditTemplate(template)'></DxButton>
+                                      Text="E" @onclick='() => EditTemplate(template)'></DxButton>
                             <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
-                            Text="D" @onclick='() => DeleteTemplate(template)'></DxButton>
+                                      Text="D" @onclick='() => DeleteTemplate(template)'></DxButton>
                         </div>
                     </div>
                 </div>
@@ -40,35 +40,34 @@
     </div>
 </div>
 
-<DxPopup
-@bind-Visible="@PopupVisible"
-ShowFooter ="true"
-HeaderText="Edit Template Type">
+<DxPopup @bind-Visible="@PopupVisible"
+         ShowFooter="true"
+         HeaderText="Edit Template Type">
     <BodyContentTemplate Context="popupContext">
         <div class="d-flex flex-fill pt-1 pb-2 w-100">
             <DxFormLayout>
-                <DxFormLayoutItem Caption="Nombre" CaptionPosition="CaptionPosition.Vertical" 
-                CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
+                <DxFormLayoutItem Caption="Nombre" CaptionPosition="CaptionPosition.Vertical"
+                                  CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
                     <DxTextBox @bind-Text="selectedItem.Name" />
                 </DxFormLayoutItem>
-                <DxFormLayoutItem Caption="URL Imagen" CaptionPosition="CaptionPosition.Vertical" 
-                CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
-                    <DxTextBox @bind-Text= "selectedItem.ImgUrl" />
+                <DxFormLayoutItem Caption="URL Imagen" CaptionPosition="CaptionPosition.Vertical"
+                                  CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
+                    <DxTextBox @bind-Text="selectedItem.ImgUrl" />
                 </DxFormLayoutItem>
             </DxFormLayout>
 
         </div>
     </BodyContentTemplate>
     <FooterContentTemplate Context="bodyContext">
-        <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Secondary" 
-        Text="Cancelar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
-        <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Primary" 
-        Text="Guardar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
+        <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Secondary"
+                  Text="Cancelar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
+        <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Primary"
+                  Text="Guardar" Click="(CloseModal)=> PopupVisible = false"></DxButton>
     </FooterContentTemplate>
 
 </DxPopup>
 
-<DxDialogProvider/>
+<DxDialogProvider />
 
 @code {
     [Inject] IDialogService DialogService { get; set; }
@@ -76,7 +75,7 @@ HeaderText="Edit Template Type">
     private TemplateType? selectedItem { get; set; }
 
     public List<TemplateType> mytemplate = new List<TemplateType>();
-    private bool PopupVisible {get; set;}
+    private bool PopupVisible { get; set; }
     private bool? Result { get; set; } = null;
     private string SearchText { get; set; } = string.Empty;
     private int? InputDelay { get; set; } = 300;
@@ -94,7 +93,8 @@ HeaderText="Edit Template Type">
 
     private void CreateNewTemplate(TemplateCode code)
     {
-        NavigationManager.NavigateTo($"/{code.ToString().ToLower()}-template");
+        var param = code.ToString().ToLower();
+        NavigationManager.NavigateTo($"/create-template/{param}");
 
     }
 
@@ -109,7 +109,7 @@ HeaderText="Edit Template Type">
         if (templateType != null)
         {
             var result = await OpenConfirmDialogAsync();
-            if(result)
+            if (result)
             {
                 mytemplate.Remove(templateType);
                 await templateTypeManager.Delete(templateType.Id);
@@ -118,7 +118,7 @@ HeaderText="Edit Template Type">
         }
     }
 
-    private async Task <bool> OpenConfirmDialogAsync()
+    private async Task<bool> OpenConfirmDialogAsync()
     {
         return await DialogService.ConfirmAsync(new MessageBoxOptions()
             {
@@ -155,10 +155,10 @@ HeaderText="Edit Template Type">
         transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .card-template:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    }
+        .card-template:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
 
     .card-img-top {
         height: 150px;
@@ -169,8 +169,8 @@ HeaderText="Edit Template Type">
     .search-container {
         display: flex;
         justify-content: center;
-        align-items: center; 
-        margin-bottom: 30px; 
+        align-items: center;
+        margin-bottom: 30px;
     }
 
     .custom-search-box {
