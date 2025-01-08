@@ -1,12 +1,24 @@
 ﻿@inject PersonMainManager personManager
+@inject IJSRuntime JSRuntime
+@inject ThemeService ThemeService
+
 
 <AuthorizeView>
 
 	<Authorized>
 		<div class="login-display">
 			<span class="user-greeting">Hello, @context.User.Identity?.Name!</span>
-			<DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"  
-			Text="Logout" @onclick="Logout"></DxButton>
+			<DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
+					Text="Logout" @onclick="Logout"></DxButton>
+			<DxDropDownButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
+							  IconCssClass="fa fa-wrench" CssClass="me-1" ItemClick="@OnItemClick">
+				<Items>
+					<DxDropDownButtonItem Text="Blazing Dark"/>
+					<DxDropDownButtonItem Text="Office White"/>
+					<DxDropDownButtonItem Text="Purple"/>
+					<DxDropDownButtonItem Text="Blazing Berry"/>
+				</Items>
+			</DxDropDownButton>
 		</div>
 	</Authorized>
 
@@ -18,6 +30,15 @@
 			
 			<DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary" 
 			Text="Conectar" @onclick="NavigateToLogin"></DxButton>
+			<DxDropDownButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
+							  IconCssClass="fa fa-wrench" CssClass="me-1" ItemClick="@OnItemClick">
+				<Items>
+					<DxDropDownButtonItem Text="Blazing Dark" />
+					<DxDropDownButtonItem Text="Office White" />
+					<DxDropDownButtonItem Text="Purple" />
+					<DxDropDownButtonItem Text="Blazing Berry" />
+				</Items>
+			</DxDropDownButton>
 		</div>
 	</NotAuthorized>
 
@@ -26,6 +47,42 @@
 @code {
 
 	[Inject] NavigationManager NavigationManager { get; set; } = null!;
+
+	private string currentTheme = "blazing-dark.bs5.min.css";
+
+	protected override async Task OnInitializedAsync()
+	{
+		currentTheme = await ThemeService.GetSavedThemeAsync();
+		
+		await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{currentTheme}");
+	}
+
+	private async Task ChangeTheme(string themeName)
+	{
+		currentTheme = themeName;
+		await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{currentTheme}");
+	}
+
+	IDropDownButtonItemInfo SelectedItem { get; set; }
+
+	private async void OnItemClick(DropDownButtonItemClickEventArgs args)
+	{
+		switch (args.ItemInfo.Text)
+		{
+			case "Blazing Dark":
+				await ChangeTheme("blazing-dark.bs5.min.css");
+				break;
+			case "Office White":
+				await ChangeTheme("office-white.bs5.min.css");
+				break;
+			case "Purple":
+				await ChangeTheme("purple.bs5.min.css");
+				break;
+			case "Blazing Berry":
+				await ChangeTheme("blazing-berry.bs5.min.css");
+				break;
+		}
+	}
 
 	private void Logout()
 	{
@@ -48,7 +105,6 @@
 		display: flex;
 		align-items: center;
 		gap: 1rem;
-		/* Space between elements */
 	}
 
 	.user-greeting {

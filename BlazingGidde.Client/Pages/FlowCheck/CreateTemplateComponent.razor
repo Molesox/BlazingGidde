@@ -6,13 +6,16 @@
 
 
 @code {
-    [Parameter] public string Code { get; set; }
+    [Parameter] 
+    public string Code { get; set; }
 
     private TemplateCode TemplateCode { get; set; }
 
     private Type? CurrentEditForm { get; set; }
 
     private TemplateType CurrentTemplateType { get; set; }
+
+    private TemplateKind kind = new TemplateKind();
 
     private readonly Dictionary<TemplateCode, Type> templateMap = new()
     {
@@ -21,15 +24,13 @@
         { TemplateCode.LABELREADER, typeof(LabelReaderTemplate) },
         { TemplateCode.MANIPULATORS, typeof(ManipulatorTemplate) },
     };
-
     protected override void OnParametersSet()
     {
         TemplateCode = Enum.Parse<TemplateCode>(Code, true);
-
         templateMap.TryGetValue(TemplateCode, out var componentType);
         CurrentEditForm = componentType ?? typeof(BreakableTemplate);
         //var query = new QueryFilter<TemplateType>();
-
-        //CurrentTemplateType = templateTypeManager.Get(query); 
+        //CurrentTemplateType = templateTypeManager.Get(query);
     }
-}    
+
+} 

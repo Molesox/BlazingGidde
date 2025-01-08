@@ -22,6 +22,7 @@ builder.Services.AddDevExpressBlazor(configure => configure.BootstrapVersion = B
 
 builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ThemeService>();
 
 builder.Services.AddScoped<AspNetUserManager>();
 builder.Services.AddScoped<AspNetRoleManager>();
