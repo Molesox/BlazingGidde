@@ -1,7 +1,8 @@
-﻿@page "/templates-consult"
+﻿@page "/templates"
 @inject TemplateKindManager templateKindManager
 @inject NavigationManager NavigationManager
-@using BlazingGidde.Shared.Models.FlowCheck;
+@using BlazingGidde.Shared.DTOs.FlowCheck
+@using BlazingGidde.Shared.Models.FlowCheck
 @using BlazingGidde.Shared.Repository
 
 <PageTitle>Consulta Plantillas</PageTitle>
@@ -24,7 +25,7 @@
                 <DxGridDataColumn FieldName="Type" Caption="Type" MinWidth="100" Visible="@(!isXSmallScreen)" />
                 <DxGridDataColumn Caption="Actions" MinWidth="100">
                     <CellDisplayTemplate>
-                        @if (context.DataItem is TemplateKind template)
+                        @if (context.DataItem is TemplateKindDto template)
                         {
                             <div class="d-flex gap-2 justify-content-center">
                                 <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
@@ -46,8 +47,8 @@
 @code {
     [Inject] IDialogService DialogService { get; set; }
 
-    private TemplateKind? selectedItem { get; set; }
-    public List<TemplateKind> mytemplate = new List<TemplateKind>();
+    private TemplateKindDto? selectedItem { get; set; }
+    public List<TemplateKindDto> mytemplate = new List<TemplateKindDto>();
     private string SearchText { get; set; } = string.Empty;
     private int? InputDelay { get; set; } = 300;
     private BindValueMode BindValueMode { get; set; } = BindValueMode.OnInput;
@@ -55,26 +56,26 @@
     IGrid Grid { get; set; }
 
     protected override async Task OnInitializedAsync()
-    {
+    {// todo:: hacer como en person main .razor
         mytemplate = (await templateKindManager.GetAll()).ToList();
     }
 
-    private IEnumerable<TemplateKind> filteredTemplates =>
+    private IEnumerable<TemplateKindDto> filteredTemplates =>
         string.IsNullOrWhiteSpace(SearchText)
             ? mytemplate
             : mytemplate.Where(t => t.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
 
-    private void ConsultTemplate(TemplateKind templateKind)
+    private void ConsultTemplate(TemplateKindDto templateKind)
     {
         
     }
 
-    private void EditTemplate(TemplateKind templateKind)
+    private void EditTemplate(TemplateKindDto templateKind)
     {
         selectedItem = templateKind;
     }
 
-    private async Task DeleteTemplate(TemplateKind templateKind)
+    private async Task DeleteTemplate(TemplateKindDto templateKind)
     {
         if (templateKind != null)
         {
