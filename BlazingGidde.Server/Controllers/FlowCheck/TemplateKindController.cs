@@ -1,4 +1,6 @@
 ﻿using BlazingGidde.Server.Data;
+using BlazingGidde.Shared.DTOs.FlowCheck;
+using BlazingGidde.Shared.DTOs.FlowCheck.Request;
 using BlazingGidde.Shared.Models.FlowCheck;
 using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -9,11 +11,11 @@ namespace BlazingGidde.Server.Controllers.FlowCheck
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class TemplateKindController : BlazingGiddeBaseController<TemplateKind, int, ApplicationDbContext>
+    public class TemplateKindController : BlazingGiddeBaseController<TemplateKind, int, ApplicationDbContext, TemplateKindDto, CreateTemplateKindDto>
     {
-
-        public TemplateKindController(IRepository<TemplateKind> repository,
-            ILogger<BlazingGiddeBaseController<TemplateKind,int, ApplicationDbContext>> logger)
-            : base(repository, logger) { }
+        public TemplateKindController(IRepository<TemplateKind> repository, 
+        ILogger<BlazingGiddeBaseController<TemplateKind, int, ApplicationDbContext, TemplateKindDto, CreateTemplateKindDto, CreateTemplateKindDto, TemplateKindDto, TemplateKindDto>> logger) : base(repository, logger)
+        {
+        }
     }
 }

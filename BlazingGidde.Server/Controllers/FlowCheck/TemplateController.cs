@@ -15,5 +15,6 @@ namespace BlazingGidde.Server.Controllers.FlowCheck
         public TemplateController(IRepository<Template> repository,
             ILogger<BlazingGiddeBaseController<Template, int, ApplicationDbContext>> logger)
             : base(repository, logger) { }
+
     }
 }

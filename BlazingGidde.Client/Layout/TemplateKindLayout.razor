@@ -1,8 +1,17 @@
-﻿@inherits LayoutComponentBase
+﻿@using BlazingGidde.Shared.DTOs.FlowCheck
+@using BlazingGidde.Shared.DTOs.FlowCheck.Request
+@inherits LayoutComponentBase
 @layout MainLayout
+@inject NavigationManager NavigationManager
+@inject TemplateKindManager templateKindManager
 
 <h3>@type.Name</h3>
-
+<DxToastProvider Name="Overview"
+MaxToastCount="5"
+AnimationType="ToastAnimationType.Slide"
+HorizontalAlignment="HorizontalAlignment.Center"
+DisplayTime="TimeSpan.Zero"
+Width="320px"/>
 <DxStackLayout Orientation="Orientation.Vertical" CssClass="w-100 ch-480">
     <Items>
         <DxStackLayoutItem Length="auto">
@@ -15,7 +24,7 @@
                         <DxSpinEdit @bind-Value="kind.Version" Enabled="false" />
                     </DxFormLayoutItem>
                     <DxFormLayoutItem ColSpanMd="3" Caption="Fecha">
-                        <DxDateEdit @bind-Date="kind.CreateDate" Enabled="false" />
+                        <DxDateEdit @bind-Date="CreateDate" Enabled="false" />
                     </DxFormLayoutItem>
                     <DxFormLayoutItem ColSpanMd="6" Caption="Descripción del programa">
                         <DxTextBox @bind-Text="kind.ProgramDescription" />
@@ -28,7 +37,9 @@
         </DxStackLayoutItem>
         <DxStackLayoutItem>
             <Template>
-                @Body
+                <CascadingValue Value="this">
+                    @Body
+                </CascadingValue>
             </Template>
         </DxStackLayoutItem>
         <DxStackLayoutItem Length="auto">
@@ -50,24 +61,37 @@
     [Parameter]
     public TemplateType type { get; set; } = new();
 
-    protected TemplateKind kind { get; set; } = new();
+    private DateTime CreateDate { get; set; } = DateTime.UtcNow;
 
-    DateTime DateTimeValue { get; set; } = DateTime.Now;
+    protected CreateTemplateKindDto kind { get; set; } = new(){
+
+    };
+
+    public List<CreateCustomTemplateItemDto> Items { get; set; } = new();    
+
 
     protected override async Task OnInitializedAsync()
     {
         // Example defaults
         kind.Version = 1;
-        kind.CreateDate = DateTime.UtcNow;
+
+    }
+    public void RegisterItems(List<CreateCustomTemplateItemDto> items)
+    {
+        Items = items; 
+    }
+    private void Cancel(MouseEventArgs e)
+    {
+        NavigationManager.NavigateTo("templates-type");
     }
 
-    private Task Cancel(MouseEventArgs e)
+    private async Task Save(MouseEventArgs e)
     {
-        throw new NotImplementedException();
-    }
-
-    private Task Save(MouseEventArgs e)
-    {
-        throw new NotImplementedException();
+        if(Items.Any()){
+            kind.CustomTemplateItems = Items;
+        }
+        kind.TemplateTypeId = type.Id;
+        kind.CustomTemplateItems.ToList().ForEach(it => it.Id = 0);
+        await templateKindManager.Insert(kind);
     }
 }

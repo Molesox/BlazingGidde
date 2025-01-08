@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 
+
 namespace BlazingGidde.Client.Services
 {
 	public class APIRepository<TEntity, Tkey, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoResponse>
@@ -22,14 +23,17 @@ namespace BlazingGidde.Client.Services
 	{
 		protected readonly string controllerName;
 		protected readonly HttpClient http;
+		protected readonly IToastNotificationService notificationService;
 
-		public APIRepository(HttpClient _http, string _controllerName)
+		public APIRepository(HttpClient _http, string _controllerName, IToastNotificationService toastNotificationService)
 		{
 			http = _http;
 			controllerName = _controllerName;
+			notificationService = toastNotificationService;
 		}
 
-		public GridDevExtremeDataSource<TReadDto> Get(){
+		public GridDevExtremeDataSource<TReadDto> Get()
+		{
 			try
 			{
 
@@ -45,18 +49,19 @@ namespace BlazingGidde.Client.Services
 
 		public async Task<IEnumerable<TReadDto>> GetAll()
 		{
-            try
-            {
+			try
+			{
 				var url = $"{controllerName}/getall";
 				var response = await http.GetFromJsonAsync<APIListOfEntityResponse<TReadDto>>(url);
 				if (response?.Success == true)
 				{
 					return response.Items;
 				}
+
 				return Enumerable.Empty<TReadDto>();
 			}
 			catch (Exception)
-            {
+			{
 				// Optionally log the exception
 				return Enumerable.Empty<TReadDto>();
 			}
@@ -64,8 +69,8 @@ namespace BlazingGidde.Client.Services
 
 		public async Task<TReadDto?> GetByID(object id)
 		{
-            try
-            {
+			try
+			{
 				var encodedId = WebUtility.HtmlEncode(id.ToString());
 				var url = $"{controllerName}/{encodedId}";
 				var response = await http.GetFromJsonAsync<APIEntityResponse<TReadDto>>(url);
@@ -76,16 +81,16 @@ namespace BlazingGidde.Client.Services
 				return default;
 			}
 			catch (Exception)
-            {
+			{
 				// Optionally log the exception
 				return default;
 			}
 		}
-	
+
 		public async Task<QueryFilterResponse<TReadDto>> Get(QueryFilter<TEntity> queryFilter)
 		{
-            try
-            {
+			try
+			{
 				var url = $"{controllerName}/getwithfilter";
 				var response = await http.PostAsJsonAsync(url, queryFilter);
 				response.EnsureSuccessStatusCode();
@@ -104,7 +109,7 @@ namespace BlazingGidde.Client.Services
 				return new QueryFilterResponse<TReadDto>();
 			}
 			catch (Exception)
-            {
+			{
 				// Optionally log the exception
 				return new QueryFilterResponse<TReadDto>();
 			}
@@ -112,8 +117,8 @@ namespace BlazingGidde.Client.Services
 
 		public async Task<QueryFilterResponse<TReadDto>> Get(LinqQueryFilter<TEntity> linqQueryFilter)
 		{
-            try
-            {
+			try
+			{
 				var url = $"{controllerName}/getwithLinqfilter";
 				var response = await http.PostAsJsonAsync(url, linqQueryFilter);
 				response.EnsureSuccessStatusCode();
@@ -131,7 +136,7 @@ namespace BlazingGidde.Client.Services
 				return new QueryFilterResponse<TReadDto>();
 			}
 			catch (Exception)
-            {
+			{
 				// Optionally log the exception
 				return new QueryFilterResponse<TReadDto>();
 			}
@@ -139,8 +144,8 @@ namespace BlazingGidde.Client.Services
 
 		public async Task<int> GetTotalCount(QueryFilter<TEntity> queryFilter)
 		{
-            try
-            {
+			try
+			{
 				var url = $"{controllerName}/GetTotalCount";
 				var response = await http.PostAsJsonAsync(url, queryFilter);
 				response.EnsureSuccessStatusCode();
@@ -150,7 +155,7 @@ namespace BlazingGidde.Client.Services
 				return apiResponse?.Success == true ? apiResponse.Items?.Counter ?? 0 : 0;
 			}
 			catch (Exception)
-            {
+			{
 				// Optionally log the exception
 				return 0;
 			}
@@ -158,8 +163,8 @@ namespace BlazingGidde.Client.Services
 
 		public async Task<int> GetTotalCount(LinqQueryFilter<TEntity> linqQueryFilter)
 		{
-            try
-            {
+			try
+			{
 				var url = $"{controllerName}/GetTotalCount";
 				var response = await http.PostAsJsonAsync(url, linqQueryFilter);
 				response.EnsureSuccessStatusCode();
@@ -169,38 +174,81 @@ namespace BlazingGidde.Client.Services
 				return apiResponse?.Success == true ? apiResponse.Items?.Counter ?? 0 : 0;
 			}
 			catch (Exception)
-            {
+			{
 				// Optionally log the exception
 				return 0;
 			}
 		}
-
-		public async Task<TCreateDtoResponse?> Insert(TCreateDto createDto)
+		
+	public async Task<TCreateDtoResponse?> Insert(TCreateDto createDto)
+	{
+		try
 		{
-            try
-            {
-				var response = await http.PostAsJsonAsync(controllerName, createDto);
-				response.EnsureSuccessStatusCode();
+			var response = await http.PostAsJsonAsync(controllerName, createDto);
 
+			if (response.IsSuccessStatusCode)
+			{
 				var apiResponse = await response.Content.ReadFromJsonAsync<APIEntityResponse<TCreateDtoResponse>>();
 
 				if (apiResponse?.Success == true)
 				{
 					return apiResponse.Items;
 				}
-				return default;
+				else
+				{
+					var errorMessages = apiResponse?.ErrorMessages ?? new List<string>();
+					notificationService.ShowToast(new ToastOptions()
+					{
+						ProviderName = "Overview",
+						ThemeMode = ToastThemeMode.Saturated,
+						RenderStyle = ToastRenderStyle.Danger,
+						Title = string.Join(", ", errorMessages),
+					});
+				}
 			}
-			catch (Exception)
-            {
-				// Optionally log the exception
-				return default;
+			else
+			{
+				// Handle validation errors
+				var validationErrors = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>();
+				if (validationErrors?.Errors != null)
+				{
+					var errorList = validationErrors.Errors
+						.SelectMany(err => err.Value)
+						.ToList();
+
+					notificationService.ShowToast(new ToastOptions()
+					{
+						ProviderName = "Overview",
+						ThemeMode = ToastThemeMode.Saturated,
+						RenderStyle = ToastRenderStyle.Danger,
+						Title = "Validation Errors",
+
+						 Text = string.Join("\n", errorList),
+					});
+				}
 			}
+
+			return default;
 		}
+		catch (Exception ex)
+		{
+			// Optionally log the exception
+			notificationService.ShowToast(new ToastOptions()
+			{
+				ProviderName = "Overview",
+				ThemeMode = ToastThemeMode.Saturated,
+				RenderStyle = ToastRenderStyle.Warning,
+				Title = "Error",
+				Text = ex.Message
+			});
+			return default;
+		}
+	}
 
 		public async Task<TUpdateDtoResponse?> Update(TUpdateDto updateDto)
 		{
-            try
-            {
+			try
+			{
 				var url = $"{controllerName}";
 				var response = await http.PutAsJsonAsync(url, updateDto);
 				response.EnsureSuccessStatusCode();
@@ -211,10 +259,20 @@ namespace BlazingGidde.Client.Services
 				{
 					return apiResponse.Items;
 				}
+				else
+				{
+					notificationService.ShowToast(new ToastOptions()
+					{
+						ProviderName = "Overview",
+						ThemeMode = ToastThemeMode.Saturated,
+						RenderStyle = ToastRenderStyle.Danger,
+						Title = string.Join(", ", apiResponse.ErrorMessages),
+					});
+				}
 				return default;
 			}
 			catch (Exception)
-            {
+			{
 				// Optionally log the exception
 				return default;
 			}
@@ -222,8 +280,8 @@ namespace BlazingGidde.Client.Services
 
 		public async Task<bool> Delete(object id)
 		{
-            try
-            {
+			try
+			{
 				var encodedID = WebUtility.HtmlEncode(id.ToString());
 				var url = $"{controllerName}/{encodedID}";
 				var response = await http.DeleteAsync(url);
@@ -232,7 +290,7 @@ namespace BlazingGidde.Client.Services
 				return true;
 			}
 			catch (Exception)
-            {
+			{
 				// Optionally log the exception
 				return false;
 			}
@@ -240,27 +298,27 @@ namespace BlazingGidde.Client.Services
 
 
 	}
-	
-    public class APIRepository<TEntity, Tkey, TReadDto, TCreateDto>
-        : APIRepository<TEntity, Tkey, TReadDto, TCreateDto, TCreateDto, TReadDto, TReadDto>
-        where TEntity : class, IModelBase<Tkey>
+
+	public class APIRepository<TEntity, Tkey, TReadDto, TCreateDto>
+		: APIRepository<TEntity, Tkey, TReadDto, TCreateDto, TCreateDto, TReadDto, TReadDto>
+		where TEntity : class, IModelBase<Tkey>
 		where Tkey : IEquatable<Tkey>
-        where TReadDto : class, IReadDto<Tkey>
+		where TReadDto : class, IReadDto<Tkey>
 		where TCreateDto : class, IModelBase<Tkey>
-    {
-        public APIRepository(HttpClient _http, string _controllerName) :
-		 base(_http, _controllerName)
-        {
-        }
-    }
-	 public class APIRepository<TEntity, Tkey>
-        : APIRepository<TEntity, Tkey, TEntity, TEntity, TEntity, TEntity, TEntity>
-        where TEntity : class, IModelBase<Tkey>
-		where Tkey : IEquatable<Tkey>
-    {
-        public APIRepository(HttpClient _http, string _controllerName) :
-		 base(_http, _controllerName)
-        {
-        }
-    }
+	{
+		public APIRepository(HttpClient _http, string _controllerName, IToastNotificationService toastNotificationService) :
+		 base(_http, _controllerName, toastNotificationService)
+		{
+		}
+	}
+	public class APIRepository<TEntity, Tkey>
+	   : APIRepository<TEntity, Tkey, TEntity, TEntity, TEntity, TEntity, TEntity>
+	   where TEntity : class, IModelBase<Tkey>
+	   where Tkey : IEquatable<Tkey>
+	{
+		public APIRepository(HttpClient _http, string _controllerName, IToastNotificationService toastNotificationService) :
+		 base(_http, _controllerName, toastNotificationService)
+		{
+		}
+	}
 }

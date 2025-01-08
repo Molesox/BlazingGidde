@@ -73,7 +73,7 @@ namespace BlazingGidde.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "{Message}", errorMessage);
-                return StatusCode(500, new { Success = false, ErrorMessages = new List<string> { errorMessage } });
+                return Ok(new { Success = false, ErrorMessages = new List<string> { errorMessage } });
             }
         }
 
@@ -84,6 +84,7 @@ namespace BlazingGidde.Server.Controllers
 
             return await ExecuteAsync(async () =>
             {
+           
                 var query = PrepareQuery(_repository.GetQueryable());
                 var items = MapToReadDto(query);
 
@@ -327,10 +328,11 @@ namespace BlazingGidde.Server.Controllers
             {
                 ValidateEntityForInsert(entity, correlationId);
                 var toInsert = MapCreateDtoToEntity(entity);
+                
                 ApplyTimeStampForInsert(toInsert);
 
                 var inserted = await _repository.Insert(toInsert);
-                var readDto = MapEntityToCreateDtoResponse(inserted);
+                var createResponseDto = MapEntityToCreateDtoResponse(inserted);
 
                 _logger.LogInformation(
                     "Request {CorrelationId}: Inserted new {EntityName} with Id {Id}",
@@ -338,7 +340,7 @@ namespace BlazingGidde.Server.Controllers
                     typeof(TEntity).Name,
                     inserted.Id);
 
-                return new APIEntityResponse<TCreateDtoResponse> { Success = true, Items = readDto };
+                return new APIEntityResponse<TCreateDtoResponse> { Success = true, Items = createResponseDto };
             },
             $"Request {correlationId}: Inserted {typeof(TEntity).Name}",
             $"Request {correlationId}: Failed to insert {typeof(TEntity).Name}",
@@ -357,7 +359,7 @@ namespace BlazingGidde.Server.Controllers
         }
 
         protected virtual TEntity MapCreateDtoToEntity(TCreateDto createDto)
-            => createDto.Map().ToANew<TEntity>();
+            => Mapper.Map(createDto).ToANew<TEntity>();
 
         protected virtual void ApplyTimeStampForInsert(TEntity entity)
         {

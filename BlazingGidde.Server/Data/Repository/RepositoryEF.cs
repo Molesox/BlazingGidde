@@ -124,6 +124,7 @@ namespace BlazingGidde.Server.Data.Repository
 		/// <returns>The inserted entity.</returns>
 		public virtual async Task<TEntity?> Insert(TEntity entity)
 		{
+		 
 			await dbSet.AddAsync(entity);
 			await context.SaveChangesAsync();
 			return entity;

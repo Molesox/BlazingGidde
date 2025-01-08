@@ -26,6 +26,11 @@ public class TemplateKind : ModelBase
     public int DefaultItemCount { get; set; }
 
     /// <summary>
+    /// The parent template type id
+    /// </summary>
+    public int TemplateTypeId { get; set; }
+
+    /// <summary>
     /// The parent TemplateType.
     /// </summary>
     public TemplateType TemplateType { get; set; }

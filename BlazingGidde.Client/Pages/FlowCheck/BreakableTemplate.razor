@@ -1,7 +1,6 @@
 ﻿
 @using BlazingGidde.Client.Shared
-
-
+@using BlazingGidde.Shared.DTOs.FlowCheck.Request
 
 <div class="container my-4">
     <div class="row">
@@ -35,19 +34,34 @@
 <DxButton Click="AddItem" IconCssClass="oi oi-plus" CssClass="fab-button btn-primary" />
 
 @code {
-    List<CustomTemplateItem> Items { get; set; } = Enumerable.Range(1, 8)
-    .Select(i => new CustomTemplateItem { Id = i })
-    .ToList();
-    
+    [CascadingParameter]
+    public TemplateKindLayout ParentLayout { get; set; }
+
+    // local child data
+    List<CreateCustomTemplateItemDto> Items { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        // Just to show an example:
+        Items = Enumerable.Range(1, 8)
+            .Select(i => new CreateCustomTemplateItemDto { Id = i })
+            .ToList();
+
+        // Let the layout know
+        ParentLayout.RegisterItems(Items);
+    }
+
     void AddItem()
     {
         int newId = Items.Any() ? Items.Max(i => i.Id) + 1 : 1;
-        Items.Add(new CustomTemplateItem { Id = newId });
+        Items.Add(new CreateCustomTemplateItemDto { Id = newId });
+        ParentLayout.RegisterItems(Items);
     }
 
-    void RemoveItem(CustomTemplateItem item)
+    void RemoveItem(CreateCustomTemplateItemDto item)
     {
         Items.Remove(item);
+        ParentLayout.RegisterItems(Items);
     }
 }
 
@@ -81,6 +95,7 @@
         height: 100px; 
         object-fit: cover; 
     }
+    using BlazingGidde.Shared.DTOs.FlowCheck.Request;
 
     .card {
         border-radius: 10px;

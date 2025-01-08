@@ -8,7 +8,11 @@ namespace BlazingGidde.Shared.Models.FlowCheck;
 [Table("Template", Schema ="FlowCheck")]
 public class Template : ModelBase
 {
-    
+    /// <summary>
+    /// The parent template kind id
+    /// </summary>
+    public int TemplateKindId { get; set; }
+
     /// <summary>
     /// Gets or sets the skip property of associated template items.
     /// </summary>

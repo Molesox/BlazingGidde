@@ -5,9 +5,15 @@ namespace BlazingGidde.Shared.Models.FlowCheck;
 /// <summary>
 /// Get or sets the control step.
 /// </summary>
-[Table("TemplateItem", Schema ="FlowCheck")]
+[Table("TemplateItem", Schema = "FlowCheck")]
 public class TemplateItem : ModelBase
-{   
+{
+
+        /// <summary>
+        /// The parent template id
+        /// </summary>
+        public int TemplateId { get; set; }
+
         /// <summary>
         /// Gets or sets the success status of the control item.
         /// </summary>
@@ -25,6 +31,6 @@ public class TemplateItem : ModelBase
         /// <summary>
         /// Gets or sets the possible related incidency.
         /// </summary>
-        public Incidency? Incidency { get; set; } 
+        public Incidency? Incidency { get; set; }
 
 }

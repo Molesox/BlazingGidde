@@ -17,6 +17,7 @@ using Serilog;
 using Serilog.Events;
 using AgileObjects.AgileMapper;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;

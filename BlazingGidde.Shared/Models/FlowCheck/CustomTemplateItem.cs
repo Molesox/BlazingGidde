@@ -11,6 +11,11 @@ public class CustomTemplateItem : IModelBase<int>
     public int Id { get; set; }
 
     /// <summary>
+    /// The parent template Kind id
+    /// </summary>
+    public int TemplateKindId { get; set; }
+
+    /// <summary>
     /// Gets or sets the name proprerty.
     /// </summary>
     public string Name { get; set; } = string.Empty;
