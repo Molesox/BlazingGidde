@@ -1,11 +1,19 @@
 ﻿@page "/create-template/{code}"
 @layout TemplateKindLayout
+@inject TemplateTypeManager templateTypeManager
 <DynamicComponent Type="@CurrentEditForm" />
 @code {
-    [Parameter] public string Code { get; set; }
+    [Parameter] 
+    public string Code { get; set; }
+
     private TemplateCode TemplateCode { get; set; }
+
     private Type? CurrentEditForm { get; set; }
+
     private TemplateType CurrentTemplateType { get; set; }
+
+    private TemplateKind kind = new TemplateKind();
+
     private readonly Dictionary<TemplateCode, Type> templateMap = new()
     {
         { TemplateCode.BREAKABLE, typeof(BreakableTemplate) },
@@ -21,4 +29,5 @@
         //var query = new QueryFilter<TemplateType>();
         //CurrentTemplateType = templateTypeManager.Get(query);
     }
+
 } 

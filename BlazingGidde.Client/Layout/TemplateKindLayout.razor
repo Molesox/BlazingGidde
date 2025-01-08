@@ -69,8 +69,6 @@
     {
         selectedTemplate = await templateTypeManager.GetByCode(TemplateCode);
         kind.Version = 1;
-        kind.CreateDate = DateTime.UtcNow;
-        kind.CreateUser = "dtc";
     }
 
     private async Task Cancel()

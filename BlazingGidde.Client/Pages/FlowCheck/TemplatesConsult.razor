@@ -1,0 +1,104 @@
+﻿@page "/templates-consult"
+@inject TemplateKindManager templateKindManager
+@inject NavigationManager NavigationManager
+@using BlazingGidde.Shared.Models.FlowCheck;
+@using BlazingGidde.Shared.Repository
+
+<PageTitle>Consulta Plantillas</PageTitle>
+
+<div class="container mt-5">
+    <h3 class="text-center mb-4">Consultar plantillas</h3>
+
+    <!-- Search bar with toggle view button -->
+    <div class="search-container d-flex align-items-center mb-3">
+        <DxSearchBox NullText="Search..." InputDelay="@InputDelay" BindValueMode="@BindValueMode"
+        CssClass="custom-search-box flex-grow-1 me-3" @bind-Text="@SearchText" aria-label="Search">
+        </DxSearchBox>
+
+    </div>
+    <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" @bind-IsActive="@isXSmallScreen" />
+    <div class="h-100 grid-wrapper">
+        <DxGrid @ref="@Grid" CssClass="flexGrid"  VirtualScrollingEnabled="true">
+            <Columns>
+                <DxGridDataColumn FieldName="Name" Caption="Name" MinWidth="80" />
+                <DxGridDataColumn FieldName="Type" Caption="Type" MinWidth="100" Visible="@(!isXSmallScreen)" />
+                <DxGridDataColumn Caption="Actions" MinWidth="100">
+                    <CellDisplayTemplate>
+                        @if (context.DataItem is TemplateKind template)
+                        {
+                            <div class="d-flex gap-2 justify-content-center">
+                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
+                                Text="+" @onclick='() => ConsultTemplate(template)'></DxButton>
+                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
+                                Text="E" @onclick='() => EditTemplate(template)'></DxButton>
+                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
+                                Text="D" @onclick='() => DeleteTemplate(template)'></DxButton>
+                            </div>
+                        }
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+            </Columns>
+        </DxGrid>
+    </div>
+</div>
+
+
+@code {
+    [Inject] IDialogService DialogService { get; set; }
+
+    private TemplateKind? selectedItem { get; set; }
+    public List<TemplateKind> mytemplate = new List<TemplateKind>();
+    private string SearchText { get; set; } = string.Empty;
+    private int? InputDelay { get; set; } = 300;
+    private BindValueMode BindValueMode { get; set; } = BindValueMode.OnInput;
+    bool isXSmallScreen;
+    IGrid Grid { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        mytemplate = (await templateKindManager.GetAll()).ToList();
+    }
+
+    private IEnumerable<TemplateKind> filteredTemplates =>
+        string.IsNullOrWhiteSpace(SearchText)
+            ? mytemplate
+            : mytemplate.Where(t => t.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+
+    private void ConsultTemplate(TemplateKind templateKind)
+    {
+        
+    }
+
+    private void EditTemplate(TemplateKind templateKind)
+    {
+        selectedItem = templateKind;
+    }
+
+    private async Task DeleteTemplate(TemplateKind templateKind)
+    {
+        if (templateKind != null)
+        {
+            var result = await OpenConfirmDialogAsync();
+            if (result)
+            {
+                mytemplate.Remove(templateKind);
+                await templateKindManager.Delete(templateKind.Id);
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+
+    private async Task<bool> OpenConfirmDialogAsync()
+    {
+        return await DialogService.ConfirmAsync(new MessageBoxOptions()
+            {
+                Text = "Esta seguro que desea borrar esta plantilla?",
+                OkButtonText = "Yes",
+                CancelButtonText = "No",
+                ShowIcon = false,
+                ShowCloseButton = false,
+                RenderStyle = MessageBoxRenderStyle.Danger,
+            });
+    }
+
+}
