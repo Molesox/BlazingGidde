@@ -2,8 +2,10 @@
 @inject TemplateKindManager templateKindManager
 @inject NavigationManager NavigationManager
 @using BlazingGidde.Shared.DTOs.FlowCheck
+@using BlazingGidde.Shared.DTOs.FlowCheck.Request
 @using BlazingGidde.Shared.Models.FlowCheck
 @using BlazingGidde.Shared.Repository
+@using AgileObjects.AgileMapper.Extensions
 
 <PageTitle>Consulta Plantillas</PageTitle>
 
@@ -19,29 +21,67 @@
     </div>
     <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" @bind-IsActive="@isXSmallScreen" />
     <div class="h-100 grid-wrapper">
-        <DxGrid @ref="@Grid" CssClass="flexGrid"  VirtualScrollingEnabled="true">
+        <DxGrid Data="@Data" @ref="@Grid" CssClass="grid-style" EditMode="GridEditMode.PopupEditForm" CustomizeEditModel="Grid_CustomizeEditModel"
+                EditModelSaving="Grid_EditModelSaving">
             <Columns>
-                <DxGridDataColumn FieldName="Name" Caption="Name" MinWidth="80" />
-                <DxGridDataColumn FieldName="Type" Caption="Type" MinWidth="100" Visible="@(!isXSmallScreen)" />
-                <DxGridDataColumn Caption="Actions" MinWidth="100">
-                    <CellDisplayTemplate>
-                        @if (context.DataItem is TemplateKindDto template)
-                        {
-                            <div class="d-flex gap-2 justify-content-center">
-                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                                Text="+" @onclick='() => ConsultTemplate(template)'></DxButton>
-                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-                                Text="E" @onclick='() => EditTemplate(template)'></DxButton>
-                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
-                                Text="D" @onclick='() => DeleteTemplate(template)'></DxButton>
-                            </div>
-                        }
-                    </CellDisplayTemplate>
+                <DxGridDataColumn Caption="Nombre" FieldName="Name" TextAlignment="GridTextAlignment.Center">
                 </DxGridDataColumn>
+                <DxGridDataColumn Caption="Descripción del programa" FieldName="ProgramDescription" TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)">
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Version" FieldName="Version" TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)">
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Sección" FieldName="Section" TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)">
+                </DxGridDataColumn>
+                <DxGridCommandColumn NewButtonVisible="false" Caption="Actions" TextAlignment="GridTextAlignment.Center" >
+                    <CellDisplayTemplate Context="gridcontext">
+                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
+                                  Text="+"></DxButton>
+                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
+                                  Text="E"></DxButton>
+                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
+                                  IconCssClass="grid-icon grid-icon-delete" CssClass="grid-delete-btn"
+                                  Text="D"
+                                  Click="@(() => Grid.ShowRowDeleteConfirmation(gridcontext.VisibleIndex))"></DxButton>
+                            
+                        
+
+                    </CellDisplayTemplate>
+                </DxGridCommandColumn>
+
+
             </Columns>
+
+            <EditFormTemplate Context="EditFormContext">
+                @{
+                    var templateKind = (CreateTemplateKindDto)EditFormContext.EditModel;
+                }
+                <DxFormLayout CssClass="w-100">
+                    <DxFormLayoutItem Caption="Name" ColSpanMd="6">
+                        @EditFormContext.GetEditor("Name")
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem Caption="Program Description" ColSpanMd="6">
+                        @EditFormContext.GetEditor("ProgramDescription")
+                    </DxFormLayoutItem>
+
+                    <DxFormLayoutItem Caption="Remarks:" ColSpanMd="6">
+                        @EditFormContext.GetEditor("Remarks")
+                    </DxFormLayoutItem>
+                </DxFormLayout>
+            </EditFormTemplate>
         </DxGrid>
+
     </div>
 </div>
+
+
+<style>
+
+    .grid-style th {
+        text-align: center !important;
+    }
+
+</style>
 
 
 @code {
@@ -55,9 +95,11 @@
     bool isXSmallScreen;
     IGrid Grid { get; set; }
 
+    object Data { get; set; }
+
     protected override async Task OnInitializedAsync()
     {// todo:: hacer como en person main .razor
-        mytemplate = (await templateKindManager.GetAll()).ToList();
+        Data = templateKindManager.Get();
     }
 
     private IEnumerable<TemplateKindDto> filteredTemplates =>
@@ -65,14 +107,40 @@
             ? mytemplate
             : mytemplate.Where(t => t.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
 
-    private void ConsultTemplate(TemplateKindDto templateKind)
+    async Task Grid_EditModelSaving(GridEditModelSavingEventArgs e)
     {
-        
+        var editedProduct = (CreateTemplateKindDto)e.EditModel;
+        var result = e.IsNew == false ? templateKindManager.Update(editedProduct) : templateKindManager.Insert(editedProduct);
+
     }
 
-    private void EditTemplate(TemplateKindDto templateKind)
+    async Task Grid_CustomizeEditModel(GridCustomizeEditModelEventArgs e)
     {
-        selectedItem = templateKind;
+        var dataItem = (TemplateKindDto)e.DataItem;
+        if (dataItem == null)
+            e.EditModel = new CreateTemplateKindDto { };
+        else
+        {
+            e.EditModel = dataItem.Map().ToANew<CreateTemplateKindDto>();
+        }
+    }
+
+    private async Task<bool> OpenConfirmDialogAsync()
+    {
+        return await DialogService.ConfirmAsync(new MessageBoxOptions()
+            {
+                Text = "Esta seguro que desea borrar esta plantilla?",
+                OkButtonText = "Yes",
+                CancelButtonText = "No",
+                ShowIcon = false,
+                ShowCloseButton = false,
+                RenderStyle = MessageBoxRenderStyle.Danger,
+            });
+    }
+
+    private void EditItem(TemplateKindDto templatekind)
+    {
+        // Lógica de edición
     }
 
     private async Task DeleteTemplate(TemplateKindDto templateKind)
@@ -89,17 +157,5 @@
         }
     }
 
-    private async Task<bool> OpenConfirmDialogAsync()
-    {
-        return await DialogService.ConfirmAsync(new MessageBoxOptions()
-            {
-                Text = "Esta seguro que desea borrar esta plantilla?",
-                OkButtonText = "Yes",
-                CancelButtonText = "No",
-                ShowIcon = false,
-                ShowCloseButton = false,
-                RenderStyle = MessageBoxRenderStyle.Danger,
-            });
-    }
 
 }
