@@ -9,10 +9,10 @@ namespace BlazingGidde.Server.Controllers.FlowCheck
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class BreakeableItemController : BlazingGiddeBaseController<BreakeableItem, int,ApplicationDbContext>
+    public class BreakeableItemController : OnaBaseController<BreakeableItem, int,ApplicationDbContext>
     {
         public BreakeableItemController(IRepository<BreakeableItem> repository, 
-            ILogger<BlazingGiddeBaseController<BreakeableItem, int, ApplicationDbContext>> logger)
+            ILogger<OnaBaseController<BreakeableItem, int, ApplicationDbContext>> logger)
             : base(repository, logger)
         {
         }

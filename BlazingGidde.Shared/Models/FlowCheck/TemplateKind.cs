@@ -33,7 +33,7 @@ public class TemplateKind : ModelBase
     /// <summary>
     /// The parent TemplateType.
     /// </summary>
-    public TemplateType TemplateType { get; set; }
+    public TemplateType? TemplateType { get; set; }
 
     /// <summary>
     /// Gets or sets the iteration of the template kind. (nb of editions)

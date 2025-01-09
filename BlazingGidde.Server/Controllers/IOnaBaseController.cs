@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BlazingGidde.Server.Controllers
 {
-	public interface IBlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>
+	public interface IOnaBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>
 		where TEntity : class, IModelBase<Tkey>
 		where Tkey : IEquatable<Tkey>
         where TReadDto : class

@@ -59,7 +59,7 @@ var entityTypes = new Type[]
     typeof(Template),
     typeof(TemplateItem),
     typeof(TemplateKind),
-    typeof(TemplateType),
+//    typeof(TemplateType), --> types have their own repositories
     typeof(BreakeableItem),
     typeof(GazItem),
     typeof(FlowUser),
@@ -73,6 +73,7 @@ foreach (var entityType in entityTypes)
     builder.Services.AddTransient(repositoryInterface, repositoryImplementation);
 }
 
+builder.Services.AddTransient<ITypeRepositoryEF<TemplateType>, TypeRepositoryEF<TemplateType, ApplicationDbContext>>();
 builder.Services.AddTransient<IUserRepository<FlowUser>, RepositoryUser>();
 builder.Services.AddTransient<IRoleRepository<FlowRole>, RepositoryRole>();
 builder.Services.AddTransient<UserRoleService>();

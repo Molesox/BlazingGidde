@@ -13,8 +13,8 @@ using Microsoft.EntityFrameworkCore;
 namespace BlazingGidde.Server.Controllers
 {
     [ApiController]
-    public class BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>
-        : ControllerBase, IBlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>
+    public class OnaBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>
+        : ControllerBase, IOnaBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>
         where TEntity : class, IModelBase<Tkey>
         where TReadDto : class
         where TCreateDto : class
@@ -25,10 +25,10 @@ namespace BlazingGidde.Server.Controllers
         where TDataContext : DbContext
     {
         protected readonly IRepository<TEntity> _repository;
-        protected readonly ILogger<BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>> _logger;
+        protected readonly ILogger<OnaBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>> _logger;
 
-        public BlazingGiddeBaseController(IRepository<TEntity> repository,
-         ILogger<BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>> logger)
+        public OnaBaseController(IRepository<TEntity> repository,
+         ILogger<OnaBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>> logger)
         {
             _repository = repository;
             _logger = logger;
@@ -88,7 +88,7 @@ namespace BlazingGidde.Server.Controllers
                 var query = PrepareQuery(_repository.GetQueryable());
                 var items = MapToReadDto(query);
 
-                return DataSourceLoader.Load(items, loadOptions);
+                return await DataSourceLoader.LoadAsync(items, loadOptions);
             },
             $"Request {correlationId}: DxLoaded {typeof(TEntity).Name}",
             $"Request {correlationId}: Failed to DxLoad {typeof(TEntity).Name}");
@@ -359,7 +359,7 @@ namespace BlazingGidde.Server.Controllers
         }
 
         protected virtual TEntity MapCreateDtoToEntity(TCreateDto createDto)
-            => Mapper.Map(createDto).ToANew<TEntity>();
+            => Mapper.Map(createDto).ToANew<TEntity>(cfg=> cfg.IgnoreEntityKeys());
 
         protected virtual void ApplyTimeStampForInsert(TEntity entity)
         {
@@ -488,28 +488,28 @@ namespace BlazingGidde.Server.Controllers
         }
     }
 
-    public class BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto>
-        : BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TCreateDto, TReadDto, TReadDto>
+    public class OnaBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto>
+        : OnaBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TCreateDto, TReadDto, TReadDto>
         where Tkey : IEquatable<Tkey>
         where TEntity : class, IModelBase<Tkey>
         where TReadDto : class, IReadDto<Tkey>
         where TCreateDto : class, ICreateDto<Tkey>
         where TDataContext : DbContext
     {
-        public BlazingGiddeBaseController(IRepository<TEntity> repository,
-          ILogger<BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TCreateDto, TReadDto, TReadDto>> logger)
+        public OnaBaseController(IRepository<TEntity> repository,
+          ILogger<OnaBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TCreateDto, TReadDto, TReadDto>> logger)
            : base(repository, logger)
         { }
     }
 
-    public class BlazingGiddeBaseController<TEntity, Tkey, TDataContext>
-        : BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TEntity, TEntity, TEntity, TEntity, TEntity>
+    public class OnaBaseController<TEntity, Tkey, TDataContext>
+        : OnaBaseController<TEntity, Tkey, TDataContext, TEntity, TEntity, TEntity, TEntity, TEntity>
         where Tkey : IEquatable<Tkey>
         where TEntity : class, IModelBase<Tkey>
         where TDataContext : DbContext
     {
-        public BlazingGiddeBaseController(IRepository<TEntity> repository,
-        ILogger<BlazingGiddeBaseController<TEntity, Tkey, TDataContext, TEntity, TEntity, TEntity, TEntity, TEntity>> logger)
+        public OnaBaseController(IRepository<TEntity> repository,
+        ILogger<OnaBaseController<TEntity, Tkey, TDataContext, TEntity, TEntity, TEntity, TEntity, TEntity>> logger)
             : base(repository, logger)
         { }
     }

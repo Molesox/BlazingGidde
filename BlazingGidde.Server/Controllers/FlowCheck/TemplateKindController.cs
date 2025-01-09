@@ -11,10 +11,10 @@ namespace BlazingGidde.Server.Controllers.FlowCheck
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class TemplateKindController : BlazingGiddeBaseController<TemplateKind, int, ApplicationDbContext, TemplateKindDto, CreateTemplateKindDto>
+    public class TemplateKindController : OnaBaseController<TemplateKind, int, ApplicationDbContext, TemplateKindDto, CreateTemplateKindDto>
     {
         public TemplateKindController(IRepository<TemplateKind> repository, 
-        ILogger<BlazingGiddeBaseController<TemplateKind, int, ApplicationDbContext, TemplateKindDto, CreateTemplateKindDto, CreateTemplateKindDto, TemplateKindDto, TemplateKindDto>> logger) : base(repository, logger)
+        ILogger<OnaBaseController<TemplateKind, int, ApplicationDbContext, TemplateKindDto, CreateTemplateKindDto, CreateTemplateKindDto, TemplateKindDto, TemplateKindDto>> logger) : base(repository, logger)
         {
         }
     }

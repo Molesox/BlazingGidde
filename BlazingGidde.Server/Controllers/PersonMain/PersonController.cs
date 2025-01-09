@@ -13,14 +13,14 @@ namespace BlazingGidde.Server.Controllers.Identity
     [Route("[controller]")]
     [ApiController]
     [Authorize]
-    public class PersonController : BlazingGiddeBaseController<Person, int, ApplicationDbContext, PersonDto, CreatePersonDto>
+    public class PersonController : OnaBaseController<Person, int, ApplicationDbContext, PersonDto, CreatePersonDto>
     {
         private readonly IRepository<Phone> _repositoryPhones;
         private readonly IRepository<Email> _repositoryEmails;
         public PersonController(IRepository<Person> repository,
         IRepository<Phone> phonesRepository,
         IRepository<Email> emailsRepository,
-        ILogger<BlazingGiddeBaseController<Person, int, ApplicationDbContext, PersonDto, CreatePersonDto>> logger)
+        ILogger<OnaBaseController<Person, int, ApplicationDbContext, PersonDto, CreatePersonDto>> logger)
         : base(repository, logger)
         {
             _repositoryPhones = phonesRepository;

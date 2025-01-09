@@ -4,6 +4,7 @@
 @layout MainLayout
 @inject NavigationManager NavigationManager
 @inject TemplateKindManager templateKindManager
+@inject TemplateTypeManager templateTypeManager
 
 <h3>@type.Name</h3>
 <DxToastProvider Name="Overview"
@@ -90,6 +91,7 @@ Width="320px"/>
         if(Items.Any()){
             kind.CustomTemplateItems = Items;
         }
+        var type = await templateTypeManager.GetByCode((int)TemplateCode.BREAKABLE);
         kind.TemplateTypeId = type.Id;
         kind.CustomTemplateItems.ToList().ForEach(it => it.Id = 0);
         await templateKindManager.Insert(kind);

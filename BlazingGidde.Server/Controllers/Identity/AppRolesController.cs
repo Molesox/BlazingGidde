@@ -13,10 +13,10 @@ namespace BlazingGidde.Server.Controllers.Identity
 	[ApiController]
 	[Route("[controller]")]
 	[Authorize]
-	public class AppRolesController : BlazingGiddeBaseController<FlowRole, string, ApplicationDbContext>
+	public class AppRolesController : OnaBaseController<FlowRole, string, ApplicationDbContext>
 	{
 		public AppRolesController(IRepository<FlowRole> repository,
-			ILogger<BlazingGiddeBaseController<FlowRole, string, ApplicationDbContext>> logger
+			ILogger<OnaBaseController<FlowRole, string, ApplicationDbContext>> logger
 		)
 			: base(repository, logger)
 		{

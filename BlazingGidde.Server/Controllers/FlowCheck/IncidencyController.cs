@@ -10,11 +10,11 @@ namespace BlazingGidde.Server.Controllers.FlowCheck.TemplateItem
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class IncidencyController : BlazingGiddeBaseController<Incidency,int, ApplicationDbContext>
+    public class IncidencyController : OnaBaseController<Incidency,int, ApplicationDbContext>
     {
 
         public IncidencyController(IRepository<Incidency> repository,
-            ILogger<BlazingGiddeBaseController<Incidency, int, ApplicationDbContext>> logger)
+            ILogger<OnaBaseController<Incidency, int, ApplicationDbContext>> logger)
             : base(repository, logger) { }
     }
 }

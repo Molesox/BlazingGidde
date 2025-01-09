@@ -1,12 +1,13 @@
+using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using BlazingGidde.Shared.Repository;
 
-namespace BlazingGidde.Shared.Models.FlowCheck;
+namespace BlazingGidde.Shared.DTOs.FlowCheck.Request;
 
-[Table("TemplateType", Schema ="FlowCheck")]
-public class TemplateType : ModelBase, ISupportType
+public class CreateTemplateTypeDto : ICreateDto<int>
 {
+    [Key]
+    public int Id { get; set; }
+
     /// <summary>
     /// The name of the template type.
     /// </summary>
@@ -24,8 +25,4 @@ public class TemplateType : ModelBase, ISupportType
     /// </summary>
     public int Code { get; set; }
 
-    /// <summary>
-    /// A collection of associated template kinds with their skip property.
-    /// </summary>
-    public ICollection<TemplateKind> TemplateKinds { get; set; } = new List<TemplateKind>();
 }

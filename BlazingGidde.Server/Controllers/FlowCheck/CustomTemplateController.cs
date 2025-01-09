@@ -12,11 +12,11 @@ namespace BlazingGidde.Server.Controllers
     [ApiController]
     [Route("[controller]")]
     [Authorize]
-    public class CustomTemplateController : BlazingGiddeBaseController<CustomTemplateItem , int, ApplicationDbContext>
+    public class CustomTemplateController : OnaBaseController<CustomTemplateItem , int, ApplicationDbContext>
     {
 
         public CustomTemplateController(IRepository<CustomTemplateItem> repository,
-            ILogger<BlazingGiddeBaseController<CustomTemplateItem,int, ApplicationDbContext>> logger)
+            ILogger<OnaBaseController<CustomTemplateItem,int, ApplicationDbContext>> logger)
             : base(repository, logger) { }
     }
 

@@ -1,7 +1,8 @@
 ﻿@page "/templates-type"
 @inject TemplateTypeManager templateTypeManager
 @inject NavigationManager NavigationManager
-@using BlazingGidde.Shared.Models.FlowCheck;
+@using BlazingGidde.Shared.DTOs.FlowCheck
+@using BlazingGidde.Shared.Models.FlowCheck
 @using BlazingGidde.Shared.Repository
 
 <PageTitle>Tipos de plantilla</PageTitle>
@@ -12,10 +13,10 @@
     <!-- Search bar with toggle view button -->
     <div class="search-container d-flex align-items-center mb-3">
         <DxSearchBox NullText="Search..." InputDelay="@InputDelay" BindValueMode="@BindValueMode"
-                     CssClass="custom-search-box flex-grow-1 me-3" @bind-Text="@SearchText" aria-label="Search">
+        CssClass="custom-search-box flex-grow-1 me-3" @bind-Text="@SearchText" aria-label="Search">
         </DxSearchBox>
         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                  CssClass="flex-shrink-0" Text="@GetToggleViewText()" @onclick="ToggleView">
+        CssClass="flex-shrink-0" Text="@GetToggleViewText()" @onclick="ToggleView">
         </DxButton>
     </div>
 
@@ -31,15 +32,15 @@
                         <DxGridDataColumn FieldName="ImgUrl" Caption="Auditables" MinWidth="100" Visible="@(!isXSmallScreen)" />
                         <DxGridDataColumn Caption="Actions" MinWidth="100">
                             <CellDisplayTemplate>
-                                @if (context.DataItem is TemplateType template)
+                                @if (context.DataItem is TemplateTypeDto template)
                                 {
                                     <div class="d-flex gap-2 justify-content-center">
                                         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                                                  Text="+" @onclick='() => CreateNewTemplate(template.Code)'></DxButton>
+                                        Text="+" @onclick='() => CreateNewTemplate(template.Code)'></DxButton>
                                         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-                                                  Text="E" @onclick='() => EditTemplate(template)'></DxButton>
+                                        Text="E" @onclick='() => EditTemplate(template)'></DxButton>
                                         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
-                                                  Text="D" @onclick='() => DeleteTemplate(template)'></DxButton>
+                                        Text="D" @onclick='() => DeleteTemplate(template)'></DxButton>
                                     </div>
                                 }
                             </CellDisplayTemplate>
@@ -60,11 +61,11 @@
                             <h5 class="card-title">@template.Name</h5>
                             <div class="d-flex justify-content-center gap-2 mt-3">
                                 <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                                          Text="+" @onclick='() => CreateNewTemplate(template.Code)'></DxButton>
+                                Text="+" @onclick='() => CreateNewTemplate(template.Code)'></DxButton>
                                 <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-                                          Text="E" @onclick='() => EditTemplate(template)'></DxButton>
+                                Text="E" @onclick='() => EditTemplate(template)'></DxButton>
                                 <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
-                                          Text="D" @onclick='() => DeleteTemplate(template)'></DxButton>
+                                Text="D" @onclick='() => DeleteTemplate(template)'></DxButton>
                             </div>
                         </div>
                     </div>
@@ -76,13 +77,13 @@
 
 <!-- Popup for editing templates -->
 <DxPopup @bind-Visible="@PopupVisible"
-         ShowFooter="true"
-         HeaderText="Edit Template Type">
+ShowFooter="true"
+HeaderText="Edit Template Type">
     <BodyContentTemplate Context="popupContext">
         <div class="d-flex flex-fill pt-1 pb-2 w-100">
             <DxFormLayout>
                 <DxFormLayoutItem Caption="Nombre" CaptionPosition="CaptionPosition.Vertical"
-                                  CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
+                CaptionCssClass="popup-demo-caption" CssClass="popup-demo-item" ColSpanMd="12">
                     <DxTextBox @bind-Text="selectedItem.Name" />
                 </DxFormLayoutItem>
                 <DxFormLayoutItem >
@@ -90,15 +91,15 @@
                         @if (UploadComplete)
                         {
                             <img id="dropzone-image"
-                                 src="@($"data:{FileType};base64,{Convert.ToBase64String(FileBytes ?? Array.Empty<byte>())}")"
-                                 alt="DxFileInput uploaded image" />
+                            src="@($"data:{FileType};base64,{Convert.ToBase64String(FileBytes ?? Array.Empty<byte>())}")"
+                            alt="DxFileInput uploaded image" />
                         }
                         else if (TotalBytesRead != 0)
                         {
                             <DxProgressBar CssClass="upload-progress"
-                                           Value="@TotalBytesRead"
-                                           MaxValue="@FileSize"
-                                           Label="@(TotalBytesRead == FileSize ? "Your image is almost ready..." : string.Empty)" />
+                            Value="@TotalBytesRead"
+                            MaxValue="@FileSize"
+                            Label="@(TotalBytesRead == FileSize ? "Your image is almost ready..." : string.Empty)" />
                         }
                         else
                         {
@@ -108,16 +109,16 @@
                         }
                     </div>
                     <DxFileInput Visible="@false"
-                                 MaxFileSize="15000000"
-                                 FilesUploading="@OnFilesUploading"
-                                 CssClass="dropZone-owner"
-                                 ExternalSelectButtonCssSelector="#dropzone-external"
-                                 ExternalDropZoneCssSelector="#dropzone-external"
-                                 ExternalDropZoneDragOverCssClass="dropzone-hover"
-                                 AcceptedFileTypes="@AllowedFileExtensions">
+                    MaxFileSize="15000000"
+                    FilesUploading="@OnFilesUploading"
+                    CssClass="dropZone-owner"
+                    ExternalSelectButtonCssSelector="#dropzone-external"
+                    ExternalDropZoneCssSelector="#dropzone-external"
+                    ExternalDropZoneDragOverCssClass="dropzone-hover"
+                    AcceptedFileTypes="@AllowedFileExtensions">
                     </DxFileInput>
-                    
- 
+
+
                     <DxTextBox Text="Pincha la imagen para cambiarla" />
                 </DxFormLayoutItem>
             </DxFormLayout>
@@ -125,9 +126,9 @@
     </BodyContentTemplate>
     <FooterContentTemplate Context="bodyContext">
         <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Secondary"
-                  Text="Cancelar" Click="CloseModal"></DxButton>
+        Text="Cancelar" Click="CloseModal"></DxButton>
         <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Primary"
-                  Text="Guardar" Click="CloseModal"></DxButton>
+        Text="Guardar" Click="CloseModal"></DxButton>
     </FooterContentTemplate>
 </DxPopup>
 
@@ -136,10 +137,10 @@
 @code {
     [Inject] IDialogService DialogService { get; set; }
 
-    
 
-    private TemplateType? selectedItem { get; set; }
-    public List<TemplateType> mytemplate = new List<TemplateType>();
+
+    private TemplateTypeDto? selectedItem { get; set; }
+    public List<TemplateTypeDto> mytemplate = new List<TemplateTypeDto>();
     private bool PopupVisible { get; set; }
     private bool? Result { get; set; } = null;
     private string SearchText { get; set; } = string.Empty;
@@ -187,24 +188,24 @@
         mytemplate = (await templateTypeManager.GetAll()).ToList();
     }
 
-    private IEnumerable<TemplateType> filteredTemplates =>
+    private IEnumerable<TemplateTypeDto> filteredTemplates =>
         string.IsNullOrWhiteSpace(SearchText)
             ? mytemplate
             : mytemplate.Where(t => t.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
 
-    private void CreateNewTemplate(TemplateCode code)
+    private void CreateNewTemplate(int code)
     {
-        var param = code.ToString().ToLower();
+        var param = ((TemplateCode)code).ToString().ToLower();
         NavigationManager.NavigateTo($"/create-template/{param}");
     }
 
-    private void EditTemplate(TemplateType templateType)
+    private void EditTemplate(TemplateTypeDto templateType)
     {
         selectedItem = templateType;
         PopupVisible = true;
     }
 
-    private async Task DeleteTemplate(TemplateType templateType)
+    private async Task DeleteTemplate(TemplateTypeDto templateType)
     {
         if (templateType != null)
         {
