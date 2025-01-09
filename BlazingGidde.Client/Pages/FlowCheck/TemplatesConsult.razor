@@ -15,36 +15,40 @@
     <!-- Search bar with toggle view button -->
     <div class="search-container d-flex align-items-center mb-3">
         <DxSearchBox NullText="Search..." InputDelay="@InputDelay" BindValueMode="@BindValueMode"
-        CssClass="custom-search-box flex-grow-1 me-3" @bind-Text="@SearchText" aria-label="Search">
+            CssClass="custom-search-box flex-grow-1 me-3" @bind-Text="@SearchText" aria-label="Search">
         </DxSearchBox>
 
     </div>
     <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" @bind-IsActive="@isXSmallScreen" />
     <div class="h-100 grid-wrapper">
-        <DxGrid Data="@Data" @ref="@Grid" CssClass="grid-style" EditMode="GridEditMode.PopupEditForm" CustomizeEditModel="Grid_CustomizeEditModel"
-                EditModelSaving="Grid_EditModelSaving">
+        <DxGrid Data="@Data" @ref="@Grid" CssClass="grid-style" EditMode="GridEditMode.PopupEditForm"
+        
+            CustomizeEditModel="Grid_CustomizeEditModel" AllowColumnReorder="true"  AllowGroup="true" AllowSort="true" 
+            ShowGroupPanel="true" ShowGroupedColumns="true" SearchBoxNullText="Buscar..."
+             ShowFilterRow="true" ShowSearchBox="true" EditModelSaving="Grid_EditModelSaving">
             <Columns>
                 <DxGridDataColumn Caption="Nombre" FieldName="Name" TextAlignment="GridTextAlignment.Center">
                 </DxGridDataColumn>
-                <DxGridDataColumn Caption="Descripción del programa" FieldName="ProgramDescription" TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)">
+                <DxGridDataColumn Caption="Descripción del programa" FieldName="ProgramDescription"
+                    TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)">
                 </DxGridDataColumn>
-                <DxGridDataColumn Caption="Version" FieldName="Version" TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)">
+                <DxGridDataColumn Caption="Version" FieldName="Version" TextAlignment="GridTextAlignment.Center"
+                    Visible="@(!isXSmallScreen)">
                 </DxGridDataColumn>
-                <DxGridDataColumn Caption="Sección" FieldName="Section" TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)">
+                <DxGridDataColumn Caption="Sección" FieldName="Section" TextAlignment="GridTextAlignment.Center"
+                    Visible="@(!isXSmallScreen)">
                 </DxGridDataColumn>
-                <DxGridCommandColumn NewButtonVisible="false" Caption="Actions" TextAlignment="GridTextAlignment.Center" >
+                <DxGridCommandColumn NewButtonVisible="false" Caption="Actions"
+                    TextAlignment="GridTextAlignment.Center">
                     <CellDisplayTemplate Context="gridcontext">
-                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                                  Text="+"></DxButton>
-                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-                                  Text="E"></DxButton>
-                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
-                                  IconCssClass="grid-icon grid-icon-delete" CssClass="grid-delete-btn"
-                                  Text="D"
-                                  Click="@(() => Grid.ShowRowDeleteConfirmation(gridcontext.VisibleIndex))"></DxButton>
-                            
-                        
-
+                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" IconCssClass="oi oi-plus"
+                            RenderStyle="ButtonRenderStyle.Primary"></DxButton>
+                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
+                            RenderStyle="ButtonRenderStyle.Secondary"  Click="@(() => Grid.StartEditDataItemAsync(gridcontext.DataItem))" IconCssClass="oi oi-pencil"></DxButton>
+                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
+                            RenderStyle="ButtonRenderStyle.Danger" CssClass="grid-delete-btn" IconCssClass="oi oi-trash"
+                            Click="@(() => Grid.ShowRowDeleteConfirmation(gridcontext.VisibleIndex))">
+                        </DxButton>
                     </CellDisplayTemplate>
                 </DxGridCommandColumn>
 
@@ -76,11 +80,9 @@
 
 
 <style>
-
     .grid-style th {
         text-align: center !important;
     }
-
 </style>
 
 
@@ -103,9 +105,9 @@
     }
 
     private IEnumerable<TemplateKindDto> filteredTemplates =>
-        string.IsNullOrWhiteSpace(SearchText)
-            ? mytemplate
-            : mytemplate.Where(t => t.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+    string.IsNullOrWhiteSpace(SearchText)
+    ? mytemplate
+    : mytemplate.Where(t => t.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
 
     async Task Grid_EditModelSaving(GridEditModelSavingEventArgs e)
     {
