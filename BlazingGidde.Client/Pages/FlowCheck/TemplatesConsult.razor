@@ -11,14 +11,6 @@
 
 <div class="container mt-5">
     <h3 class="text-center mb-4">Consultar plantillas</h3>
-
-    <!-- Search bar with toggle view button -->
-    <div class="search-container d-flex align-items-center mb-3">
-        <DxSearchBox NullText="Search..." InputDelay="@InputDelay" BindValueMode="@BindValueMode"
-            CssClass="custom-search-box flex-grow-1 me-3" @bind-Text="@SearchText" aria-label="Search">
-        </DxSearchBox>
-
-    </div>
     <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" @bind-IsActive="@isXSmallScreen" />
     <div class="h-100 grid-wrapper">
         <DxGrid Data="@Data" @ref="@Grid" CssClass="grid-style" EditMode="GridEditMode.PopupEditForm"
@@ -32,7 +24,7 @@
                 <DxGridDataColumn Caption="Descripción del programa" FieldName="ProgramDescription"
                     TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)">
                 </DxGridDataColumn>
-                <DxGridDataColumn Caption="Version" FieldName="Version" TextAlignment="GridTextAlignment.Center"
+                <DxGridDataColumn Caption="Versión" FieldName="Version" TextAlignment="GridTextAlignment.Center"
                     Visible="@(!isXSmallScreen)">
                 </DxGridDataColumn>
                 <DxGridDataColumn Caption="Sección" FieldName="Section" TextAlignment="GridTextAlignment.Center"
@@ -41,13 +33,14 @@
                 <DxGridCommandColumn NewButtonVisible="false" Caption="Actions"
                     TextAlignment="GridTextAlignment.Center">
                     <CellDisplayTemplate Context="gridcontext">
-                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" IconCssClass="oi oi-plus"
-                            RenderStyle="ButtonRenderStyle.Primary"></DxButton>
                         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
-                            RenderStyle="ButtonRenderStyle.Secondary"  Click="@(() => Grid.StartEditDataItemAsync(gridcontext.DataItem))" IconCssClass="oi oi-pencil"></DxButton>
+                                  RenderStyle="ButtonRenderStyle.Primary" IconCssClass="oi oi-plus"></DxButton>
                         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
-                            RenderStyle="ButtonRenderStyle.Danger" CssClass="grid-delete-btn" IconCssClass="oi oi-trash"
-                            Click="@(() => Grid.ShowRowDeleteConfirmation(gridcontext.VisibleIndex))">
+                                  RenderStyle="ButtonRenderStyle.Secondary" IconCssClass="oi oi-pencil"
+                                  Click="@(() => Grid.StartEditDataItemAsync(gridcontext.DataItem))"> </DxButton>
+                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
+                                  RenderStyle="ButtonRenderStyle.Danger" CssClass="grid-delete-btn" IconCssClass="oi oi-trash"
+                                  Click="@(() => Grid.ShowRowDeleteConfirmation(gridcontext.VisibleIndex))">
                         </DxButton>
                     </CellDisplayTemplate>
                 </DxGridCommandColumn>
@@ -60,12 +53,18 @@
                     var templateKind = (CreateTemplateKindDto)EditFormContext.EditModel;
                 }
                 <DxFormLayout CssClass="w-100">
-                    <DxFormLayoutItem Caption="Name" ColSpanMd="6">
+                    <DxFormLayoutItem Caption="Name" ColSpanMd="12">
                         @EditFormContext.GetEditor("Name")
                     </DxFormLayoutItem>
 
-                    <DxFormLayoutItem Caption="Program Description" ColSpanMd="6">
+                    <DxFormLayoutItem Caption="Program Description" ColSpanMd="12">
                         @EditFormContext.GetEditor("ProgramDescription")
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Versión" ColSpanMd="6">
+                        @EditFormContext.GetEditor("Version")
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Sección" ColSpanMd="6">
+                        @EditFormContext.GetEditor("Section")
                     </DxFormLayoutItem>
 
                     <DxFormLayoutItem Caption="Remarks:" ColSpanMd="6">

@@ -35,12 +35,18 @@
                                 @if (context.DataItem is TemplateTypeDto template)
                                 {
                                     <div class="d-flex gap-2 justify-content-center">
-                                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                                        Text="+" @onclick='() => CreateNewTemplate(template.Code)'></DxButton>
-                                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-                                        Text="E" @onclick='() => EditTemplate(template)'></DxButton>
-                                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
-                                        Text="D" @onclick='() => DeleteTemplate(template)'></DxButton>
+                                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" 
+                                            RenderStyle="ButtonRenderStyle.Primary"IconCssClass="oi oi-plus" 
+                                            @onclick='() => CreateNewTemplate(template.Code)'>
+                                        </DxButton>
+                                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
+                                                  RenderStyle="ButtonRenderStyle.Secondary" IconCssClass="oi oi-pencil"
+                                            @onclick='() => EditTemplate(template)'>
+                                        </DxButton>
+                                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
+                                                  RenderStyle="ButtonRenderStyle.Danger" IconCssClass="oi oi-trash"
+                                            @onclick='() => DeleteTemplate(template)'>
+                                        </DxButton>
                                     </div>
                                 }
                             </CellDisplayTemplate>
@@ -60,12 +66,18 @@
                         <div class="card-body">
                             <h5 class="card-title">@template.Name</h5>
                             <div class="d-flex justify-content-center gap-2 mt-3">
-                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                                Text="+" @onclick='() => CreateNewTemplate(template.Code)'></DxButton>
-                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-                                Text="E" @onclick='() => EditTemplate(template)'></DxButton>
-                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
-                                Text="D" @onclick='() => DeleteTemplate(template)'></DxButton>
+                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
+                                          RenderStyle="ButtonRenderStyle.Primary" IconCssClass="oi oi-plus"
+                                          @onclick='() => CreateNewTemplate(template.Code)'>
+                                </DxButton>
+                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
+                                          RenderStyle="ButtonRenderStyle.Secondary" IconCssClass="oi oi-pencil"
+                                          @onclick='() => EditTemplate(template)'>
+                                </DxButton>
+                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
+                                          RenderStyle="ButtonRenderStyle.Danger" IconCssClass="oi oi-trash"
+                                          @onclick='() => DeleteTemplate(template)'>
+                                </DxButton>
                             </div>
                         </div>
                     </div>
