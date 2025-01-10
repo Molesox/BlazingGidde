@@ -1,21 +1,88 @@
 ﻿@page "/create-template/{code}"
-@layout TemplateKindLayout
+@using BlazingGidde.Shared.DTOs.FlowCheck
+@using BlazingGidde.Shared.DTOs.FlowCheck.Request
+@inject NavigationManager NavigationManager
+@inject TemplateKindManager TemplateKindManager
+@inject TemplateTypeManager TemplateTypeManager
 
-<DynamicComponent Type="@CurrentEditForm" />
+<h3>@TypeInfo?.Name</h3>
 
+<DxToastProvider Name="Overview"
+                 MaxToastCount="5"
+                 AnimationType="ToastAnimationType.Slide"
+                 HorizontalAlignment="HorizontalAlignment.Center"
+                 DisplayTime="TimeSpan.Zero"
+                 Width="320px" />
 
+<DxStackLayout Orientation="Orientation.Vertical" CssClass="w-100 ch-480">
+    <Items>
+        <DxStackLayoutItem Length="auto">
+            <Template>
+                <DxFormLayout CaptionPosition="CaptionPosition.Vertical">
+                    <DxFormLayoutItem ColSpanMd="6" Caption="Nombre">
+                        <DxTextBox @bind-Text="KindDto.Name" />
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="3" Caption="Versión">
+                        <DxSpinEdit @bind-Value="KindDto.Version" Enabled="false" />
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="3" Caption="Fecha">
+                        <DxDateEdit @bind-Date="CreateDate" Enabled="false" />
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="6" Caption="Descripción del programa">
+                        <DxTextBox @bind-Text="KindDto.ProgramDescription" />
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem ColSpanMd="3" Caption="Sección">
+                        <DxTextBox @bind-Text="KindDto.Section" />
+                    </DxFormLayoutItem>
+                </DxFormLayout>
+            </Template>
+        </DxStackLayoutItem>
+
+        <DxStackLayoutItem>
+            <Template>
+                @if (TemplateCode == TemplateCode.BREAKABLE)
+                {
+                    <DynamicComponent Type="@typeof(BreakableTemplate)"
+                                     Parameters="@(new Dictionary<string, object>
+                                     {
+                                         [nameof(BreakableTemplate.Items)] = Items,
+                                         [nameof(BreakableTemplate.ItemsChanged)] = 
+                                              EventCallback.Factory.Create<List<CreateCustomTemplateItemDto>>(this, OnItemsChanged)
+                                     })" />
+                }
+                else
+                {
+                    <DynamicComponent Type="@CurrentTemplateComponent" />
+                }
+            </Template>
+        </DxStackLayoutItem>
+
+        <DxStackLayoutItem Length="auto">
+            <Template>
+                <div style="margin-top: 20px; margin-bottom: 20px;>
+                    <DxButton RenderStyle="ButtonRenderStyle.Secondary" Click="Cancel">
+                        Cancelar
+                    </DxButton>
+                    <DxButton style="margin-left: 4px;" RenderStyle="ButtonRenderStyle.Primary" Click="Save">
+                        Guardar
+                    </DxButton>
+                </div>
+            </Template>
+        </DxStackLayoutItem>
+    </Items>
+</DxStackLayout>
 
 @code {
-    [Parameter] 
+    [Parameter]
     public string Code { get; set; }
 
+    private TemplateTypeDto TypeInfo { get; set; }
     private TemplateCode TemplateCode { get; set; }
+    private Type? CurrentTemplateComponent { get; set; }
 
-    private Type? CurrentEditForm { get; set; }
-
-    private TemplateType CurrentTemplateType { get; set; }
-
-    private TemplateKind kind = new TemplateKind();
+    private DateTime CreateDate { get; set; } = DateTime.UtcNow;
+    private CreateTemplateKindDto KindDto { get; set; } = new() { Version = 1 };
+    private List<CreateCustomTemplateItemDto> Items { get; set; } = new();
 
     private readonly Dictionary<TemplateCode, Type> templateMap = new()
     {
@@ -24,13 +91,48 @@
         { TemplateCode.LABELREADER, typeof(LabelReaderTemplate) },
         { TemplateCode.MANIPULATORS, typeof(ManipulatorTemplate) },
     };
-    protected override void OnParametersSet()
+
+    protected override async Task OnInitializedAsync()
     {
-        TemplateCode = Enum.Parse<TemplateCode>(Code, true);
-        templateMap.TryGetValue(TemplateCode, out var componentType);
-        CurrentEditForm = componentType ?? typeof(BreakableTemplate);
-        //var query = new QueryFilter<TemplateType>();
-        //CurrentTemplateType = templateTypeManager.Get(query);
+        if (!string.IsNullOrWhiteSpace(Code))
+        {
+            TemplateCode = Enum.Parse<TemplateCode>(Code, true);
+        }
+        if (templateMap.TryGetValue(TemplateCode, out var componentType))
+            CurrentTemplateComponent = componentType;
+        else
+            CurrentTemplateComponent = typeof(BreakableTemplate);
+
+        TypeInfo = await TemplateTypeManager.GetByCode((int)TemplateCode);
     }
 
-} 
+    private void OnItemsChanged(List<CreateCustomTemplateItemDto> updatedItems)
+    {
+        Items = updatedItems;
+    }
+
+    private void Cancel(MouseEventArgs e)
+    {
+        NavigationManager.NavigateTo("templates-type");
+    }
+
+    private async Task Save(MouseEventArgs e)
+    {
+        if (Items.Any())
+        {
+            KindDto.CustomTemplateItems = Items;
+        }
+
+        // If you want to use the TypeInfo you fetched:
+        if (TypeInfo != null)
+        {
+            KindDto.TemplateTypeId = TypeInfo.Id;
+        }
+
+        // Make sure any Ids for new items are zero
+        KindDto.CustomTemplateItems?.ToList().ForEach(it => it.Id = 0);
+
+        await TemplateKindManager.Insert(KindDto);
+        NavigationManager.NavigateTo("templates-type");
+    }
+}
