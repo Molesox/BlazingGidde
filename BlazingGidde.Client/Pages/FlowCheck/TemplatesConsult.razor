@@ -13,8 +13,7 @@
     <h3 class="text-center mb-4">Consultar plantillas</h3>
     <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" @bind-IsActive="@isXSmallScreen" />
     <div class="h-100 grid-wrapper">
-        <DxGrid Data="@Data" @ref="@Grid" CssClass="grid-style" EditMode="GridEditMode.PopupEditForm"
-        
+        <DxGrid Data="@Data" @ref="@Grid" EditMode="GridEditMode.PopupEditForm"
             CustomizeEditModel="Grid_CustomizeEditModel" AllowColumnReorder="true"  AllowGroup="true" AllowSort="true" 
             ShowGroupPanel="true" ShowGroupedColumns="true" SearchBoxNullText="Buscar..."
              ShowFilterRow="true" ShowSearchBox="true" EditModelSaving="Grid_EditModelSaving">
@@ -78,13 +77,6 @@
 </div>
 
 
-<style>
-    .grid-style th {
-        text-align: center !important;
-    }
-</style>
-
-
 @code {
     [Inject] IDialogService DialogService { get; set; }
 
@@ -99,7 +91,7 @@
     object Data { get; set; }
 
     protected override async Task OnInitializedAsync()
-    {// todo:: hacer como en person main .razor
+    {
         Data = templateKindManager.Get();
     }
 

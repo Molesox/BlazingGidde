@@ -2,7 +2,8 @@
 @using AgileObjects.AgileMapper.Extensions
 @using BlazingGidde.Client.Services
 @using BlazingGidde.Client
-
+@using BlazingGidde.Shared.DTOs.FlowCheck
+@using BlazingGidde.Shared.DTOs.FlowCheck.Request
 @using BlazingGidde.Shared.Models.Identity
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
@@ -12,43 +13,64 @@
 
 <PageTitle>Application roles</PageTitle>
 
-<DxGrid Data="@Data" @ref="@Grid" EditMode="GridEditMode.PopupEditForm" CustomizeEditModel="Grid_CustomizeEditModel"
-    EditModelSaving="Grid_EditModelSaving">
-    <Columns>
-        <DxGridCommandColumn></DxGridCommandColumn>
-        <DxGridDataColumn Caption="Id" FieldName="Id">
-        </DxGridDataColumn>
+<div class="container mt-5">
+    <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" @bind-IsActive="@isXSmallScreen" />
+    <div class="h-100 grid-wrapper">
+        <DxGrid Data="@Data" @ref="@Grid" EditMode="GridEditMode.PopupEditForm"
+                CustomizeEditModel="Grid_CustomizeEditModel" AllowColumnReorder="true" AllowGroup="true" AllowSort="true"
+                ShowGroupPanel="true" ShowGroupedColumns="true" SearchBoxNullText="Buscar..."
+                ShowFilterRow="true" ShowSearchBox="true" EditModelSaving="Grid_EditModelSaving">
+            <Columns>
+                <DxGridDataColumn Caption="Id" FieldName="Id">
+                </DxGridDataColumn>
 
-        <DxGridDataColumn Caption="Employee Name" FieldName="Name">
-        </DxGridDataColumn>
+                <DxGridDataColumn Caption="Employee Name" FieldName="Name">
+                </DxGridDataColumn>
 
-        <DxGridDataColumn Caption="Normalized Name" FieldName="NormalizedName">
-        </DxGridDataColumn>
-    </Columns>
+                <DxGridDataColumn Caption="Normalized Name" FieldName="NormalizedName">
+                </DxGridDataColumn>
+                <DxGridCommandColumn NewButtonVisible="false" Caption="Actions"
+                                     TextAlignment="GridTextAlignment.Center">
+                    <CellDisplayTemplate Context="gridcontext">
+                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
+                                  RenderStyle="ButtonRenderStyle.Secondary" IconCssClass="oi oi-pencil"
+                                  Click="@(() => Grid.StartEditDataItemAsync(gridcontext.DataItem))"> </DxButton>
+                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
+                                  RenderStyle="ButtonRenderStyle.Danger" CssClass="grid-delete-btn" IconCssClass="oi oi-trash"
+                                  Click="@(() => Grid.ShowRowDeleteConfirmation(gridcontext.VisibleIndex))">
+                        </DxButton>
+                    </CellDisplayTemplate>
+                </DxGridCommandColumn>
+            </Columns>
 
-    <EditFormTemplate Context="EditFormContext">
-        @{
-            var role = (FlowRole)EditFormContext.EditModel;
-        }
-        <DxFormLayout CssClass="w-100">
-            <DxFormLayoutItem Caption="Id" ColSpanMd="6">
-                @EditFormContext.GetEditor("Id")
-            </DxFormLayoutItem>
+            <EditFormTemplate Context="EditFormContext">
+                @{
+                    var role = (FlowRoleDto)EditFormContext.EditModel;
+                }
+                <DxFormLayout CssClass="w-100">
+                    <DxFormLayoutItem Caption="Id" ColSpanMd="6">
+                        @EditFormContext.GetEditor("Id")
+                    </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Employee Name:" ColSpanMd="6">
-                @EditFormContext.GetEditor("Name")
-            </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Employee Name:" ColSpanMd="6">
+                        @EditFormContext.GetEditor("Name")
+                    </DxFormLayoutItem>
 
-            <DxFormLayoutItem Caption="Normalized Name:" ColSpanMd="6">
-                @EditFormContext.GetEditor("NormalizedName")
-            </DxFormLayoutItem>
-        </DxFormLayout>
-    </EditFormTemplate>
-</DxGrid>
+                    <DxFormLayoutItem Caption="Normalized Name:" ColSpanMd="6">
+                        @EditFormContext.GetEditor("NormalizedName")
+                    </DxFormLayoutItem>
+                </DxFormLayout>
+            </EditFormTemplate>
+        </DxGrid>
+    </div>
+</div>
+
+
 
 @code {
     IGrid Grid { get; set; }
     object Data { get; set; }
+    bool isXSmallScreen;
 
     protected override void OnInitialized()
     {
@@ -57,7 +79,7 @@
 
     async Task Grid_EditModelSaving(GridEditModelSavingEventArgs e)
     {
-        var editedRole = (FlowRole)e.EditModel;
+        var editedRole = (FlowRoleDto)e.EditModel;
         var result = e.IsNew == false ? await roleManager.Update(editedRole) : await roleManager.Insert(editedRole);
         
         if (result is not null)
@@ -69,12 +91,12 @@
 
     async Task Grid_CustomizeEditModel(GridCustomizeEditModelEventArgs e)
     {
-        var dataItem = (FlowRole)e.DataItem;
+        var dataItem = (FlowRoleDto)e.DataItem;
         if (dataItem == null)
-            e.EditModel = new FlowRole { };
+            e.EditModel = new FlowRoleDto { };
         else
         {
-            e.EditModel = dataItem.Map().ToANew<FlowRole>();
+            e.EditModel = dataItem.Map().ToANew<FlowRoleDto>();
         }
     }
 }

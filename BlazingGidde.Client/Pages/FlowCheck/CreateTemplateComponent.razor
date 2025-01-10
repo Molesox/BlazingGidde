@@ -59,7 +59,7 @@
 
         <DxStackLayoutItem Length="auto">
             <Template>
-                <div style="margin-top: 20px; margin-bottom: 20px;>
+                <div style="margin-top: 20px; margin-bottom: 20px;">
                     <DxButton RenderStyle="ButtonRenderStyle.Secondary" Click="Cancel">
                         Cancelar
                     </DxButton>
@@ -84,7 +84,7 @@
     private CreateTemplateKindDto KindDto { get; set; } = new() { Version = 1 };
     private List<CreateCustomTemplateItemDto> Items { get; set; } = new();
 
-    private readonly Dictionary<TemplateCode, Type> templateMap = new()
+    public readonly Dictionary<TemplateCode, Type> templateMap = new()
     {
         { TemplateCode.BREAKABLE, typeof(BreakableTemplate) },
         { TemplateCode.GAS, typeof(GasTemplate) },
