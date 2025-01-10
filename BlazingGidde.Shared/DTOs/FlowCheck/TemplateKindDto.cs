@@ -7,6 +7,8 @@ public class TemplateKindDto : IReadDto<int>
 {
 
      public int Id { get; set; }
+
+    public int TemplateTypeId {get; set;}
      
     /// <summary>
     /// The name of the template instance.
