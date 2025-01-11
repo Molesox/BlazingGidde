@@ -17,7 +17,7 @@ namespace BlazingGidde.Server.Controllers
         : ControllerBase, IOnaBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>
         where TEntity : class, IModelBase<Tkey>
         where TReadDto : class
-        where TCreateDto : class
+        where TCreateDto : class, IModelBase<Tkey>
         where Tkey : IEquatable<Tkey>
         where TUpdateDto : class, IModelBase<Tkey>
         where TCreateDtoResponse : class
@@ -134,14 +134,15 @@ namespace BlazingGidde.Server.Controllers
             {
                 ValidateId(Id, correlationId);
                 LogFetchByIdStart(Id, correlationId);
-                var entity = await _repository.GetByID(Id);
+                var entity = _repository.GetByID(Id);
+
                 if (entity == null)
                 {
                     LogEntityNotFound(Id, correlationId);
                     throw new KeyNotFoundException($"Entity with ID {Id} was not found.");
                 }
 
-                var readDto = MapEntityToReadDto(entity);
+                var readDto = await MapToReadDto(entity).FirstAsync();
 
                 LogFetchByIdSuccess(Id, correlationId);
 
@@ -381,19 +382,20 @@ namespace BlazingGidde.Server.Controllers
             return ExecuteAsync(async () =>
             {
                 ValidateEntityForUpdate(entity, correlationId);
-                var toUpdate = await _repository.GetByID(entity.Id);
+                var toUpdate =  _repository.GetByID(entity.Id);
+                
                 ValidateEntityExists(toUpdate, entity.Id, correlationId);
-                MapUpdateDtoToEntity(entity, toUpdate);
-                ApplyTimeStampForUpdate(toUpdate);
+                 var updated = await MapUpdateDtoToEntity(entity, toUpdate).FirstAsync();
+                ApplyTimeStampForUpdate(updated);
 
-                var updated = await _repository.Update(toUpdate);
+                 updated = await _repository.Update(updated);
                 var updatedDto = MapEntityToUpdateDtoResponse(updated);
 
                 _logger.LogInformation(
                     "Request {CorrelationId}: Updated {EntityName} with Id {Id}",
                     correlationId,
                     typeof(TEntity).Name,
-                    toUpdate.Id);
+                    updated.Id);
 
                 return new APIEntityResponse<TUpdateDtoReponse> { Success = true, Items = updatedDto };
             },
@@ -413,7 +415,7 @@ namespace BlazingGidde.Server.Controllers
             }
         }
 
-        protected virtual void ValidateEntityExists(TEntity entity, Tkey Id, string correlationId)
+        protected virtual void ValidateEntityExists(IQueryable<TEntity> entity, Tkey Id, string correlationId)
         {
             if (entity == null)
             {
@@ -425,7 +427,7 @@ namespace BlazingGidde.Server.Controllers
             }
         }
 
-        protected virtual void MapUpdateDtoToEntity(TUpdateDto updateDto, TEntity entity)
+        protected virtual IQueryable<TEntity> MapUpdateDtoToEntity(TUpdateDto updateDto, IQueryable<TEntity> entity)
             => updateDto.Map().Over(entity);
 
         protected virtual void ApplyTimeStampForUpdate(TEntity entity)

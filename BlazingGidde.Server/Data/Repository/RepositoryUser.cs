@@ -44,9 +44,13 @@ namespace BlazingGidde.Server.Data.Repository
 			return _userManager.Users.AsQueryable();
 		}
 
-		public async Task<FlowUser?> GetByID(object id)
+		public IQueryable<FlowUser> GetByID(object id)
 		{
-			return await _userManager.FindByIdAsync(id.ToString() ?? string.Empty);
+			if (id == null)
+				throw new ArgumentNullException(nameof(id));
+
+			string idString = id.ToString() ?? string.Empty;
+			return _userManager.Users.Where(user => user.Id == idString);
 		}
 
 		public IQueryable<FlowUser> Get(IQueryFilter<FlowUser> queryFilter)
@@ -79,11 +83,11 @@ namespace BlazingGidde.Server.Data.Repository
 			var result = await _userManager.UpdateAsync(identityUser);
 
 			if (!result.Succeeded) return null;
-			var person = await _userRepository.GetByID(entityToUpdate.Id);
+			var person = _userRepository.GetByID(entityToUpdate.Id).First();
 			if (person != null)
 			{
 				person = entityToUpdate.Map().Over(person);
-				person.Person.PersonType = null;
+
 				return await _userRepository.Update(person);
 			}
 			return null;

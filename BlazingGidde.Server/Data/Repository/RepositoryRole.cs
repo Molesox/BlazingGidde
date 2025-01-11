@@ -39,10 +39,12 @@ namespace BlazingGidde.Server.Data.Repository
 			return _roleManager.Roles.AsQueryable();
 		}
 
-
-		public async Task<FlowRole?> GetByID(object id)
+		public IQueryable<FlowRole> GetByID(object id)
 		{
-			return await _roleManager.FindByIdAsync(id.ToString() ?? string.Empty);
+			if (id == null)
+				throw new ArgumentNullException(nameof(id));
+
+			return _roleManager.Roles.Where(role => role.Id == id.ToString());
 		}
 
 		public IQueryable<FlowRole> Get(IQueryFilter<FlowRole> queryFilter)

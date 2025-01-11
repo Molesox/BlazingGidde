@@ -43,7 +43,7 @@ namespace BlazingGidde.Shared.Repository
 		/// </summary>
 		/// <param name="id">ID of the entity to retrieve.</param>
 		/// <returns>The entity if found; otherwise, null.</returns>
-		Task<TEntity?> GetByID(object id);
+		IQueryable<TEntity> GetByID(object id);
 
 		/// <summary>
 		/// Gets entities based on a query filter.

@@ -9,8 +9,9 @@ namespace BlazingGidde.Server.Data.Repository
 	/// </summary>
 	/// <typeparam name="TEntity">The type of the entity that this repository works with.</typeparam>
 	/// <typeparam name="TDataContext">The type of the DbContext that this repository uses.</typeparam>
-	public class RepositoryEF<TEntity, TDataContext> : IRepository<TEntity>
-		where TEntity : class
+	public class RepositoryEF<TEntity, TDataContext, TKey> : IRepository<TEntity>
+		where TKey : IEquatable<TKey>
+		where TEntity : class, IModelBase<TKey>
 		where TDataContext : DbContext
 	{
 		protected readonly TDataContext context;
@@ -62,7 +63,7 @@ namespace BlazingGidde.Server.Data.Repository
 		/// <returns>An IEnumerable of entities.</returns>
 		public IQueryable<TEntity> Get(IQueryFilter<TEntity> queryFilter)
 		{
-			return  queryFilter.GetFilteredList(dbSet);
+			return queryFilter.GetFilteredList(dbSet);
 		}
 
 		/// <summary>
@@ -112,9 +113,13 @@ namespace BlazingGidde.Server.Data.Repository
 		/// </summary>
 		/// <param name="id">ID of the entity to retrieve.</param>
 		/// <returns>The entity if found; otherwise, null.</returns>
-		public virtual async Task<TEntity?> GetByID(object id)
+		public virtual IQueryable<TEntity> GetByID(object id)
 		{
-			return await dbSet.FindAsync(id);
+			if (id == null)
+				throw new ArgumentNullException(nameof(id));
+
+			var key = (TKey)id; // Ensure the type matches
+			return dbSet.Where(entity => entity.Id.Equals(key));
 		}
 
 		/// <summary>
@@ -124,7 +129,7 @@ namespace BlazingGidde.Server.Data.Repository
 		/// <returns>The inserted entity.</returns>
 		public virtual async Task<TEntity?> Insert(TEntity entity)
 		{
-		 
+
 			await dbSet.AddAsync(entity);
 			await context.SaveChangesAsync();
 			return entity;

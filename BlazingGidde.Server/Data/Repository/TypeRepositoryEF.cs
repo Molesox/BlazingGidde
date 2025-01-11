@@ -1,11 +1,12 @@
 using System;
+using BlazingGidde.Shared.Models;
 using BlazingGidde.Shared.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazingGidde.Server.Data.Repository;
 
-public class TypeRepositoryEF<TEntity, TDataContext> : RepositoryEF<TEntity, TDataContext>, ITypeRepositoryEF<TEntity>
-    where TEntity : class, ISupportType
+public class TypeRepositoryEF<TEntity, TDataContext> : RepositoryEF<TEntity, TDataContext, int>, ITypeRepositoryEF<TEntity>
+    where TEntity : class, IModelBase<int>, ISupportType
     where TDataContext : DbContext
 {
         public TypeRepositoryEF(TDataContext dataContext) : base(dataContext)

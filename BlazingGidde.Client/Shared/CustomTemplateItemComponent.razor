@@ -1,9 +1,14 @@
 ﻿@using DevExpress.Blazor
+@inject IJSRuntime JS
+
 <div id="@Id" class="upload-container">
 
     <div id="@($"dropzone-external-{Id}")" class="dropzone-external card flex-box">
-        @if (UploadComplete)
+        @if (UploadComplete || IsBase64Image(Value))
         {
+               <img id="dropzone-image"
+                 src="@Value"
+                 alt="DxFileInput uploaded image" />
         }
         else if (TotalBytesRead != 0)
         {
@@ -14,32 +19,34 @@
         {
             <div id="dropzone-text" class="flex-box">
                 <span>Arrastra y suelta el archivo deseado</span>
-                <span>…o haga clic para buscar un archivo.</span>
             </div>
         }
     </div>
+     <DxButton id="@($"upload-button-{Id}")"
+              CssClass="m-1"
+                style="max-width: 100%;"
+              RenderStyle="ButtonRenderStyle.Primary"
+              Text="Subir" />
 
     <DxFileInput Visible="false" MaxFileSize="15000000" 
     FilesUploading="@OnFilesUploading" 
     CssClass="dropZone-owner"
-        ExternalSelectButtonCssSelector="@($"#dropzone-external-{Id}")"
+        ExternalSelectButtonCssSelector="@($"#upload-button-{Id}")"
         ExternalDropZoneCssSelector="@($"#dropzone-external-{Id}")" 
         ExternalDropZoneDragOverCssClass="dropzone-hover"
         AcceptedFileTypes="@AllowedFileExtensions">
     </DxFileInput>
 </div>
 
+
 @code {
 
     [Parameter]
     public int Id { get; set; }
 
-    // This is the "public" value we will expose to the parent
-    // containing the Base64-encoded image.
     [Parameter]
     public string? Value { get; set; }
 
-    // This event (or a two-way binding) notifies the parent that we have a new image.
     [Parameter]
     public EventCallback<string?> ValueChanged { get; set; }
 
@@ -50,6 +57,9 @@
     private readonly List<string> AllowedFileExtensions = new() { ".jpg", ".jpeg", ".gif", ".png" };
     private int FileSize { get; set; }
     private int TotalBytesRead { get; set; }
+
+    private bool IsBase64Image(string? data) 
+        => !string.IsNullOrWhiteSpace(data) && data.StartsWith("data:image/", StringComparison.OrdinalIgnoreCase);
 
     private async Task OnFilesUploading(FilesUploadingEventArgs args)
     {
@@ -77,11 +87,19 @@
             stream.Close();
         }
 
+        // Build the Base64 string
+        Value = $"data:{FileType};base64,{Convert.ToBase64String(FileBytes ?? Array.Empty<byte>())}";
+
+        Value = await JS.InvokeAsync<string>(
+            "imageResizer.resize", 
+            Value,
+            800,        // max width
+            600         // max height
+        );
+
         // Mark upload as complete
         UploadComplete = true;
 
-        // Build the Base64 string
-        Value = $"data:{FileType};base64,{Convert.ToBase64String(FileBytes ?? Array.Empty<byte>())}";
         await ValueChanged.InvokeAsync(Value);
 
     }

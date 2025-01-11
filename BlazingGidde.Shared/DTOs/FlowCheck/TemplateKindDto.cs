@@ -1,4 +1,5 @@
 using System;
+using BlazingGidde.Shared.DTOs.FlowCheck.Request;
 using BlazingGidde.Shared.Models;
 
 namespace BlazingGidde.Shared.DTOs.FlowCheck;
@@ -29,6 +30,7 @@ public class TemplateKindDto : IReadDto<int>
     /// The parent TemplateType.
     /// </summary>
     public string TemplateTypeName { get; set; }
+    public int TemplateTypeCode { get; set; }
 
     /// <summary>
     /// Gets or sets the iteration of the template kind. (nb of editions)
@@ -41,5 +43,8 @@ public class TemplateKindDto : IReadDto<int>
     public string Section { get; set; }
 
     public TemplateCode Code { get; set; }
+
+    public ICollection<CreateCustomTemplateItemDto> CustomTemplateItems { get; set; } = new List<CreateCustomTemplateItemDto>();
+
 
 }

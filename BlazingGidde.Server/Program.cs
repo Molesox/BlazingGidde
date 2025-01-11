@@ -18,6 +18,7 @@ using Serilog.Events;
 using AgileObjects.AgileMapper;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
+using BlazingGidde.Shared.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -59,17 +60,30 @@ var entityTypes = new Type[]
     typeof(Template),
     typeof(TemplateItem),
     typeof(TemplateKind),
-//    typeof(TemplateType), --> types have their own repositories
+    // typeof(TemplateType), // Types with their own repositories
     typeof(BreakeableItem),
-    typeof(GazItem),
+    typeof(GazItem)
+};
+
+// Add repositories for standard entities
+foreach (var entityType in entityTypes)
+{
+    var repositoryInterface = typeof(IRepository<>).MakeGenericType(entityType);
+    var repositoryImplementation = typeof(RepositoryEF<,,>).MakeGenericType(entityType, typeof(ApplicationDbContext), typeof(int));
+    builder.Services.AddTransient(repositoryInterface, repositoryImplementation);
+}
+
+// Handle FlowUser and FlowRole as string-based repositories
+var stringBasedEntityTypes = new Type[]
+{
     typeof(FlowUser),
     typeof(FlowRole)
 };
 
-foreach (var entityType in entityTypes)
+foreach (var entityType in stringBasedEntityTypes)
 {
     var repositoryInterface = typeof(IRepository<>).MakeGenericType(entityType);
-    var repositoryImplementation = typeof(RepositoryEF<,>).MakeGenericType(entityType, typeof(ApplicationDbContext));
+    var repositoryImplementation = typeof(RepositoryEF<,,>).MakeGenericType(entityType, typeof(ApplicationDbContext), typeof(string));
     builder.Services.AddTransient(repositoryInterface, repositoryImplementation);
 }
 
