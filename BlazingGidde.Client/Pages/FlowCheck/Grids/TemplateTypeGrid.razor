@@ -21,17 +21,14 @@
             </DxGridDataColumn>
 
             <DxGridCommandColumn Width="100px" FixedPosition="GridColumnFixedPosition.Left" NewButtonVisible="false"
-                Caption="Actions" TextAlignment="GridTextAlignment.Center">
+                Caption="Actions" TextAlignment="GridTextAlignment.Center"  CaptionAlignment="GridTextAlignment.Center">
                 <CellDisplayTemplate Context="gridcontext">
-                    <!--
-                    Click="@(async() => { if (Grid is not null) await Grid.StartEditNewRowAsync(); })">
-                    -->
+                    <!-- Click="@(async() => { if (Grid is not null) await Grid.StartEditNewRowAsync(); })"> -->
                     <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
                         IconCssClass="oi oi-plus" 
                         Click="@(async() => { 
                             var item = (TemplateTypeDto)gridcontext.DataItem;
                             var param = ((TemplateCode)item.Code).ToString().ToLower();
-
                             NavigationManager.NavigateTo($"/create-template/{param}/{0}?mode=add");
                         })">
                     </DxButton>
@@ -64,13 +61,6 @@
     </DxGrid>
 
 </div>
-
-<style>
-    .grid-style th {
-        text-align: center !important;
-    }
-</style>
-
 
 @code {
 
