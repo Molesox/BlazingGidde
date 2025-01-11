@@ -44,7 +44,8 @@ HorizontalAlignment="HorizontalAlignment.Right" DisplayTime="TimeSpan.Zero" Widt
                                      {
                                          [nameof(BreakableTemplate.Items)] = Items,
                                          [nameof(BreakableTemplate.ItemsChanged)] = 
-                                              EventCallback.Factory.Create<List<CreateCustomTemplateItemDto>>(this, OnItemsChanged)
+                                              EventCallback.Factory.Create<List<CreateCustomTemplateItemDto>>(this, OnItemsChanged),
+                                        [nameof(BreakableTemplate.IsReadOnly)] = IsReadOnly
                                      })" />
                 }
              

@@ -1,6 +1,6 @@
 ﻿@using BlazingGidde.Shared.DTOs.FlowCheck.Request
 @using BlazingGidde.Client.Shared
-<!-- Display the list of items in a grid / card layout -->
+
 <div class="container my-4">
     <div class="row">
         @if (Items != null)
@@ -10,18 +10,13 @@
                 <div class="col-md-3 mb-4">
                     <div class="card h-100">
                         <div class="card-body d-flex flex-column">
-                            @if (!string.IsNullOrEmpty(item.ImageUrl))
-                            {
-                                <img src="@item.ImageUrl" alt="Uploaded" class="fixed-size-image" />
-                            }
-                            else
-                            {
-                                <CustomTemplateItemComponent Id="@item.Id" @bind-Value="@item.ImageUrl" />
-                            }
+
+                            <CustomTemplateItemComponent IsReadOnly="IsReadOnly" Id="@item.Id" @bind-Value="@item.ImageUrl" />
+
                             <div style="margin-top: 3px;" class="d-flex justify-content-between align-items-center">
-                                <DxTextBox @bind-Text="@item.Name" NullText="@($"Nombre{item.Id}")" />
+                                <DxTextBox ReadOnly="IsReadOnly" @bind-Text="@item.Name" NullText="@($"Nombre{item.Id}")" />
                                 <div class="mt-auto">
-                                    <DxButton Click="@(() => RemoveItem(item))" IconCssClass="oi oi-trash"
+                                    <DxButton Enabled="!IsReadOnly" Click="@(() => RemoveItem(item))" IconCssClass="oi oi-trash"
                                         RenderStyle="ButtonRenderStyle.Danger" />
                                 </div>
                             </div>
@@ -33,16 +28,14 @@
     </div>
 </div>
 
-<!-- Floating action button to add a new item -->
 <DxButton Click="AddItem" IconCssClass="oi oi-plus" CssClass="fab-button btn-primary" />
 
 @code {
     [Parameter] public List<CreateCustomTemplateItemDto> Items { get; set; } = new();
     [Parameter] public EventCallback<List<CreateCustomTemplateItemDto>> ItemsChanged { get; set; }
-
+    [Parameter] public bool IsReadOnly { get; set; }
     protected override void OnInitialized()
     {
-        // If you want default items on load:
         if (Items == null || !Items.Any())
         {
             Items = Enumerable.Range(1, 4)

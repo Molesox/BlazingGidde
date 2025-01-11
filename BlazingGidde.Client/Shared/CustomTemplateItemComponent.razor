@@ -6,9 +6,7 @@
     <div id="@($"dropzone-external-{Id}")" class="dropzone-external card flex-box">
         @if (UploadComplete || IsBase64Image(Value))
         {
-               <img id="dropzone-image"
-                 src="@Value"
-                 alt="DxFileInput uploaded image" />
+            <img id="dropzone-image" src="@Value" alt="DxFileInput uploaded image" />
         }
         else if (TotalBytesRead != 0)
         {
@@ -22,18 +20,16 @@
             </div>
         }
     </div>
-     <DxButton id="@($"upload-button-{Id}")"
-              CssClass="m-1"
-                style="max-width: 100%;"
-              RenderStyle="ButtonRenderStyle.Primary"
-              Text="Subir" />
+    @if (!IsReadOnly)
+    {
+        <DxButton id="@($"upload-button-{Id}")" CssClass="m-1" style="max-width: 100%;"
+            RenderStyle="ButtonRenderStyle.Primary" Text="Subir" />
+    }
 
-    <DxFileInput Visible="false" MaxFileSize="15000000" 
-    FilesUploading="@OnFilesUploading" 
-    CssClass="dropZone-owner"
+
+    <DxFileInput Visible="false" MaxFileSize="15000000" FilesUploading="@OnFilesUploading" CssClass="dropZone-owner"
         ExternalSelectButtonCssSelector="@($"#upload-button-{Id}")"
-        ExternalDropZoneCssSelector="@($"#dropzone-external-{Id}")" 
-        ExternalDropZoneDragOverCssClass="dropzone-hover"
+        ExternalDropZoneCssSelector="@($"#dropzone-external-{Id}")" ExternalDropZoneDragOverCssClass="dropzone-hover"
         AcceptedFileTypes="@AllowedFileExtensions">
     </DxFileInput>
 </div>
@@ -50,6 +46,9 @@
     [Parameter]
     public EventCallback<string?> ValueChanged { get; set; }
 
+    [Parameter]
+    public bool IsReadOnly { get; set; } = false;
+
     // Internal state
     private bool UploadComplete { get; set; } = false;
     private byte[]? FileBytes { get; set; }
@@ -58,8 +57,8 @@
     private int FileSize { get; set; }
     private int TotalBytesRead { get; set; }
 
-    private bool IsBase64Image(string? data) 
-        => !string.IsNullOrWhiteSpace(data) && data.StartsWith("data:image/", StringComparison.OrdinalIgnoreCase);
+    private bool IsBase64Image(string? data)
+    => !string.IsNullOrWhiteSpace(data) && data.StartsWith("data:image/", StringComparison.OrdinalIgnoreCase);
 
     private async Task OnFilesUploading(FilesUploadingEventArgs args)
     {
@@ -91,10 +90,10 @@
         Value = $"data:{FileType};base64,{Convert.ToBase64String(FileBytes ?? Array.Empty<byte>())}";
 
         Value = await JS.InvokeAsync<string>(
-            "imageResizer.resize", 
-            Value,
-            800,        // max width
-            600         // max height
+        "imageResizer.resize",
+        Value,
+        800, // max width
+        600 // max height
         );
 
         // Mark upload as complete

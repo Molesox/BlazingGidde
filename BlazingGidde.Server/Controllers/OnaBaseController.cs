@@ -382,14 +382,14 @@ namespace BlazingGidde.Server.Controllers
             return ExecuteAsync(async () =>
             {
                 ValidateEntityForUpdate(entity, correlationId);
-                var toUpdate =  _repository.GetByID(entity.Id);
+                var toUpdate =  _repository.GetByID(entity.Id).First();
                 
                 ValidateEntityExists(toUpdate, entity.Id, correlationId);
-                 var updated = await MapUpdateDtoToEntity(entity, toUpdate).FirstAsync();
-                ApplyTimeStampForUpdate(updated);
+                MapUpdateDtoToEntity(entity, toUpdate);
+                ApplyTimeStampForUpdate(toUpdate);
 
-                 updated = await _repository.Update(updated);
-                var updatedDto = MapEntityToUpdateDtoResponse(updated);
+                var updated = await _repository.Update(toUpdate);
+                var updatedDto = MapEntityToUpdateDtoResponse(toUpdate);
 
                 _logger.LogInformation(
                     "Request {CorrelationId}: Updated {EntityName} with Id {Id}",
@@ -415,7 +415,7 @@ namespace BlazingGidde.Server.Controllers
             }
         }
 
-        protected virtual void ValidateEntityExists(IQueryable<TEntity> entity, Tkey Id, string correlationId)
+        protected virtual void ValidateEntityExists(TEntity entity, Tkey Id, string correlationId)
         {
             if (entity == null)
             {
@@ -427,7 +427,7 @@ namespace BlazingGidde.Server.Controllers
             }
         }
 
-        protected virtual IQueryable<TEntity> MapUpdateDtoToEntity(TUpdateDto updateDto, IQueryable<TEntity> entity)
+        protected virtual TEntity MapUpdateDtoToEntity(TUpdateDto updateDto, TEntity entity)
             => updateDto.Map().Over(entity);
 
         protected virtual void ApplyTimeStampForUpdate(TEntity entity)
