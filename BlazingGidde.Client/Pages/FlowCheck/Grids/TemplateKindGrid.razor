@@ -14,7 +14,7 @@
         ShowGroupPanel="true" ShowGroupedColumns="true" SearchBoxNullText="Buscar..." ShowFilterRow="true"
         ShowSearchBox="true" DataItemDeleting="Grid_DataItemDeleting" EditModelSaving="Grid_EditModelSaving">
         <Columns>
-        <DxGridDataColumn Caption="Typo" FieldName="TemplateTypeName" TextAlignment="GridTextAlignment.Left"  CaptionAlignment="GridTextAlignment.Left" Width="30%">
+        <DxGridDataColumn Caption="Tipo" FieldName="TemplateTypeName" TextAlignment="GridTextAlignment.Left"  CaptionAlignment="GridTextAlignment.Left" Width="30%">
             </DxGridDataColumn>
             <DxGridDataColumn Caption="Nombre" FieldName="Name" TextAlignment="GridTextAlignment.Left"  CaptionAlignment="GridTextAlignment.Left" Width="30%">
             </DxGridDataColumn>
@@ -28,7 +28,7 @@
                 Width="100px" Visible="@(!isXSmallScreen)">
             </DxGridDataColumn>
             <DxGridCommandColumn Width="100px" FixedPosition="GridColumnFixedPosition.Left" NewButtonVisible="false"
-                Caption="Actions" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
+                Caption="Acciones" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
                 <CellDisplayTemplate Context="gridcontext">
                     <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
                         IconCssClass="oi oi-eye"

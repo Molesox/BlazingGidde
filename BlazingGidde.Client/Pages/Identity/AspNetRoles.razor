@@ -19,25 +19,28 @@
         <DxGrid Data="@Data" @ref="@Grid" EditMode="GridEditMode.PopupEditForm"
                 CustomizeEditModel="Grid_CustomizeEditModel" AllowColumnReorder="true" AllowGroup="true" AllowSort="true"
                 ShowGroupPanel="true" ShowGroupedColumns="true" SearchBoxNullText="Buscar..."
-                ShowFilterRow="true" ShowSearchBox="true" EditModelSaving="Grid_EditModelSaving">
+                ShowFilterRow="true" ShowSearchBox="true" DataItemDeleting="Grid_DataItemDeleting" EditModelSaving="Grid_EditModelSaving">
             <Columns>
-                <DxGridDataColumn Caption="Id" FieldName="Id">
+                <DxGridDataColumn Caption="Id" FieldName="Id"
+                                  TextAlignment="GridTextAlignment.Left" Visible="@(!isXSmallScreen)" CaptionAlignment="GridTextAlignment.Left">
                 </DxGridDataColumn>
 
-                <DxGridDataColumn Caption="Employee Name" FieldName="Name">
+                <DxGridDataColumn Caption="Employee Name" FieldName="Name"
+                                  TextAlignment="GridTextAlignment.Left" Visible="@(!isXSmallScreen)" CaptionAlignment="GridTextAlignment.Left">
                 </DxGridDataColumn>
 
-                <DxGridDataColumn Caption="Normalized Name" FieldName="NormalizedName">
+                <DxGridDataColumn Caption="Normalized Name" FieldName="NormalizedName"
+                                  TextAlignment="GridTextAlignment.Left" Visible="@(!isXSmallScreen)" CaptionAlignment="GridTextAlignment.Left">
                 </DxGridDataColumn>
-                <DxGridCommandColumn NewButtonVisible="false" Caption="Actions"
-                                     TextAlignment="GridTextAlignment.Center">
+                <DxGridCommandColumn Width="100px" FixedPosition="GridColumnFixedPosition.Left" NewButtonVisible="false"
+                                     Caption="Acciones" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
                     <CellDisplayTemplate Context="gridcontext">
                         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
-                                  RenderStyle="ButtonRenderStyle.Secondary" IconCssClass="oi oi-pencil"
+                                  RenderStyle="ButtonRenderStyle.Success" IconCssClass="oi oi-pencil"
                                   Click="@(() => Grid.StartEditDataItemAsync(gridcontext.DataItem))"> </DxButton>
                         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
                                   RenderStyle="ButtonRenderStyle.Danger" CssClass="grid-delete-btn" IconCssClass="oi oi-trash"
-                                  Click="@(() => Grid.ShowRowDeleteConfirmation(gridcontext.VisibleIndex))">
+                                  Click="@(() => DeleteRow(gridcontext.VisibleIndex))">
                         </DxButton>
                     </CellDisplayTemplate>
                 </DxGridCommandColumn>
@@ -98,5 +101,19 @@
         {
             e.EditModel = dataItem.Map().ToANew<FlowRoleDto>();
         }
+    }
+
+    private void DeleteRow(int visibleIndex)
+    {
+        Grid?.ShowRowDeleteConfirmation(visibleIndex);
+
+    }
+
+    async Task Grid_DataItemDeleting(GridDataItemDeletingEventArgs e)
+    {
+        var dataItem = (FlowRoleDto)e.DataItem;
+
+        await roleManager.Delete(dataItem.Id);
+        Grid?.Reload();
     }
 }
