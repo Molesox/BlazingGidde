@@ -1,0 +1,56 @@
+﻿@page "/create-checklist/{code}/{id:int}"
+
+@using BlazingGidde.Shared.DTOs.FlowCheck
+@using BlazingGidde.Shared.DTOs.FlowCheck.Request
+@inject NavigationManager NavigationManager
+@inject TemplateKindManager TemplateKindManager
+@inject TemplateTypeManager TemplateTypeManager
+
+@code {
+    [Parameter]
+    public string Code { get; set; }
+
+    [Parameter]
+    public int? Id { get; set; }
+
+    private TemplateTypeDto TypeInfo { get; set; }
+    private TemplateKindDto KindDto { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (!string.IsNullOrWhiteSpace(Code))
+        {
+            var templateCode = Enum.Parse<TemplateCode>(Code, true);
+
+            TypeInfo = await TemplateTypeManager.GetByCode((int)templateCode);
+        }
+
+        if (Id > 0)
+        {
+            KindDto = await TemplateKindManager.GetByID(Id);
+        }
+
+        if (TypeInfo?.Code == (int)TemplateCode.BREAKABLE)
+        {
+            NavigationManager.NavigateTo($"/breakable-checklist/{KindDto.Id}");
+            return;
+        }
+        else if (TypeInfo?.Code == (int)TemplateCode.GAS)
+        {
+            NavigationManager.NavigateTo($"/gas-checklist/{KindDto.Id}");
+            return;
+        }
+        else if (TypeInfo?.Code == (int)TemplateCode.MANIPULATORS)
+        {
+            NavigationManager.NavigateTo($"/manipulators-checklist/{KindDto.Id}");
+            return;
+        }
+        else if (TypeInfo?.Code == (int)TemplateCode.LABELREADER)
+        {
+            NavigationManager.NavigateTo($"/labelreader-checklist/{KindDto.Id}");
+            return;
+        }
+    }
+
+}

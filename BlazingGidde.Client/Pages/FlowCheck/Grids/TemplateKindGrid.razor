@@ -28,23 +28,43 @@
                 Width="100px" Visible="@(!isXSmallScreen)">
             </DxGridDataColumn>
             <DxGridCommandColumn Width="100px" FixedPosition="GridColumnFixedPosition.Left" NewButtonVisible="false"
-                Caption="Acciones" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
+                                 Caption="Acciones" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
                 <CellDisplayTemplate Context="gridcontext">
+                    <!-- Botón Ojo -->
                     <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                        IconCssClass="oi oi-eye"
-                         Click="@(async() => { 
-                           var item = (TemplateKindDto)gridcontext.DataItem;
-                            NavigationManager.NavigateTo($"/create-template/{item.TemplateTypeCode}/{item.Id}?mode=readonly");
-                         }
-                         )"></DxButton>
-               <!-- <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-                        IconCssClass="oi oi-pencil"
-                        Click="@(async() => { if (Grid is not null) await Grid.StartEditDataItemAsync(gridcontext.DataItem); })">
-                    </DxButton> -->
-                    <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
-                        CssClass="grid-delete-btn" IconCssClass="oi oi-trash"
-                        Click="@(() => DeleteRow(gridcontext.VisibleIndex))">
+                              IconCssClass="oi oi-eye"
+                              Click="@(async() => {
+                var item = (TemplateKindDto)gridcontext.DataItem;
+                NavigationManager.NavigateTo($"/create-template/{item.TemplateTypeCode}/{item.Id}?mode=readonly");
+            })">
                     </DxButton>
+
+                    @if (ButtonSet == "TemplatesKind")
+                    {
+                        <!-- Botón Pencil -->
+                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
+                                  IconCssClass="oi oi-pencil"
+                                  Click="@(async() => { if (Grid is not null) await Grid.StartEditDataItemAsync(gridcontext.DataItem); })">
+                        </DxButton>
+
+                        <!-- Botón Trash -->
+                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
+                                  CssClass="grid-delete-btn" IconCssClass="oi oi-trash"
+                                  Click="@(() => DeleteRow(gridcontext.VisibleIndex))">
+                        </DxButton>
+                    }
+
+                    @if (ButtonSet == "Templates")
+                    {
+                        <!-- Botón Plus (Solo para Templates) -->
+                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
+                                  CssClass="grid-plus-btn" IconCssClass="oi oi-plus"
+                                  Click="@(async() => {
+                                      var item = (TemplateKindDto)gridcontext.DataItem;
+                                      NavigationManager.NavigateTo($"/create-checklist/{item.TemplateTypeCode}/{item.Id}");
+                                  })">
+                        </DxButton>
+                    }
                 </CellDisplayTemplate>
             </DxGridCommandColumn>
 
@@ -89,6 +109,9 @@
     [Inject] IDialogService? DialogService { get; set; }
 
     bool isXSmallScreen;
+
+    [Parameter]
+    public string ButtonSet { get; set; } = "Default";
 
     protected override void OnInitialized()
     {
