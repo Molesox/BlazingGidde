@@ -2,9 +2,33 @@
 
 @using BlazingGidde.Shared.DTOs.FlowCheck
 @using BlazingGidde.Shared.DTOs.FlowCheck.Request
-@inject NavigationManager NavigationManager
+@using BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems
+@using BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems.Request
+@using BlazingGidde.Client.Services.FlowCheck.TemplateItems
+@using Microsoft.AspNetCore.Components.Rendering
 @inject TemplateKindManager TemplateKindManager
 @inject TemplateTypeManager TemplateTypeManager
+@inject TemplateItemManager TemplateItemManager
+@inject BreakeableItemManager BreakableItemManager
+@inject GazItemManager GazItemManager
+@inject IncidencyManager IncidencyManager
+
+@if (TypeInfo == null || KindDto == null)
+{
+    <p>Cargando el formulario...</p>
+}
+else
+{
+    <EditForm Model="@Template">
+        <DataAnnotationsValidator />
+        @GetForm()
+        <div style="margin-top: 20px;">
+            <button class="btn btn-secondary" @onclick="GoToPrevious" disabled="@(!CanGoPrevious)">Anterior</button>
+            <button class="btn btn-primary" @onclick="GoToNext" disabled="@(!CanGoNext)">Siguiente</button>
+        </div>
+        <button type="submit" class="btn btn-primary" @onclick="OnSaveChecklist" style="margin-top: 20px;">Guardar</button>
+    </EditForm>
+}
 
 @code {
     [Parameter]
@@ -15,42 +39,207 @@
 
     private TemplateTypeDto TypeInfo { get; set; }
     private TemplateKindDto KindDto { get; set; } = new();
+    private TemplateDto Template { get; set; } = new();
+    private List<CustomTemplateItemDto> CustomItems { get; set; } = new();
+
+    private int CurrentIndex { get; set; } = 0;
+
+    private bool CanGoPrevious => CurrentIndex > 0;
+    private bool CanGoNext => CurrentIndex < CustomItems.Count - 1;
 
     protected override async Task OnInitializedAsync()
     {
-
         if (!string.IsNullOrWhiteSpace(Code))
         {
             var templateCode = Enum.Parse<TemplateCode>(Code, true);
-
             TypeInfo = await TemplateTypeManager.GetByCode((int)templateCode);
         }
 
         if (Id > 0)
         {
             KindDto = await TemplateKindManager.GetByID(Id);
+            CustomItems = KindDto?.CustomTemplateItems.Map().ToANew<List<CustomTemplateItemDto>>()
+                      ?? new List<CustomTemplateItemDto>();
         }
 
-        if (TypeInfo?.Code == (int)TemplateCode.BREAKABLE)
+        Template = new TemplateDto
+            {
+                TemplateKindId = KindDto.Id,
+                CreateDate = DateTime.Now,
+                CreateUser = "UsuarioActual" // Cambiar por el usuario real conectado
+            };
+    }
+
+    private RenderFragment GetForm() => TypeInfo?.Code switch
+    {
+        (int)TemplateCode.BREAKABLE => __builder =>
         {
-            NavigationManager.NavigateTo($"/breakable-checklist/{KindDto.Id}");
-            return;
+            __builder.OpenElement(0, "h4");
+            __builder.AddContent(1, "Formulario de Rompibles");
+            __builder.CloseElement();
+
+            if (CustomItems.Count > 0)
+            {
+                var item = CustomItems[CurrentIndex];
+                RenderItemForm(__builder, item);
+            }
         }
-        else if (TypeInfo?.Code == (int)TemplateCode.GAS)
+        ,
+
+        (int)TemplateCode.GAS => __builder =>
         {
-            NavigationManager.NavigateTo($"/gas-checklist/{KindDto.Id}");
-            return;
+            __builder.OpenElement(0, "h4");
+            __builder.AddContent(1, "Formulario de Gases");
+            __builder.CloseElement();
+
+            if (CustomItems.Count > 0)
+            {
+                var item = CustomItems[CurrentIndex];
+                __builder.OpenElement(2, "div");
+                __builder.AddAttribute(3, "style", "margin-bottom: 20px;");
+                __builder.OpenElement(4, "label");
+                __builder.AddContent(5, item.Name);
+                __builder.CloseElement();
+
+                __builder.OpenElement(6, "label");
+                __builder.AddContent(7, "Nivel de O2:");
+                __builder.CloseElement();
+                __builder.OpenElement(8, "input");
+                __builder.AddAttribute(9, "type", "text");
+                __builder.AddAttribute(10, "placeholder", "Nivel de O2");
+                __builder.AddAttribute(11, "bind-value", "");  // Aquí puedes enlazar con un modelo si es necesario
+                __builder.CloseElement();
+
+                __builder.OpenElement(12, "label");
+                __builder.AddContent(13, "Nivel de CO2:");
+                __builder.CloseElement();
+                __builder.OpenElement(14, "input");
+                __builder.AddAttribute(15, "type", "text");
+                __builder.AddAttribute(16, "placeholder", "Nivel de CO2");
+                __builder.AddAttribute(17, "bind-value", "");  // Aquí puedes enlazar con un modelo si es necesario
+                __builder.CloseElement();
+
+                __builder.CloseElement();
+            }
         }
-        else if (TypeInfo?.Code == (int)TemplateCode.MANIPULATORS)
+        ,
+
+        _ => __builder =>
         {
-            NavigationManager.NavigateTo($"/manipulators-checklist/{KindDto.Id}");
-            return;
+            __builder.AddContent(0, "Formulario no encontrado para este tipo de plantilla.");
         }
-        else if (TypeInfo?.Code == (int)TemplateCode.LABELREADER)
+    };
+
+    private void RenderItemForm(RenderTreeBuilder __builder, CustomTemplateItemDto item)
+    {
+        __builder.OpenElement(2, "div");
+        __builder.AddAttribute(3, "style", "margin-bottom: 20px;");
+
+        __builder.OpenElement(4, "label");
+        __builder.AddContent(5, item.Name);
+        __builder.CloseElement();
+
+        if (!string.IsNullOrWhiteSpace(item.ImageUrl))
         {
-            NavigationManager.NavigateTo($"/labelreader-checklist/{KindDto.Id}");
-            return;
+            __builder.OpenElement(6, "img");
+            __builder.AddAttribute(7, "src", item.ImageUrl);
+            __builder.AddAttribute(8, "alt", item.Name);
+            __builder.AddAttribute(9, "style", "width: 100px; height: auto;");
+            __builder.CloseElement();
+        }
+
+        __builder.OpenElement(10, "div");
+        __builder.AddAttribute(11, "style", "display: flex; gap: 10px; align-items: center;");
+
+        __builder.OpenElement(12, "label");
+        __builder.AddContent(13, "OK");
+        __builder.CloseElement();
+        __builder.OpenElement(14, "input");
+        __builder.AddAttribute(15, "type", "radio");
+        __builder.AddAttribute(16, "name", $"status_{item.Id}");
+        __builder.AddAttribute(17, "value", "OK");
+        __builder.AddAttribute(18, "bind-value", "");  // Aquí puedes conectar un modelo si es necesario
+        __builder.CloseElement();
+
+        __builder.OpenElement(19, "label");
+        __builder.AddContent(20, "KO");
+        __builder.CloseElement();
+        __builder.OpenElement(21, "input");
+        __builder.AddAttribute(22, "type", "radio");
+        __builder.AddAttribute(23, "name", $"status_{item.Id}");
+        __builder.AddAttribute(24, "value", "KO");
+        __builder.AddAttribute(25, "bind-value", "");  // Aquí puedes conectar un modelo si es necesario
+        __builder.CloseElement();
+
+        __builder.CloseElement(); 
+
+        __builder.CloseElement();
+    }
+
+    // Funciones de navegación
+    private void GoToPrevious()
+    {
+        if (CanGoPrevious)
+        {
+            CurrentIndex--;
         }
     }
 
+    private void GoToNext()
+    {
+        if (CanGoNext)
+        {
+            CurrentIndex++;
+        }
+    }
+
+
+    private async Task OnSaveChecklist()
+    {
+        /*
+        try
+        {
+            // Guardar el Template
+            var createdTemplate = await TemplateItemManager.Create(Template);
+
+            // Guardar ítems específicos según el tipo de plantilla
+            if (TypeInfo?.Code == (int)TemplateCode.BREAKABLE)
+            {
+                foreach (var item in Template.TemplateItems)
+                {
+                    await BreakableItemManager.Create(new BreakableItemDto
+                        {
+
+                        });
+                }
+            }
+            else if (TypeInfo?.Code == (int)TemplateCode.GAS)
+            {
+                await GazItemManager.Create(new GazItemDto
+                    {
+                        TemplateId = createdTemplate.Id,
+
+                    });
+            }
+
+            // Guardar incidencias si existen
+            if (Template.Incidency != null)
+            {
+                await IncidencyManager.Create(new IncidencyDto
+                    {
+                        TemplateId = createdTemplate.Id,
+                        IsQualityAdvised = Template.Incidency.IsQualityAdvised,
+                        IsMaintenanceAdvised = Template.Incidency.IsMaintenanceAdvised,
+                        Signature = Template.Incidency.Signature,
+                        CorrectiveActions = Template.Incidency.CorrectiveActions
+                    });
+            }
+
+            Console.WriteLine("Checklist guardado correctamente.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al guardar el checklist: {ex.Message}");
+        }*/
+    }
 }

@@ -14,7 +14,8 @@ namespace BlazingGidde.Server.Controllers.FlowCheck
     public class TemplateKindController : OnaBaseController<TemplateKind, int, ApplicationDbContext, TemplateKindDto, CreateTemplateKindDto>
     {
         public TemplateKindController(IRepository<TemplateKind> repository, 
-        ILogger<OnaBaseController<TemplateKind, int, ApplicationDbContext, TemplateKindDto, CreateTemplateKindDto, CreateTemplateKindDto, TemplateKindDto, TemplateKindDto>> logger) : base(repository, logger)
+        ILogger<OnaBaseController<TemplateKind, int, ApplicationDbContext, TemplateKindDto, CreateTemplateKindDto, CreateTemplateKindDto, TemplateKindDto, TemplateKindDto>> logger) 
+            : base(repository, logger)
         {
         }
     }
