@@ -1,0 +1,193 @@
+﻿@using BlazingGidde.Shared.DTOs.FlowCheck
+@using BlazingGidde.Shared.DTOs.FlowCheck.Request
+@using BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems
+@using BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems.Request
+@using BlazingGidde.Client.Services.FlowCheck.TemplateItems
+@using Microsoft.AspNetCore.Components.Rendering
+@inject TemplateKindManager TemplateKindManager
+@inject TemplateTypeManager TemplateTypeManager
+@inject TemplateItemManager TemplateItemManager
+@inject BreakeableItemManager BreakableItemManager
+@inject GazItemManager GazItemManager
+@inject IncidencyManager IncidencyManager
+
+@if (CustomItems.Count > 0 && CurrentIndex < CustomItems.Count)
+{
+    <div class="current-item-section mt-3">
+        <div class="form-group">
+            <h5>@CustomItems[CurrentIndex].Name</h5>
+        </div>
+
+        @if (!string.IsNullOrEmpty(CustomItems[CurrentIndex].ImageUrl))
+        {
+            <div class="form-group mt-2">
+                <img src="@CustomItems[CurrentIndex].ImageUrl" style="height: 150px; width: auto;" />
+            </div>
+        }
+
+        <div class="form-group mt-3">
+            <label>
+                <input type="radio" name="itemState" value="true" @onchange="() => HandleItemStateUpdate(true)"/> OK
+            </label>
+            <label class="ms-3">
+                <input type="radio" name="itemState" value="false" @onchange="() => HandleItemStateUpdate(false)" /> KO
+            </label>
+        </div>
+
+        @if (isIncidentQuestionVisible)
+        {
+            <div class="incident-questions">
+                <h6>Incidencia Detectada</h6>
+
+                @if (currentIncidentQuestionIndex == 0)
+                {
+                    <div>
+                        <label>Aviso a mantenimiento?</label>
+                        <label><input type="radio" @bind="currentIncident.IsMaintenancAdvised" /> Sí</label>
+                        <label><input type="radio" @bind="currentIncident.IsMaintenancAdvised" /> No</label>
+                    </div>
+                }
+                else if (currentIncidentQuestionIndex == 1)
+                {
+                    <div>
+                        <label>Aviso a calidad?</label>
+                        <label><input type="radio" @bind="currentIncident.IsQualityAdvised" /> Sí</label>
+                        <label><input type="radio" @bind="currentIncident.IsQualityAdvised" /> No</label>
+                    </div>
+                }
+                else if (currentIncidentQuestionIndex == 1)
+                {
+                    <div>
+                        <label>Rellenadas incidencias</label>
+                        
+                    </div>
+                }
+                
+
+                @if (incidentValidationError != null)
+                {
+                    <div class="alert alert-danger mt-2">@incidentValidationError</div>
+                }
+            </div>
+
+            <div class="navigation-buttons mt-3">
+                @if (currentIncidentQuestionIndex > 0)
+                {
+                    <button type="button" @onclick="PreviousIncidentQuestion" class="btn btn-secondary m-2">Atrás</button>
+                }
+
+                <button type="button" @onclick="NextIncidentQuestion" class="btn btn-primary">Siguiente</button>
+            </div>
+        }
+
+    </div>
+
+    <div class="button-group mt-3">
+        <button class="btn btn-secondary me-2" @onclick="PreviousItem">Anterior</button>
+        <button class="btn btn-primary" @onclick="NextItem">Siguiente</button>
+    </div>
+}
+else
+{
+    <h4>CheckList Completado</h4>
+    <p>Todos los elementos han sido revisados.</p>
+    <button class="btn btn-primary" @onclick="FinishChecklist">Finalizar</button>
+}
+
+@code {
+    [Parameter]
+    public string Code { get; set; }
+
+    [Parameter]
+    public int? Id { get; set; }
+
+    private TemplateTypeDto TypeInfo { get; set; }
+    private TemplateKindDto KindDto { get; set; } = new();
+    private TemplateDto Template { get; set; } = new();
+    private List<CustomTemplateItemDto> CustomItems { get; set; } = new();
+    private Incidency currentIncident { get; set; } = new();
+
+    private int CurrentIndex { get; set; } = 0;
+    private bool isIncidentQuestionVisible = false;
+    private string? incidentValidationError;
+    private int currentIncidentQuestionIndex = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(Code))
+        {
+            var templateCode = Enum.Parse<TemplateCode>(Code, true);
+            TypeInfo = await TemplateTypeManager.GetByCode((int)templateCode);
+        }
+
+        if (Id > 0)
+        {
+            KindDto = await TemplateKindManager.GetByID(Id);
+            CustomItems = KindDto?.CustomTemplateItems.Map().ToANew<List<CustomTemplateItemDto>>()
+                          ?? new List<CustomTemplateItemDto>();
+        }
+    }
+
+    private void NextItem()
+    {
+        if (CurrentIndex < CustomItems.Count - 1)
+        {
+            CurrentIndex++;
+        }
+        else
+        {
+            StateHasChanged();
+        }
+    }
+
+    private void PreviousItem()
+    {
+        if (CurrentIndex > 0)
+        {
+            CurrentIndex--;
+        }
+    }
+
+    private void HandleItemStateUpdate(bool isOk)
+    {
+        var item = CustomItems[CurrentIndex];
+        item.IsOk = isOk;
+
+        if (!isOk)
+        {
+            isIncidentQuestionVisible = true;
+            currentIncidentQuestionIndex = 0;
+        }
+        else
+        {
+            isIncidentQuestionVisible = false;
+        }
+    }
+
+    private void NextIncidentQuestion()
+    {
+        
+        if (currentIncidentQuestionIndex < 2) 
+        {
+            currentIncidentQuestionIndex++;
+        }
+        if (currentIncidentQuestionIndex >= 2)
+        {
+            isIncidentQuestionVisible = false;
+        }
+    }
+
+    private void PreviousIncidentQuestion()
+    {
+        if (currentIncidentQuestionIndex > 0)
+            currentIncidentQuestionIndex--;
+    }
+
+    // Finalizar el checklist y guardar los resultados
+    private void FinishChecklist()
+    {
+        Console.WriteLine("Checklist completado. Guardando datos...");
+        // Aquí puedes guardar los resultados en la base de datos o realizar otras acciones necesarias
+        // Ejemplo: await ChecklistService.SaveCheckListAsync(CustomItems);
+    }
+}
