@@ -14,8 +14,7 @@
     ShowGroupPanel="true" ShowGroupedColumns="true" SearchBoxNullText="Buscar..." ShowFilterRow="true"
     ShowSearchBox="true" DataItemDeleting="Grid_DataItemDeleting" EditModelSaving="Grid_EditModelSaving">
         <Columns>
-            <DxGridDataColumn Caption="Typo" FieldName="TemplateTypeName" TextAlignment="GridTextAlignment.Left"
-            CaptionAlignment="GridTextAlignment.Left" Width="30%">
+        <DxGridDataColumn Caption="Tipo" FieldName="TemplateTypeName" TextAlignment="GridTextAlignment.Left"  CaptionAlignment="GridTextAlignment.Left" Width="30%">
             </DxGridDataColumn>
             <DxGridDataColumn Caption="Nombre" FieldName="Name" TextAlignment="GridTextAlignment.Left"
             CaptionAlignment="GridTextAlignment.Left" Width="30%">
@@ -31,7 +30,7 @@
             TextAlignment="GridTextAlignment.Center" Width="100px" Visible="@(!isXSmallScreen)">
             </DxGridDataColumn>
             <DxGridCommandColumn Width="100px" FixedPosition="GridColumnFixedPosition.Left" NewButtonVisible="false"
-            Caption="Actions" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
+                                 Caption="Acciones" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
                 <CellDisplayTemplate Context="gridcontext">
                     <AuthorizeView Roles="viewer">
                         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
@@ -99,6 +98,9 @@
     [Inject] IDialogService? DialogService { get; set; }
 
     bool isXSmallScreen;
+
+    [Parameter]
+    public string ButtonSet { get; set; } = "Default";
 
     protected override void OnInitialized()
     {
