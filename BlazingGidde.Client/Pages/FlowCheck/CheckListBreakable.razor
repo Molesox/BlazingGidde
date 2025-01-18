@@ -151,17 +151,7 @@ else
     private void HandleItemStateUpdate(bool isOk)
     {
         var item = CustomItems[CurrentIndex];
-        item.IsOk = isOk;
 
-        if (!isOk)
-        {
-            isIncidentQuestionVisible = true;
-            currentIncidentQuestionIndex = 0;
-        }
-        else
-        {
-            isIncidentQuestionVisible = false;
-        }
     }
 
     private void NextIncidentQuestion()

@@ -30,8 +30,4 @@ public class CustomTemplateItem : IModelBase<int>
     /// </summary>
     public TemplateKind TemplateKind { get; set; }
 
-    /// <summary>
-    /// Gets or sets the 'OK' state of the item. Nullable to allow for unset state.
-    /// </summary>
-    public bool? IsOk { get; set; }
 }

@@ -35,8 +35,6 @@ namespace BlazingGidde.Server.Data.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsOk")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
