@@ -6,8 +6,9 @@ namespace BlazingGidde.Client.Services.FlowCheck
 {
     public class TemplateManager : APIRepository<TemplateDto, int>
     {
-        public TemplateManager(HttpClient _http, IToastNotificationService toastNotificationService)
-            : base(_http, "Template", toastNotificationService)
-        { }
+        public TemplateManager(HttpClient _http, string _controllerName, IToastNotificationService toastNotificationService) 
+            : base(_http, _controllerName, toastNotificationService)
+        {
+        }
     }
 }
