@@ -9,5 +9,6 @@ namespace BlazingGidde.Shared.Models.FlowCheck
     public class FlowRole : IdentityRole, IModelBase<string>
     {
 
+        public virtual ICollection<FlowUser> FlowUsers { get; set; } = new List<FlowUser>();
     }
 }

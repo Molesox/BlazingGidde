@@ -23,18 +23,20 @@ namespace BlazingGidde.Server.Controllers
 
 		Task<ActionResult<APIEntityResponse<TReadDto>>> GetById(Tkey Id);
 
+		Task<ActionResult<APIEntityResponse<TCreateDto>>> GetEditModelById(Tkey Id);
+
 		Task<ActionResult<APIEntityResponse<QueryFilterResponse<TReadDto>>>> GetWithFilter(QueryFilter<TEntity> queryFilter);
 
 		Task<ActionResult<APIEntityResponse<QueryFilterResponse<TReadDto>>>> GetWithLinqFilter(LinqQueryFilter<TEntity> linqQueryFilter);
 
 		Task<ActionResult<APIEntityResponse<CountDto>>> GetTotalCount(LinqQueryFilter<TEntity> linqQueryFilter);
+
 		Task<ActionResult<APIEntityResponse<CountDto>>> GetTotalCount(QueryFilter<TEntity> queryFilter);
 
 		Task<ActionResult<APIEntityResponse<TCreateDtoResponse>>> Post([FromBody] TCreateDto Entity);
 
 		Task<ActionResult<APIEntityResponse<TUpdateDtoReponse>>> Put([FromBody] TUpdateDto Entity);
 
-		Task<ActionResult<APIEntityResponse<TEntity>>> Delete(Tkey Id);
-		
+		Task<ActionResult<APIEntityResponse<TEntity>>> Delete(Tkey Id);	
 	}
 }

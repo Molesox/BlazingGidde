@@ -79,11 +79,13 @@ namespace BlazingGidde.Client.Services
 		/// </summary>
 		public async Task Logout()
 		{
+			_httpClient.DefaultRequestHeaders.Authorization = null;
+
 			await _localStorage.RemoveItemAsync("authToken");
+
 			((ApiAuthenticationStateProvider)_authenticationStateProvider)
 				.MarkUserAsLoggedOut();
 
-			_httpClient.DefaultRequestHeaders.Authorization = null;
 		}
 	}
 }

@@ -17,14 +17,13 @@ namespace BlazingGidde.Client.Services
     {
         Task<IEnumerable<TReadDto>> GetAll();
 
-
         Task<TReadDto?> GetByID(object Id);
+
+        Task<TCreateDto?> GetEditModelByID(object id);
 
         GridDevExtremeDataSource<TReadDto> Get();
 
-
         Task<QueryFilterResponse<TReadDto>> Get(QueryFilter<TEntity> queryFilter);
-
 
         Task<QueryFilterResponse<TReadDto>> Get(LinqQueryFilter<TEntity> linqQueryFilter);
 
@@ -32,12 +31,9 @@ namespace BlazingGidde.Client.Services
 
         Task<int> GetTotalCount(LinqQueryFilter<TEntity> linqQueryFilter);
 
-
         Task<TCreateDtoResponse> Insert(TCreateDto Entity);
 
-
         Task<TUpdateDtoResponse> Update(TUpdateDto Entity);
-
 
         Task<bool> Delete(object Id);
     }

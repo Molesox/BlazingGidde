@@ -11,12 +11,12 @@ namespace BlazingGidde.Server.Data.Repository
 	public class RepositoryUser : IUserRepository<FlowUser>
 	{
 		private readonly UserManager<FlowUser> _userManager;
-		private readonly IRepository<FlowUser> _userRepository;
+		private readonly RoleManager<FlowRole> _roleManager;
 
-		public RepositoryUser(UserManager<FlowUser> userManager, IRepository<FlowUser> userRepository)
+		public RepositoryUser(UserManager<FlowUser> userManager, RoleManager<FlowRole> roleManager)
 		{
 			_userManager = userManager;
-			_userRepository = userRepository;
+			_roleManager = roleManager;
 		}
 
 		public async Task<bool> Delete(FlowUser entityToDelete)
@@ -73,24 +73,26 @@ namespace BlazingGidde.Server.Data.Repository
 
 		public async Task<FlowUser?> Update(FlowUser entityToUpdate)
 		{
+			var currentRoles = await _userManager.GetRolesAsync(entityToUpdate);
 
-			var identityUser = await _userManager.FindByIdAsync(entityToUpdate.Id);
-			if (identityUser == null) return null;
-
-			identityUser.UserName = entityToUpdate.UserName;
-			identityUser.Email = entityToUpdate.Email;
-
-			var result = await _userManager.UpdateAsync(identityUser);
-
-			if (!result.Succeeded) return null;
-			var person = _userRepository.GetByID(entityToUpdate.Id).First();
-			if (person != null)
+			var existingRoles = new List<string>();
+			foreach (var roleName in entityToUpdate.FlowRoles.Select(r => r.Name))
 			{
-				person = entityToUpdate.Map().Over(person);
-
-				return await _userRepository.Update(person);
+				if (await _roleManager.RoleExistsAsync(roleName))
+					existingRoles.Add(roleName);
 			}
-			return null;
+
+			entityToUpdate.FlowRoles.Clear();
+
+			var rolesToRemove = currentRoles.Except(existingRoles).ToList();
+			if (rolesToRemove.Any()) await _userManager.RemoveFromRolesAsync(entityToUpdate, rolesToRemove);
+
+			var rolesToAdd = existingRoles.Except(currentRoles).ToList();
+			if (rolesToAdd.Any()) await _userManager.AddToRolesAsync(entityToUpdate, rolesToAdd);
+
+			await _userManager.UpdateAsync(entityToUpdate);
+
+			return entityToUpdate;
 		}
 	}
 }

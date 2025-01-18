@@ -20,7 +20,7 @@ namespace BlazingGidde.Server.Data.Repository
 		public RepositoryEF(TDataContext dataContext)
 		{
 			context = dataContext;
-			context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+			// context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 			dbSet = context.Set<TEntity>();
 		}
 
@@ -143,8 +143,9 @@ namespace BlazingGidde.Server.Data.Repository
 		public virtual async Task<TEntity?> Update(TEntity entityToUpdate)
 		{
 			var dbSet = context.Set<TEntity>();
-			dbSet.Attach(entityToUpdate);
-			context.Entry(entityToUpdate).State = EntityState.Modified;
+			context.Update(entityToUpdate);
+			// dbSet.Attach(entityToUpdate);
+			// context.Entry(entityToUpdate).State = EntityState.Modified;
 			await context.SaveChangesAsync();
 			return entityToUpdate;
 		}

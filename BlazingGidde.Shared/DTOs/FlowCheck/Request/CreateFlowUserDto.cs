@@ -9,19 +9,18 @@ namespace BlazingGidde.Shared.DTOs.FlowCheck.Request
 {
 	public record CreateFlowUserDto : ICreateDto<string>
 	{
-
 		public string Id { get; set; }
 
 		public int PersonId { get; set; }
 
 		public int PersonPersonTypeId { get; set; }
 
-		[Required]
+		// [Required]
 		[StringLength(20)]
 		public string PersonCulture { get; set; }
 
 		[StringLength(80)]
-		[Required]
+		// [Required]
 		public string PersonTitle { get; set; }
 
 		[StringLength(80)]
@@ -40,6 +39,7 @@ namespace BlazingGidde.Shared.DTOs.FlowCheck.Request
 		[Required]
 		public string PhoneNumber { get; set; }
 
+		public ICollection<NameFlowRoleDto> FlowRoles { get; set; } = new List<NameFlowRoleDto>();
 
 	}
 }

@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BlazingGidde.Server.Controllers
 {
     [ApiController]
+    [Route("[controller]")]
     public class OnaBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>
         : ControllerBase, IOnaBaseController<TEntity, Tkey, TDataContext, TReadDto, TCreateDto, TUpdateDto, TCreateDtoResponse, TUpdateDtoReponse>
         where TEntity : class, IModelBase<Tkey>
@@ -33,6 +34,7 @@ namespace BlazingGidde.Server.Controllers
             _repository = repository;
             _logger = logger;
         }
+
         /// <summary>
         /// Executes an asynchronous operation with optional model state validation.
         /// </summary>
@@ -54,6 +56,7 @@ namespace BlazingGidde.Server.Controllers
                 var errors = ModelState.Values.SelectMany(v => v.Errors)
                                               .Select(e => e.ErrorMessage)
                                               .ToList();
+
                 _logger.LogWarning("Model validation failed: {Errors}", string.Join("; ", errors));
 
                 // Return a BadRequest with the validation errors
@@ -84,7 +87,7 @@ namespace BlazingGidde.Server.Controllers
 
             return await ExecuteAsync(async () =>
             {
-           
+
                 var query = PrepareQuery(_repository.GetQueryable());
                 var items = MapToReadDto(query);
 
@@ -114,6 +117,7 @@ namespace BlazingGidde.Server.Controllers
 
         protected virtual IQueryable<TEntity> PrepareQuery(IQueryable<TEntity> query) => query;
         protected virtual IQueryable<TReadDto> MapToReadDto(IQueryable<TEntity> query) => query.Project().To<TReadDto>();
+        protected virtual IQueryable<TCreateDto> MapToCreateDto(IQueryable<TEntity> query) => query.Project().To<TCreateDto>();
 
         protected virtual void LogFetchSuccess(int count, string correlationId)
         {
@@ -150,6 +154,34 @@ namespace BlazingGidde.Server.Controllers
             },
             $"Request {correlationId}: Fetched {typeof(TEntity).Name} by ID {Id}",
             $"Request {correlationId}: Failed to fetch {typeof(TEntity).Name} by ID {Id}");
+        }
+
+        [HttpGet("GetEditModelById/{id}")]
+        public virtual Task<ActionResult<APIEntityResponse<TCreateDto>>> GetEditModelById([FromRoute] Tkey Id)
+        {
+            var correlationId = HttpContext.TraceIdentifier;
+
+            return ExecuteAsync(async () =>
+            {
+                ValidateId(Id, correlationId);
+                LogFetchByIdStart(Id, correlationId);
+
+                var entity = _repository.GetByID(Id);
+
+                if (entity == null)
+                {
+                    LogEntityNotFound(Id, correlationId);
+                    throw new KeyNotFoundException($"Entity with ID {Id} was not found.");
+                }
+
+                var createDto = await MapToCreateDto(entity).FirstAsync();
+
+                LogFetchByIdSuccess(Id, correlationId);
+
+                return new APIEntityResponse<TCreateDto> { Success = true, Items = createDto };
+            },
+            $"Request {correlationId}: Fetched {typeof(TEntity).Name} CreateDto by ID {Id}",
+            $"Request {correlationId}: Failed to fetch {typeof(TEntity).Name} CreateDto by ID {Id}");
         }
 
         protected virtual void ValidateId(Tkey Id, string correlationId)
@@ -205,7 +237,7 @@ namespace BlazingGidde.Server.Controllers
                 var items = await MapToReadDto(query).ToListAsync();
 
                 LogFetchSuccess(items.Count, correlationId);
-                
+
                 _logger.LogInformation(
                     "Request {CorrelationId}: Fetched {EntityName} with provided filter",
                     correlationId,
@@ -329,7 +361,7 @@ namespace BlazingGidde.Server.Controllers
             {
                 ValidateEntityForInsert(entity, correlationId);
                 var toInsert = MapCreateDtoToEntity(entity);
-                
+
                 ApplyTimeStampForInsert(toInsert);
 
                 var inserted = await _repository.Insert(toInsert);
@@ -360,7 +392,7 @@ namespace BlazingGidde.Server.Controllers
         }
 
         protected virtual TEntity MapCreateDtoToEntity(TCreateDto createDto)
-            => Mapper.Map(createDto).ToANew<TEntity>(cfg=> cfg.IgnoreEntityKeys());
+            => Mapper.Map(createDto).ToANew<TEntity>(cfg => cfg.IgnoreEntityKeys());
 
         protected virtual void ApplyTimeStampForInsert(TEntity entity)
         {
@@ -375,17 +407,18 @@ namespace BlazingGidde.Server.Controllers
             => entity.Map().ToANew<TCreateDtoResponse>();
 
         [HttpPut]
-        public virtual Task<ActionResult<APIEntityResponse<TUpdateDtoReponse>>> Put([FromBody] TUpdateDto entity)
+        public virtual Task<ActionResult<APIEntityResponse<TUpdateDtoReponse>>> Put([FromBody] TUpdateDto updateDto)
         {
             var correlationId = HttpContext.TraceIdentifier;
 
             return ExecuteAsync(async () =>
             {
-                ValidateEntityForUpdate(entity, correlationId);
-                var toUpdate =  _repository.GetByID(entity.Id).First();
-                
-                ValidateEntityExists(toUpdate, entity.Id, correlationId);
-                MapUpdateDtoToEntity(entity, toUpdate);
+                ValidateEntityForUpdate(updateDto, correlationId);
+                var toUpdate = _repository.GetByID(updateDto.Id).First();
+
+                ValidateEntityExists(toUpdate, updateDto.Id, correlationId);
+
+                MapUpdateDtoToEntity(updateDto, toUpdate);
                 ApplyTimeStampForUpdate(toUpdate);
 
                 var updated = await _repository.Update(toUpdate);
@@ -399,8 +432,8 @@ namespace BlazingGidde.Server.Controllers
 
                 return new APIEntityResponse<TUpdateDtoReponse> { Success = true, Items = updatedDto };
             },
-            $"Request {correlationId}: Updated {typeof(TEntity).Name} with ID {entity.Id}",
-            $"Request {correlationId}: Failed to update {typeof(TEntity).Name} with ID {entity.Id}",
+            $"Request {correlationId}: Updated {typeof(TEntity).Name} with ID {updateDto.Id}",
+            $"Request {correlationId}: Failed to update {typeof(TEntity).Name} with ID {updateDto.Id}",
             validateModel: true);
         }
 

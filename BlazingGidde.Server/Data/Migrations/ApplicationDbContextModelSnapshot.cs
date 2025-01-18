@@ -4,19 +4,16 @@ using BlazingGidde.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BlazingGidde.Server.Migrations
+namespace BlazingGidde.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241229103450_ModifiedTemplateKind")]
-    partial class ModifiedTemplateKind
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,7 +94,7 @@ namespace BlazingGidde.Server.Migrations
                     b.Property<string>("FlowUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int?>("TemplateKindId")
+                    b.Property<int>("TemplateKindId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateDate")
@@ -926,7 +923,7 @@ namespace BlazingGidde.Server.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("AspNetUserRoles", "FlowCheck");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -1042,7 +1039,9 @@ namespace BlazingGidde.Server.Migrations
 
                     b.HasOne("BlazingGidde.Shared.Models.FlowCheck.TemplateKind", null)
                         .WithMany("Templates")
-                        .HasForeignKey("TemplateKindId");
+                        .HasForeignKey("TemplateKindId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BlazingGidde.Shared.Models.FlowCheck.TemplateItem", b =>
@@ -1181,10 +1180,22 @@ namespace BlazingGidde.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
+                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.FlowRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BlazingGidde.Shared.Models.FlowCheck.FlowUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)

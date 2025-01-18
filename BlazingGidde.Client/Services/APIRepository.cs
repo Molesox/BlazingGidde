@@ -88,6 +88,27 @@ namespace BlazingGidde.Client.Services
 			}
 		}
 
+		public async Task<TCreateDto?> GetEditModelByID(object id)
+		{
+			try
+			{
+				var encodedId = WebUtility.HtmlEncode(id.ToString());
+				var url = $"{controllerName}/GetEditModelById/{encodedId}";
+				var response = await http.GetFromJsonAsync<APIEntityResponse<TCreateDto>>(url);
+				if (response?.Success == true)
+				{
+					return response.Items;
+				}
+				return default;
+			}
+			catch (Exception ex)
+			{
+				var e = ex.Message;
+				// Optionally log the exception
+				return default;
+			}
+		}
+
 		public async Task<QueryFilterResponse<TReadDto>> Get(QueryFilter<TEntity> queryFilter)
 		{
 			try

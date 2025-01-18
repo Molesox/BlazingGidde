@@ -1,4 +1,5 @@
 ﻿@page "/appusers"
+@using AgileObjects.AgileMapper
 @using BlazingGidde.Client.Services
 @using BlazingGidde.Client.Shared
 @using BlazingGidde.Shared.Models.Identity
@@ -9,6 +10,7 @@
 @using BlazingGidde.Shared.Models.PersonMain
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
+@using DevExpress.Blazor
 
 @inject AspNetUserManager UserManager
 @inject AspNetRoleManager RoleManager
@@ -18,230 +20,164 @@
 
 <PageTitle>Application Users</PageTitle>
 
-@* 
-<CustomGrid TEntity="FlowUser" Tkey="string" Repository="@UserManager"
- TCreateDto="CreateFlowUserDto" TReadDto="FlowUserDto">
+<div class="h-100 grid-wrapper">
+    <DxGrid Data="@Users" @ref="Grid" CssClass="grid-style" EditMode="GridEditMode.PopupEditForm"
+        AllowColumnReorder="true" AllowGroup="true" AllowSort="true" ShowGroupPanel="true" ShowFilterRow="true"
+        ShowSearchBox="true" EditModelSaving="Grid_EditModelSaving" DataItemDeleting="Grid_DataItemDeleting"
+        CustomizeEditModel="Grid_CustomizeEditModel">
 
-    <GridColumns>
-        <DxGridDataColumn  Caption="ID" FieldName="Id">
-        </DxGridDataColumn>
+        <Columns>
+            <DxGridCommandColumn Width="100px" FixedPosition="GridColumnFixedPosition.Left" NewButtonVisible="true"
+                Caption="Actions" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
+                <CellDisplayTemplate Context="gridcontext">
+                    <DxButton RenderStyleMode="ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
+                        IconCssClass="oi oi-eye" Click="@(() => ViewRoles(gridcontext.DataItem))" />
+                    <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
+                        IconCssClass="oi oi-pencil"
+                        Click="@(async() => { if (Grid is not null) await Grid.StartEditDataItemAsync(gridcontext.DataItem); })" />
+                    <DxButton RenderStyleMode="ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
+                        IconCssClass="oi oi-trash" Click="@(() => DeleteUser(gridcontext.VisibleIndex))" />
+                </CellDisplayTemplate>
+            </DxGridCommandColumn>
+            <DxGridDataColumn Caption="First Name" FieldName="PersonFirstName" TextAlignment="GridTextAlignment.Left" />
+            <DxGridDataColumn Caption="Last Name" FieldName="PersonLastName" TextAlignment="GridTextAlignment.Left" />
+            <DxGridDataColumn Caption="Email" FieldName="Email" TextAlignment="GridTextAlignment.Left" />
+            <DxGridDataColumn Caption="Phone Number" CaptionAlignment="GridTextAlignment.Center" FieldName="PhoneNumber"
+                TextAlignment="GridTextAlignment.Left" />
+            <DxGridDataColumn Caption="Two-Factor Enabled" FieldName="TwoFactorEnabled"
+                TextAlignment="GridTextAlignment.Center" />
 
-        <DxGridDataColumn  Caption="First Name" FieldName="PersonFirstName">
-        </DxGridDataColumn>
+        </Columns>
 
-        <DxGridDataColumn  Caption="Last Name" FieldName="PersonLastName">
-        </DxGridDataColumn>
+        <EditFormTemplate Context="EditFormContext">
+            @{
+                var user = (CreateFlowUserDto)EditFormContext.EditModel;
+            }
+            <DxFormLayout CssClass="w-100">
+                <DxFormLayoutGroup>
+                    <DxFormLayoutItem Caption="First Name">
+                        @EditFormContext.GetEditor("PersonFirstName")
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Last Name">
+                        @EditFormContext.GetEditor("PersonLastName")
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Email">
+                        @EditFormContext.GetEditor("Email")
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Phone Number">
+                        @EditFormContext.GetEditor("PhoneNumber")
+                    </DxFormLayoutItem>
+                </DxFormLayoutGroup>
 
-        <DxGridDataColumn  Caption="Email" FieldName="Email">
-        </DxGridDataColumn>
+                <DxFormLayoutItem Caption="Roles">
 
-        <DxGridDataColumn  Caption="Phone Number" FieldName="PhoneNumber">
-        </DxGridDataColumn>
+                    <DxTagBox Data="@Roles" TextFieldName="@nameof(FlowRoleDto.Name)" TData="FlowRoleDto"
+                        TValue="FlowRoleDto" ValueFieldName="@nameof(FlowRoleDto.Name)" @bind-Tags="@Tags"
+                        ListRenderMode="ListRenderMode.Virtual" CssClass="cw-480" InputId="tbTagTemplate">
 
-        <DxGridDataColumn  Caption="Lockout Enabled" FieldName="LockoutEnabled">
-        </DxGridDataColumn>
+                        <TagDisplayTemplate Context="tagContext">
+                            @{
+                                var buttonStyleMode = tagContext.IsCustom ? ButtonRenderStyleMode.Contained
+                                : GetModeByID(tagContext.DataItem.Name);
 
-        <DxGridDataColumn  Caption="Two-Factor Enabled" FieldName="TwoFactorEnabled">
-        </DxGridDataColumn>
-    </GridColumns>
+                                var buttonStyle = tagContext.IsCustom ? ButtonRenderStyle.Dark : ButtonRenderStyle.Primary;
 
-    <EditFormTemplate Context="user">
-        <div class="card">
-            <div class="card-header">
-                <h5>User Information</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <!-- Column 1 -->
-                    <div class="col-md-6">
-                        <!-- ID (Read-Only) -->
-                        <div class="mb-3">
-                            <label class="form-label">ID</label>
-                            <InputText class="form-control" @bind-Value="user.Id" readonly />
-                        </div>
-
-                        <!-- Title -->
-                        <div class="mb-3">
-                            <label class="form-label">Title</label>
-                            <InputText class="form-control" @bind-Value="user.PersonTitle" />
-                            <ValidationMessage For="@(() => user.PersonTitle)" />
-                        </div>
-
-                        <!-- First Name -->
-                        <div class="mb-3">
-                            <label class="form-label">First Name</label>
-                            <InputText class="form-control" @bind-Value="user.PersonFirstName" />
-                            <ValidationMessage For="@(() => user.PersonFirstName)" />
-                        </div>
-
-                        <!-- Phone Number -->
-                        <div class="mb-3">
-                            <label class="form-label">Phone Number</label>
-                            <InputText class="form-control" @bind-Value="user.PhoneNumber" />
-                            <ValidationMessage For="@(() => user.PhoneNumber)" />
-                        </div>
-                    </div>
-
-                    <!-- Column 2 -->
-                    <div class="col-md-6">
-                        <!-- Culture -->
-                        <div class="mb-3">
-                            <label class="form-label">Culture</label>
-                            <InputText class="form-control" @bind-Value="user.PersonCulture" />
-                            <ValidationMessage For="@(() => user.PersonCulture)" />
-                        </div>
-
-                        <!-- Last Name -->
-                        <div class="mb-3">
-                            <label class="form-label">Last Name</label>
-                            <InputText class="form-control" @bind-Value="user.PersonLastName" />
-                            <ValidationMessage For="@(() => user.PersonLastName)" />
-                        </div>
-
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <InputText class="form-control" @bind-Value="user.Email" type="email" />
-                            <ValidationMessage For="@(() => user.Email)" />
-                        </div>
-
-                        <!-- Person Type Dropdown -->
-                        <div class="mb-3">
-                            <label class="form-label">Person Type</label>
-                            <InputSelect class="form-control" @bind-Value="user.PersonPersonTypeId">
-                                <option value="1" disabled>Select a Person Type</option>
-                                @foreach (var type in PersonTypes)
-                                {
-                                    <option value="@((int)type)">@type.ToString()</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For="@(() => user.PersonPersonTypeId)" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Role Management Section -->
-        <div class="card mt-4">
-            <div class="card-header">
-                <h5>Role Management</h5>
-            </div>
-            <div class="card-body">
-                <div>
-                    <h6>Assign Role</h6>
-                    <div class="input-group mb-3">
-                        <InputSelect class="form-control" @bind-Value="selectedRole">
-                            <option value="" disabled>Select a Role</option>
-                            @if (_roles != null)
-                            {
-                                @foreach (var role in _roles)
-                                {
-                                    <option value="@role.Name">@role.Name</option>
-                                }
+                                <DxButton Context="btnContext" RenderStyle="@buttonStyle" RenderStyleMode="@buttonStyleMode"
+                                    Text="@tagContext.DisplayText" CssStyle="display:inline-block; padding-right: 0">
+                                    @btnContext
+                                    <span @onclick="@tagContext.RemoveTagAction"
+                                        style="display:inline-block; width: 1em; margin-left: 0.5em">
+                                        &times;
+                                    </span>
+                                </DxButton>
                             }
-                        </InputSelect>
-                        <button class="btn btn-primary" @onclick="() => AssignRole(user.Id)">Assign</button>
-                    </div>
-                </div>
+                        </TagDisplayTemplate>
+                    </DxTagBox>
+                </DxFormLayoutItem>
 
-                <div>
-                    <h6>Current Roles</h6>
-                    @if (userRoles.ContainsKey(user.Id) && userRoles[user.Id].Any())
-                    {
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Role</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var role in userRoles[user.Id])
-                                {
-                                    <tr>
-                                        <td>@role</td>
-                                        <td>
-                                            <button class="btn btn-danger btn-sm" @onclick="() => RemoveRole(user.Id, role)">
-
-                                            </button>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                    else
-                    {
-                        <p>No roles assigned.</p>
-                    }
-                </div>
-            </div>
-        </div>
-    </EditFormTemplate>
-</CustomGrid>
+            </DxFormLayout>
+        </EditFormTemplate>
+    </DxGrid>
+</div>
 
 @code {
-    private IEnumerable<IdentityRole>? _roles;
-    private string? selectedRole;
-    private Dictionary<string, List<string>> userRoles = new();
+    IGrid? Grid { get; set; }
+    object? Users { get; set; }
 
-    // Define available Person Types based on the enum
-    private List<PersonMainEnum> PersonTypes = Enum.GetValues(typeof(PersonMainEnum)).Cast<PersonMainEnum>().ToList();
+
+    IEnumerable<FlowRoleDto> Roles { get; set; }
+    IEnumerable<string> Tags { get; set; }
+    ButtonRenderStyleMode GetModeByID(string cityName)
+    {
+        switch (cityName)
+        {
+            case "New York":
+                return ButtonRenderStyleMode.Contained;
+            case "Los Angeles":
+                return ButtonRenderStyleMode.Outline;
+            default:
+                return ButtonRenderStyleMode.Text;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        _roles = await RoleManager.GetAll();
-        await LoadUserRoles();
+        Users = UserManager.Get();
+        Roles = await RoleManager.GetAll();
     }
 
-    private async Task AssignRole(string userId)
+    async Task Grid_EditModelSaving(GridEditModelSavingEventArgs e)
     {
-        if (!string.IsNullOrEmpty(selectedRole))
-        {
-            var dto = new AssignRoleDto { UserId = userId, RoleName = selectedRole };
-            var response = await UserRoleManager.AssignRole(dto);
-            if (response.Success)
-            {
-                await LoadUserRoles();
-                StateHasChanged();
-            }
-            else
-            {
-                Console.WriteLine($"Error assigning role: {string.Join(", ", response.ErrorMessages)}");
-            }
-        }
-    }
+        var editedUser = (CreateFlowUserDto)e.EditModel;
 
-    private async Task RemoveRole(string userId, string roleName)
-    {
-        var dto = new AssignRoleDto { UserId = userId, RoleName = roleName };
-        var response = await UserRoleManager.RemoveRole(dto);
-        if (response.Success)
+
+        editedUser.FlowRoles = Mapper.Map(Tags).Over(editedUser.FlowRoles);
+
+        if (e.IsNew)
         {
-            await LoadUserRoles();
-            StateHasChanged();
+            await UserManager.Insert(editedUser);
         }
         else
         {
-            Console.WriteLine($"Error removing role: {string.Join(", ", response.ErrorMessages)}");
+            await UserManager.Update(editedUser);
+        }
+
+        Grid?.Reload();
+        Tags = Enumerable<string>.Empty;
+    }
+
+    async Task Grid_DataItemDeleting(GridDataItemDeletingEventArgs e)
+    {
+        var user = (FlowUserDto)e.DataItem;
+        await UserManager.Delete(user.Id);
+
+        Grid?.Reload();
+    }
+    async Task Grid_CustomizeEditModel(GridCustomizeEditModelEventArgs e)
+    {
+        var user = (FlowUserDto)e.DataItem;
+
+        if (user == null)
+        {
+            e.EditModel = new CreateFlowUserDto();
+        }
+        else
+        {
+            var editModel = await UserManager.GetEditModelByID(user.Id);
+
+            e.EditModel = editModel ?? new CreateFlowUserDto();
+            Tags = editModel.FlowRoles.Select(r => r.Name);
         }
     }
 
-    private async Task LoadUserRoles()
+    void ViewRoles(object dataItem)
     {
-        userRoles.Clear();
-        var allUsers = await UserManager.GetAll();
-        if (allUsers != null)
-        {
-            foreach (var user in allUsers)
-            {
-                var response = await UserRoleManager.GetRoles(user.Id);
-                if (response.Success && response.Items != null)
-                {
-                    userRoles[user.Id] = response.Items.ToList();
-                }
-            }
-        }
+        var user = (FlowUserDto)dataItem;
+        // Navigate to role management or display roles
     }
-} *@
+
+    void DeleteUser(int visibleIndex)
+    {
+        Grid?.ShowRowDeleteConfirmation(visibleIndex);
+    }
+}

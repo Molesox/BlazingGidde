@@ -73,6 +73,7 @@
 
     protected override void OnInitialized()
     {
+        base.OnInitialized();
         Data = templateTypeManager.Get();
         Grid?.AutoFitColumnWidths();
     }

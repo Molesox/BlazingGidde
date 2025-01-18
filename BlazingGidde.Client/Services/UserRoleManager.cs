@@ -42,22 +42,19 @@ namespace BlazingGidde.Client.Services
 			}
 		}
 
-		public async Task<APIListOfEntityResponse<string>> GetRoles(string userId)
+		public async Task<IEnumerable<string>> GetRoles(string userId)
 		{
 			try
 			{
 				var response = await _httpClient.GetAsync($"{ControllerName}/{userId}/roles");
 				response.EnsureSuccessStatusCode();
-				return await response.Content.ReadFromJsonAsync<APIListOfEntityResponse<string>>()
+				var result = await response.Content.ReadFromJsonAsync<APIListOfEntityResponse<string>>()
 					   ?? new APIListOfEntityResponse<string> { Success = false };
+				return result.Items;
 			}
 			catch (Exception)
 			{
-				return new APIListOfEntityResponse<string>
-				{
-					Success = false,
-					ErrorMessages = new List<string> { "An error occurred while fetching roles." }
-				};
+				return default;
 			}
 		}
 	}

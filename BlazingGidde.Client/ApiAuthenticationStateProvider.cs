@@ -49,9 +49,11 @@ namespace BlazingGidde.Client
 		/// Marks the user as authenticated and notifies of the state change.
 		/// </summary>
 		/// <param name="email">The email of the authenticated user.</param>
-		public void MarkUserAsAuthenticated(string email)
+		public async void MarkUserAsAuthenticated(string email)
 		{
-			var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, email)], "apiauth"));
+			var savedToken = await _localStorage.GetItemAsync<string>("authToken");
+
+			var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(savedToken), "apiauth"));
 
 			var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
 			NotifyAuthenticationStateChanged(authState);

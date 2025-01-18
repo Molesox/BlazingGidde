@@ -27,10 +27,10 @@ if not exists (select 1 from flowcheck.templatetype)
 begin
     insert into flowcheck.templatetype ([name], imgurl, code, updatedate, createdate, createuser, updateuser)
     values 
-    ( 'rompibles', '/Images/rompibleCYE.png', 30, null, sysdatetime(), 'system', null),
-    ( 'gases y estanqueidad', '/GasEst.png', 10, null, sysdatetime(), 'system', null),
-    ( 'verificación código de barras', '/BAR.png', 40, null, sysdatetime(), 'system', null),
-    ( 'control de manipuladores', '/controlmanipuladores.png', 20, null, sysdatetime(), 'system', null);
+    ( 'rompibles', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQImWNgYGAAAAAEAAGjChXjAAAAAElFTkSuQmCC', 30, null, sysdatetime(), 'system', null),
+    ( 'gases y estanqueidad', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQImWNgYGAAAAAEAAGjChXjAAAAAElFTkSuQmCC', 10, null, sysdatetime(), 'system', null),
+    ( 'verificación código de barras', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQImWNgYGAAAAAEAAGjChXjAAAAAElFTkSuQmCC', 40, null, sysdatetime(), 'system', null),
+    ( 'control de manipuladores', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVQImWNgYGAAAAAEAAGjChXjAAAAAElFTkSuQmCC', 20, null, sysdatetime(), 'system', null);
 end
 go
 
