@@ -1,7 +1,10 @@
-﻿@page "/create-template/{code}/{id:int}"
+﻿@page "/create-template/{code}"
+@page "/update-template/{id:int}"
+@page "/view-template/{id:int}"
 
 @using BlazingGidde.Shared.DTOs.FlowCheck
 @using BlazingGidde.Shared.DTOs.FlowCheck.Request
+@using System.Security.Claims
 
 @inject NavigationManager NavigationManager
 @inject TemplateKindManager TemplateKindManager
@@ -10,13 +13,14 @@
 <h3>@TypeInfo?.Name</h3>
 
 <DxToastProvider Name="Overview" MaxToastCount="5" AnimationType="ToastAnimationType.Slide"
-HorizontalAlignment="HorizontalAlignment.Right" DisplayTime="TimeSpan.Zero" Width="320px" />
+                 HorizontalAlignment="HorizontalAlignment.Right"
+                 DisplayTime="TimeSpan.Zero" Width="320px" />
 
 <DxStackLayout Orientation="Orientation.Vertical" CssClass="w-100 ch-480">
     <Items>
         <DxStackLayoutItem Length="auto">
             <Template>
-                <DxFormLayout  CaptionPosition="CaptionPosition.Vertical">
+                <DxFormLayout CaptionPosition="CaptionPosition.Vertical">
                     <DxFormLayoutItem ColSpanMd="6" Caption="Nombre">
                         <DxTextBox ReadOnly="@IsReadOnly" @bind-Text="KindDto.Name" />
                     </DxFormLayoutItem>
@@ -40,15 +44,15 @@ HorizontalAlignment="HorizontalAlignment.Right" DisplayTime="TimeSpan.Zero" Widt
             <Template>
                 @if (TemplateCode == TemplateCode.BREAKABLE)
                 {
-                    <DynamicComponent Type="@typeof(BreakableTemplate)" Parameters="@(new Dictionary<string, object>
+                    <DynamicComponent Type="@typeof(BreakableTemplate)"
+                                     Parameters="@(new Dictionary<string, object>
                                      {
                                          [nameof(BreakableTemplate.Items)] = Items,
                                          [nameof(BreakableTemplate.ItemsChanged)] = 
                                               EventCallback.Factory.Create<List<CreateCustomTemplateItemDto>>(this, OnItemsChanged),
-                                        [nameof(BreakableTemplate.IsReadOnly)] = IsReadOnly
+                                         [nameof(BreakableTemplate.IsReadOnly)] = IsReadOnly
                                      })" />
                 }
-             
             </Template>
         </DxStackLayoutItem>
 
@@ -60,7 +64,9 @@ HorizontalAlignment="HorizontalAlignment.Right" DisplayTime="TimeSpan.Zero" Widt
                     </DxButton>
                     @if (!IsReadOnly)
                     {
-                        <DxButton style="margin-left: 4px;" RenderStyle="ButtonRenderStyle.Primary" Click="Save">
+                        <DxButton style="margin-left: 4px;"
+                                  RenderStyle="ButtonRenderStyle.Primary"
+                                  Click="Save">
                             Guardar
                         </DxButton>
                     }
@@ -71,17 +77,13 @@ HorizontalAlignment="HorizontalAlignment.Right" DisplayTime="TimeSpan.Zero" Widt
 </DxStackLayout>
 
 @code {
-    [Parameter]
-    public string Code { get; set; }
 
-    [Parameter]
-    public int? Id { get; set; }
+    [Parameter] public string Code { get; set; }
+    [Parameter] public int? Id { get; set; }
 
-
-    private string Mode { get; set; } = "edit"; // Default to "edit" if not provided
-
-    private bool IsReadOnly => Mode?.Equals("readonly", StringComparison.OrdinalIgnoreCase) ?? false;
-    private bool IsAddMode => Mode?.Equals("add", StringComparison.OrdinalIgnoreCase) ?? false;
+    private string Mode { get; set; } = "readonly";
+    private bool IsReadOnly { get; set; }
+    private bool IsAddMode { get; set; }
 
     private TemplateTypeDto TypeInfo { get; set; }
     private TemplateCode TemplateCode { get; set; }
@@ -90,33 +92,58 @@ HorizontalAlignment="HorizontalAlignment.Right" DisplayTime="TimeSpan.Zero" Widt
     private CreateTemplateKindDto KindDto { get; set; } = new() { Version = 1 };
     private List<CreateCustomTemplateItemDto> Items { get; set; } = new();
 
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; }
+    private ClaimsPrincipal User { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        if (!string.IsNullOrWhiteSpace(Code))
-            TemplateCode = Enum.Parse<TemplateCode>(Code, true);
-     
-
-
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var query = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
-
-        if (query.TryGetValue("mode", out var mode))
+        try
         {
-            Mode = mode;
-        }
+            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
 
-        if(IsAddMode){
-            TypeInfo = await TemplateTypeManager.GetByCode((int)TemplateCode);
-            KindDto = new CreateTemplateKindDto();
+            if (uri.AbsolutePath.Contains("view-template"))
+                Mode = "readonly";
+            else if (uri.AbsolutePath.Contains("update-template"))
+                Mode = "edit";
+            else if (uri.AbsolutePath.Contains("create-template"))
+                Mode = "add";
+
+            IsReadOnly = (Mode == "readonly");
+            IsAddMode = (Mode == "add");
+
+            if (!string.IsNullOrWhiteSpace(Code)
+                && Enum.TryParse(Code, true, out TemplateCode parsedCode))
+            {
+                TemplateCode = parsedCode;
+            }
+
+            if (IsAddMode)
+            {
+                TypeInfo = await TemplateTypeManager.GetByCode((int)TemplateCode);
+                if (TypeInfo != null)
+                {
+                    KindDto.TemplateTypeId = TypeInfo.Id;
+                    TemplateCode = (TemplateCode)TypeInfo.Code;
+                }
+            }
+            else if (Id.HasValue && Id > 0)
+            {
+                var dto = await TemplateKindManager.GetEditModelByID(Id.Value);
+                if (dto != null)
+                {
+                    TypeInfo = await TemplateTypeManager.GetByID(dto.TemplateTypeId);
+                    KindDto = dto.Map().Over(KindDto);
+                    TemplateCode = (TemplateCode)TypeInfo?.Code;
+
+                    Items = KindDto?.CustomTemplateItems?.Map()
+                                   .ToANew<List<CreateCustomTemplateItemDto>>()
+                            ?? new();
+                }
+            }
         }
-        if (Id > 0)
+        catch (Exception ex)
         {
-            var dto = await TemplateKindManager.GetByID(Id);
-            KindDto = dto.Map().Over(KindDto);
-            TypeInfo = await TemplateTypeManager.GetByCode((int)dto.TemplateTypeCode);
-
-            Items = KindDto?.CustomTemplateItems.Map().ToANew<List<CreateCustomTemplateItemDto>>() ?? new List<CreateCustomTemplateItemDto>();
+            Console.WriteLine($"Error initializing component: {ex.Message}");
         }
     }
 
@@ -132,21 +159,26 @@ HorizontalAlignment="HorizontalAlignment.Right" DisplayTime="TimeSpan.Zero" Widt
 
     private async Task Save(MouseEventArgs e)
     {
-        if (Items.Any())
+        try
         {
-            KindDto.CustomTemplateItems = Items;
-        }
+            if (Items.Any())
+                KindDto.CustomTemplateItems = Items;
 
-        // If you want to use the TypeInfo you fetched:
-        if (TypeInfo != null)
+            if (TypeInfo != null)
+                KindDto.TemplateTypeId = TypeInfo.Id;
+
+            KindDto.CustomTemplateItems?.ForEach(it => it.Id = 0);
+
+            if (IsAddMode)
+                await TemplateKindManager.Insert(KindDto);
+            else
+                await TemplateKindManager.Update(KindDto);
+
+            NavigationManager.NavigateTo("templates-type");
+        }
+        catch (Exception ex)
         {
-            KindDto.TemplateTypeId = TypeInfo.Id;
+            Console.WriteLine($"Error saving template: {ex.Message}");
         }
-
-        // Make sure any Ids for new items are zero
-        KindDto.CustomTemplateItems?.ToList().ForEach(it => it.Id = 0);
-
-        await TemplateKindManager.Insert(KindDto);
-        NavigationManager.NavigateTo("templates-type");
     }
 }

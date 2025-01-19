@@ -30,10 +30,16 @@ namespace BlazingGidde.Server.Data.Repository
 			var user = await _userManager.FindByIdAsync(id.ToString() ?? string.Empty);
 			if (user == null) return false;
 
+			var roles = await _userManager.GetRolesAsync(user);
+			if (roles.Any())
+			{
+				var roleRemovalResult = await _userManager.RemoveFromRolesAsync(user, roles);
+				if (!roleRemovalResult.Succeeded) return false;
+			}
+
 			var result = await _userManager.DeleteAsync(user);
 			return result.Succeeded;
 		}
-
 		public async Task<IEnumerable<FlowUser>> GetAll()
 		{
 			return await _userManager.Users.ToListAsync();

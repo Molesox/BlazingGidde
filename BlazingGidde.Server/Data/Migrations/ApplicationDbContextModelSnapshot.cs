@@ -35,7 +35,6 @@ namespace BlazingGidde.Server.Data.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1109,7 +1108,8 @@ namespace BlazingGidde.Server.Data.Migrations
                 {
                     b.HasOne("BlazingGidde.Shared.Models.FlowCheck.FlowUser", "ApplicationUser")
                         .WithOne("Person")
-                        .HasForeignKey("BlazingGidde.Shared.Models.PersonMain.Person", "ApplicationUserId");
+                        .HasForeignKey("BlazingGidde.Shared.Models.PersonMain.Person", "ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("BlazingGidde.Shared.Models.PersonMain.PersonType", "PersonType")
                         .WithMany("Persons")

@@ -1,6 +1,6 @@
 dotnet ef database drop
 dotnet ef migrations remove
 dotnet ef migrations add InitialDbCreate -o Data/Migrations -v
-dotnet ef database update
+dotnet ef database update InitialDbCreate
 
 dotnet ef dbcontext scaffold "Data Source=localhost,1433;Initial Catalog=BitFlowDb;User ID=sa;Password=admin123*;MultipleActiveResultSets=True;Trust Server Certificate=True;" Microsoft.EntityFrameworkCore.SqlServer --context-dir Data --output-dir ScafoldedModels --data-annotations

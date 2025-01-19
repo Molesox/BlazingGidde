@@ -80,11 +80,13 @@ namespace BlazingGidde.Shared.Models.PersonMain
         [NotMapped]
         public string FullNameInv => $"{LastName.ToUpper()}, {FirstName}";
 
+        public string? ApplicationUserId { get; set; }
+
         /// <summary>
         /// Gets or sets the skip application user property.
         /// </summary>
         [ForeignKey(nameof(FlowUser.Id))]
-        public virtual FlowUser? ApplicationUser { get; set; }
+        public virtual FlowUser?  ApplicationUser { get; set; }
 
         /// <summary>
         /// Gets or sets the skip person type property.

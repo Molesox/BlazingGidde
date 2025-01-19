@@ -1,15 +1,19 @@
 ﻿@page "/templates"
+@attribute [Authorize(Roles = "admin, viewer")]
+
 @inject TemplateKindManager templateKindManager
 @inject NavigationManager NavigationManager
+
 @using BlazingGidde.Client.Pages.FlowCheck.Grids
 @using BlazingGidde.Shared.DTOs.FlowCheck
 @using BlazingGidde.Shared.DTOs.FlowCheck.Request
 @using BlazingGidde.Shared.Models.FlowCheck
 @using BlazingGidde.Shared.Repository
+@using Microsoft.AspNetCore.Authorization
 
 <PageTitle>Plantillas</PageTitle>
 
 <div class="container mt-5">
     <h3 class="mb-4">Plantillas</h3>
-    <TemplateKindGrid ButtonSet="Templates"></TemplateKindGrid>
+    <TemplateKindGrid></TemplateKindGrid>
 </div>

@@ -5,24 +5,27 @@
 </style>
 
 <div class="sidebar @StateCssClass">
-    <DxAccordion SelectionMode="NavigationSelectionMode.Single" 
-                 UrlMatchMode="NavigationUrlMatchMode.CurrentPath" 
-                 CssClass="app-sidebar">
+    <DxAccordion SelectionMode="NavigationSelectionMode.Single" UrlMatchMode="NavigationUrlMatchMode.CurrentPath"
+        CssClass="app-sidebar" @ref="Accordion">
         <Items>
             <DxAccordionItem NavigateUrl="./" Text="Overview" />
-            <DxAccordionItem Text="FlowCheck" AllowSelection="false">
-                <Items>
-                    <DxAccordionItem Text="Nuevo dani" NavigateUrl="/templatesKind" />
-                    <DxAccordionItem  NavigateUrl="/templates" Text="Nuevo" />
-                    <DxAccordionItem Text="Consultar" />
-                </Items>
-            </DxAccordionItem>
-            <DxAccordionItem Text="Plantillas" AllowSelection="false">
-                <Items>
-                    <DxAccordionItem NavigateUrl="/templates-type" Text="Tipos de plantillas" />
-                    <DxAccordionItem NavigateUrl="/templateskind" Text="Plantillas" />
-                </Items>
-            </DxAccordionItem>
+            <AuthorizeView Roles="admin, viewer">
+                <DxAccordionItem Text="FlowCheck" AllowSelection="false">
+                    <Items>
+                        <DxAccordionItem NavigateUrl="/templates" Text="Nuevo" />
+                        <DxAccordionItem Text="Consultar" />
+                    </Items>
+                </DxAccordionItem>
+            </AuthorizeView>
+            <AuthorizeView Roles="admin,manager">
+                <DxAccordionItem Text="Plantillas" AllowSelection="false">
+                    <Items>
+                        <DxAccordionItem NavigateUrl="/templates-type" Text="Tipos de plantillas" />
+                        <DxAccordionItem NavigateUrl="/templates-kind" Text="Plantillas" />
+                    </Items>
+                </DxAccordionItem>
+            </AuthorizeView>
+
             <DxAccordionItem Text="Admin" AllowSelection="false">
                 <Items>
                     <DxAccordionItem NavigateUrl="/appusers" Text="Usuarios" />
@@ -36,4 +39,16 @@
 
 @code {
     [Parameter] public string? StateCssClass { get; set; }
+
+    DxAccordion Accordion;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Accordion.ExpandAll();
+
+        }
+    }
+
 }

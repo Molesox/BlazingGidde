@@ -461,7 +461,7 @@ namespace BlazingGidde.Server.Controllers
         }
 
         protected virtual TEntity MapUpdateDtoToEntity(TUpdateDto updateDto, TEntity entity)
-            => updateDto.Map().Over(entity);
+            =>Mapper.Map(updateDto).Over(entity,cfg => cfg.IgnoreEntityKeys());
 
         protected virtual void ApplyTimeStampForUpdate(TEntity entity)
         {

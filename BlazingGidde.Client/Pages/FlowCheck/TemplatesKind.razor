@@ -1,11 +1,12 @@
-﻿@page "/templateskind"
+﻿@page "/templates-kind"
+@attribute [Authorize(Roles = "admin,manager")]
+
+
+@using BlazingGidde.Client.Pages.FlowCheck.Grids
+@using Microsoft.AspNetCore.Authorization
+
 @inject TemplateKindManager templateKindManager
 @inject NavigationManager NavigationManager
-@using BlazingGidde.Client.Pages.FlowCheck.Grids
-@using BlazingGidde.Shared.DTOs.FlowCheck
-@using BlazingGidde.Shared.DTOs.FlowCheck.Request
-@using BlazingGidde.Shared.Models.FlowCheck
-@using BlazingGidde.Shared.Repository
 
 <PageTitle>Plantillas</PageTitle>
 

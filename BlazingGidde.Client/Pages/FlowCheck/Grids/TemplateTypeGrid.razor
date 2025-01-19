@@ -29,7 +29,7 @@
                         Click="@(async() => { 
                             var item = (TemplateTypeDto)gridcontext.DataItem;
                             var param = ((TemplateCode)item.Code).ToString().ToLower();
-                            NavigationManager.NavigateTo($"/create-template/{param}/{0}?mode=add");
+                            NavigationManager.NavigateTo($"/create-template/{param}");
                         })">
                     </DxButton>
                     <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"

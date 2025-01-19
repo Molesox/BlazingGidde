@@ -22,9 +22,4 @@ public class CreateCustomTemplateItemDto : ICreateDto<int>
     /// </summary>
     public string? ImageUrl { get; set; }
 
-    /// <summary>
-    /// The skip parent template kind property.
-    /// </summary>
-    public TemplateKind TemplateKind { get; set; }
-
 }

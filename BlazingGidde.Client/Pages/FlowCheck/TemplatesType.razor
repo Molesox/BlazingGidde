@@ -1,11 +1,15 @@
 ﻿@page "/templates-type"
-@inject TemplateTypeManager templateTypeManager
-@inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = "admin,manager")]
+
 @using BlazingGidde.Client.Pages.FlowCheck.Grids
 @using BlazingGidde.Shared.DTOs.FlowCheck
 @using BlazingGidde.Shared.DTOs.FlowCheck.Request
 @using BlazingGidde.Shared.Models.FlowCheck
 @using BlazingGidde.Shared.Repository
+@using Microsoft.AspNetCore.Authorization
+
+@inject TemplateTypeManager templateTypeManager
+@inject NavigationManager NavigationManager
 
 <PageTitle>Tipos de plantilla</PageTitle>
 <div class="container mt-5">
@@ -63,7 +67,7 @@
 
     private CreateTemplateTypeDto? selectedItem { get; set; }
 
-    public List<TemplateTypeDto> mytemplate = new List<TemplateTypeDto>();
+    public List<TemplateTypeDto> templateTypedto = new List<TemplateTypeDto>();
 
     private bool PopupVisible { get; set; }
     private bool? Result { get; set; } = null;
@@ -78,18 +82,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        mytemplate = (await templateTypeManager.GetAll()).ToList();
+        templateTypedto = (await templateTypeManager.GetAll()).ToList();
     }
 
     private IEnumerable<TemplateTypeDto> filteredTemplates =>
     string.IsNullOrWhiteSpace(SearchText)
-    ? mytemplate
-    : mytemplate.Where(t => t.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+    ? templateTypedto
+    : templateTypedto.Where(t => t.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
 
     private void CreateNewTemplate(int code)
     {
         var param = ((TemplateCode)code).ToString().ToLower();
-        NavigationManager.NavigateTo($"/create-template/{param}/{0}?mode=add");
+        NavigationManager.NavigateTo($"/create-template/{param}");
+
+
     }
 
 
@@ -101,7 +107,7 @@
             var result = await OpenConfirmDialogAsync();
             if (result)
             {
-                mytemplate.Remove(templateType);
+                templateTypedto.Remove(templateType);
                 await templateTypeManager.Delete(templateType.Id);
                 await InvokeAsync(StateHasChanged);
             }
@@ -129,7 +135,7 @@
     private async Task SaveModal()
     {
         var updated = await templateTypeManager.Update(selectedItem);
-        var item = mytemplate.First(t => t.Id == updated.Id);
+        var item = templateTypedto.First(t => t.Id == updated.Id);
         updated.Map().Over(item);
 
         CloseModal();

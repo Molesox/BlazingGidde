@@ -402,7 +402,8 @@ namespace BlazingGidde.Server.Data.Migrations
                         column: x => x.ApplicationUserId,
                         principalSchema: "FlowCheck",
                         principalTable: "FlowUser",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Person_PersonType_PersonTypeId",
                         column: x => x.PersonTypeId,

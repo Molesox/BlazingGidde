@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazingGidde.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250115162336_InitialDbCreate")]
+    [Migration("20250118175224_InitialDbCreate")]
     partial class InitialDbCreate
     {
         /// <inheritdoc />
@@ -1111,7 +1111,8 @@ namespace BlazingGidde.Server.Data.Migrations
                 {
                     b.HasOne("BlazingGidde.Shared.Models.FlowCheck.FlowUser", "ApplicationUser")
                         .WithOne("Person")
-                        .HasForeignKey("BlazingGidde.Shared.Models.PersonMain.Person", "ApplicationUserId");
+                        .HasForeignKey("BlazingGidde.Shared.Models.PersonMain.Person", "ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("BlazingGidde.Shared.Models.PersonMain.PersonType", "PersonType")
                         .WithMany("Persons")

@@ -95,7 +95,11 @@ namespace BlazingGidde.Server.Data
 				.HasForeignKey(p => p.PersonTypeId)
 				.IsRequired();
 
-
+			modelBuilder.Entity<FlowUser>()
+				.HasOne(fu => fu.Person)
+				.WithOne(p => p.ApplicationUser)
+				.HasForeignKey<Person>(p => p.ApplicationUserId)
+				.OnDelete(DeleteBehavior.Cascade);
 
 		}
 	}
