@@ -19,6 +19,8 @@ using AgileObjects.AgileMapper;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using BlazingGidde.Shared.Models;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -27,9 +29,11 @@ var connectionString = configuration.GetConnectionString("DefaultConnection");
 Mapper.WhenMapping.MapEntityKeys();
 
 // Add services to the container.
-
+// https://learn.microsoft.com/fr-fr/aspnet/core/web-api/?view=aspnetcore-9.0
 builder.Services.AddControllers()
+.ConfigureApiBehaviorOptions(opt => opt.SuppressModelStateInvalidFilter = true)
 .AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
 builder.Services.AddRazorPages();
 
 builder.Services.AddSerilog((services, lc) => lc

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazingGidde.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250118175224_InitialDbCreate")]
+    [Migration("20250119172759_InitialDbCreate")]
     partial class InitialDbCreate
     {
         /// <inheritdoc />
@@ -461,7 +461,6 @@ namespace BlazingGidde.Server.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 

@@ -521,7 +521,7 @@ namespace BlazingGidde.Server.Data.Migrations
                     EmailTypeId = table.Column<int>(type: "int", nullable: false),
                     EmailAddress = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     SortKey = table.Column<int>(type: "int", nullable: true),
-                    Remarks = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     IsDefault = table.Column<bool>(type: "bit", nullable: false),
                     UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),

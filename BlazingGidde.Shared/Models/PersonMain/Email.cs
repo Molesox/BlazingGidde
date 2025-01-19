@@ -36,7 +36,7 @@ namespace BlazingGidde.Shared.Models.PersonMain
         /// Gets or sets the remarks.
         /// </summary>
         [StringLength(200)]
-        public string Remarks { get; set; }= string.Empty;
+        public string? Remarks { get; set; }
 
         /// <summary>
         /// Gets or sets the is default flag.

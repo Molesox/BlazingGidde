@@ -458,7 +458,6 @@ namespace BlazingGidde.Server.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Remarks")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 

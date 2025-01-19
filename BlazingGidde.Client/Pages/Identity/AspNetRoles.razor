@@ -1,15 +1,13 @@
 ﻿@page "/approles"
 
-@using BlazingGidde.Client.Services
-@using BlazingGidde.Client
 @using BlazingGidde.Shared.DTOs.FlowCheck
 @using BlazingGidde.Shared.DTOs.FlowCheck.Request
 @using BlazingGidde.Shared.Models.Identity
-@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
-@using BlazingGidde.Client.Shared
+
 @inject AspNetRoleManager roleManager
-@attribute [Authorize]
+
+@attribute [Authorize(Roles = "admin")]
 
 <PageTitle>Application roles</PageTitle>
 

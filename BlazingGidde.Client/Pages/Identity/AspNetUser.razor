@@ -1,24 +1,21 @@
 ﻿@page "/appusers"
-@using AgileObjects.AgileMapper
-@using BlazingGidde.Client.Services
-@using BlazingGidde.Client.Shared
+
 @using BlazingGidde.Shared.Models.Identity
 @using BlazingGidde.Shared.Models.Patois
-@using BlazingGidde.Shared.DTOs.Common
 @using BlazingGidde.Shared.DTOs.FlowCheck
 @using BlazingGidde.Shared.DTOs.FlowCheck.Request
 @using BlazingGidde.Shared.Models.PersonMain
-@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
-@using DevExpress.Blazor
 
 @inject AspNetUserManager UserManager
 @inject AspNetRoleManager RoleManager
 @inject UserRoleManager UserRoleManager
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = "admin")]
 
 <PageTitle>Application Users</PageTitle>
+
+<h3>Usuarios</h3>
 
 <div class="h-100 grid-wrapper">
     <DxGrid Data="@Users" @ref="Grid" CssClass="grid-style" EditMode="GridEditMode.PopupEditForm"

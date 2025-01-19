@@ -8,7 +8,8 @@
     <DxAccordion SelectionMode="NavigationSelectionMode.Single" UrlMatchMode="NavigationUrlMatchMode.CurrentPath"
         CssClass="app-sidebar" @ref="Accordion">
         <Items>
-            <DxAccordionItem NavigateUrl="./" Text="Overview" />
+            <DxAccordionItem NavigateUrl="./" Text="Panel de control" />
+
             <AuthorizeView Roles="admin, viewer">
                 <DxAccordionItem Text="FlowCheck" AllowSelection="false">
                     <Items>
@@ -25,14 +26,16 @@
                     </Items>
                 </DxAccordionItem>
             </AuthorizeView>
+            <AuthorizeView Roles="admin">
+                <DxAccordionItem Text="Admin" AllowSelection="false">
+                    <Items>
+                        <DxAccordionItem NavigateUrl="/appusers" Text="Usuarios" />
+                        <DxAccordionItem NavigateUrl="/person" Text="Personas" />
+                        <DxAccordionItem NavigateUrl="/approles" Text="Roles" />
+                    </Items>
+                </DxAccordionItem>
+            </AuthorizeView>
 
-            <DxAccordionItem Text="Admin" AllowSelection="false">
-                <Items>
-                    <DxAccordionItem NavigateUrl="/appusers" Text="Usuarios" />
-                    <DxAccordionItem NavigateUrl="/person" Text="Personas" />
-                    <DxAccordionItem NavigateUrl="/approles" Text="Roles" />
-                </Items>
-            </DxAccordionItem>
         </Items>
     </DxAccordion>
 </div>
