@@ -61,6 +61,7 @@
 	{
 		currentTheme = themeName;
 		await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{currentTheme}");
+		StateHasChanged();
 	}
 
 	IDropDownButtonItemInfo SelectedItem { get; set; }

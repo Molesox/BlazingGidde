@@ -50,7 +50,12 @@
 
 		window.onload = function () {
 			var savedTheme = localStorage.getItem("selectedTheme");
+
 			if (savedTheme) {
+				if (savedTheme.startsWith("_content/DevExpress.Blazor.Themes/_content/DevExpress.Blazor.Themes/")) {
+					savedTheme = savedTheme.replace("_content/DevExpress.Blazor.Themes/_content/DevExpress.Blazor.Themes/", "_content/DevExpress.Blazor.Themes/");
+					localStorage.setItem("selectedTheme", savedTheme);
+				}
 				setTheme(savedTheme);
 			} else {
 				setTheme("_content/DevExpress.Blazor.Themes/blazing-dark.bs5.min.css");

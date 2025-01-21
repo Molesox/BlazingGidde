@@ -9,6 +9,69 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazingGidde.Shared", "Blaz
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazingGidde.Client", "BlazingGidde.Client\BlazingGidde.Client.csproj", "{5870325F-220A-4BA4-81E8-B3B3033CA473}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BitFlowDb", "BitFlowDb", "{3105FE7A-0C32-4C5D-AD49-A5005701C0E0}"
+	ProjectSection(SolutionItems) = preProject
+		BitFlowDb\BitFlowDb.sqlproj = BitFlowDb\BitFlowDb.sqlproj
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dbo", "dbo", "{79BD10A9-2844-4300-9AD8-EC8BC6BA697B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FlowCheck", "FlowCheck", "{F85F9CE5-053A-4B18-9646-795D8AD02530}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Person", "Person", "{0DCEF737-2BD8-4DDD-81A2-391F971EEDDF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Security", "Security", "{4D8B7BD7-A836-422D-9CCB-71B8BF7C0DE2}"
+	ProjectSection(SolutionItems) = preProject
+		BitFlowDb\Security\FlowCheck.sql = BitFlowDb\Security\FlowCheck.sql
+		BitFlowDb\Security\Patois.sql = BitFlowDb\Security\Patois.sql
+		BitFlowDb\Security\Person.sql = BitFlowDb\Security\Person.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sequences", "Sequences", "{497C3C69-336F-4EAF-B2C3-6D6BE82EF714}"
+	ProjectSection(SolutionItems) = preProject
+		BitFlowDb\dbo\Sequences\TemplateSequence.sql = BitFlowDb\dbo\Sequences\TemplateSequence.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tables", "Tables", "{5A47F75C-80E1-49BC-8BED-B23C7A179D77}"
+	ProjectSection(SolutionItems) = preProject
+		BitFlowDb\dbo\Tables\AspNetRoleClaims.sql = BitFlowDb\dbo\Tables\AspNetRoleClaims.sql
+		BitFlowDb\dbo\Tables\AspNetRoles.sql = BitFlowDb\dbo\Tables\AspNetRoles.sql
+		BitFlowDb\dbo\Tables\AspNetUserClaims.sql = BitFlowDb\dbo\Tables\AspNetUserClaims.sql
+		BitFlowDb\dbo\Tables\AspNetUserLogins.sql = BitFlowDb\dbo\Tables\AspNetUserLogins.sql
+		BitFlowDb\dbo\Tables\AspNetUserRoles.sql = BitFlowDb\dbo\Tables\AspNetUserRoles.sql
+		BitFlowDb\dbo\Tables\AspNetUsers.sql = BitFlowDb\dbo\Tables\AspNetUsers.sql
+		BitFlowDb\dbo\Tables\AspNetUserTokens.sql = BitFlowDb\dbo\Tables\AspNetUserTokens.sql
+		BitFlowDb\dbo\Tables\Script.PostDeployment1.sql = BitFlowDb\dbo\Tables\Script.PostDeployment1.sql
+		BitFlowDb\dbo\Tables\__EFMigrationsHistory.sql = BitFlowDb\dbo\Tables\__EFMigrationsHistory.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tables", "Tables", "{B8CCE9C6-6E20-4809-9577-CDA9CA437AEC}"
+	ProjectSection(SolutionItems) = preProject
+		BitFlowDb\FlowCheck\Tables\BreakeableItem.sql = BitFlowDb\FlowCheck\Tables\BreakeableItem.sql
+		BitFlowDb\FlowCheck\Tables\CustomTemplateItem.sql = BitFlowDb\FlowCheck\Tables\CustomTemplateItem.sql
+		BitFlowDb\FlowCheck\Tables\FlowRole.sql = BitFlowDb\FlowCheck\Tables\FlowRole.sql
+		BitFlowDb\FlowCheck\Tables\FlowUser.sql = BitFlowDb\FlowCheck\Tables\FlowUser.sql
+		BitFlowDb\FlowCheck\Tables\GazItem.sql = BitFlowDb\FlowCheck\Tables\GazItem.sql
+		BitFlowDb\FlowCheck\Tables\Incidency.sql = BitFlowDb\FlowCheck\Tables\Incidency.sql
+		BitFlowDb\FlowCheck\Tables\Template.sql = BitFlowDb\FlowCheck\Tables\Template.sql
+		BitFlowDb\FlowCheck\Tables\TemplateItem.sql = BitFlowDb\FlowCheck\Tables\TemplateItem.sql
+		BitFlowDb\FlowCheck\Tables\TemplateKind.sql = BitFlowDb\FlowCheck\Tables\TemplateKind.sql
+		BitFlowDb\FlowCheck\Tables\TemplateType.sql = BitFlowDb\FlowCheck\Tables\TemplateType.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tables", "Tables", "{5D10658A-A142-4BB7-8294-C138E4A223D9}"
+	ProjectSection(SolutionItems) = preProject
+		BitFlowDb\Person\Tables\Address.sql = BitFlowDb\Person\Tables\Address.sql
+		BitFlowDb\Person\Tables\AddressType.sql = BitFlowDb\Person\Tables\AddressType.sql
+		BitFlowDb\Person\Tables\Email.sql = BitFlowDb\Person\Tables\Email.sql
+		BitFlowDb\Person\Tables\EmailType.sql = BitFlowDb\Person\Tables\EmailType.sql
+		BitFlowDb\Person\Tables\Person.sql = BitFlowDb\Person\Tables\Person.sql
+		BitFlowDb\Person\Tables\PersonProfile.sql = BitFlowDb\Person\Tables\PersonProfile.sql
+		BitFlowDb\Person\Tables\PersonType.sql = BitFlowDb\Person\Tables\PersonType.sql
+		BitFlowDb\Person\Tables\Phone.sql = BitFlowDb\Person\Tables\Phone.sql
+		BitFlowDb\Person\Tables\PhoneType.sql = BitFlowDb\Person\Tables\PhoneType.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +93,16 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{79BD10A9-2844-4300-9AD8-EC8BC6BA697B} = {3105FE7A-0C32-4C5D-AD49-A5005701C0E0}
+		{F85F9CE5-053A-4B18-9646-795D8AD02530} = {3105FE7A-0C32-4C5D-AD49-A5005701C0E0}
+		{0DCEF737-2BD8-4DDD-81A2-391F971EEDDF} = {3105FE7A-0C32-4C5D-AD49-A5005701C0E0}
+		{4D8B7BD7-A836-422D-9CCB-71B8BF7C0DE2} = {3105FE7A-0C32-4C5D-AD49-A5005701C0E0}
+		{497C3C69-336F-4EAF-B2C3-6D6BE82EF714} = {79BD10A9-2844-4300-9AD8-EC8BC6BA697B}
+		{5A47F75C-80E1-49BC-8BED-B23C7A179D77} = {79BD10A9-2844-4300-9AD8-EC8BC6BA697B}
+		{B8CCE9C6-6E20-4809-9577-CDA9CA437AEC} = {F85F9CE5-053A-4B18-9646-795D8AD02530}
+		{5D10658A-A142-4BB7-8294-C138E4A223D9} = {0DCEF737-2BD8-4DDD-81A2-391F971EEDDF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4A055332-C9CC-4719-B6ED-2929AF37541F}

@@ -100,14 +100,14 @@ end
 */
 
 declare @existingAdminUserId uniqueidentifier;
-select @existingAdminUserId = Id from [BitFlowDb].[dbo].[AspNetUsers] where [Email] = 'admin@onasoft.ch';
+select @existingAdminUserId = Id from [dbo].[AspNetUsers] where [Email] = 'admin@onasoft.ch';
 
 if @existingAdminUserId is null
 begin
     declare @adminuserid uniqueidentifier = newid();
     declare @personidTable_admin table (personid int);
 
-    insert into [BitFlowDb].[dbo].[AspNetUsers] 
+    insert into [dbo].[AspNetUsers] 
         ([Id], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], 
          [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], 
          [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount])
@@ -118,12 +118,12 @@ begin
          '5D2CA2I7KB6KLHJECBWF6KPV266DWZ57', newid(), 
          666, 0, 0, NULL, 1, 0);
 
-    insert into [BitFlowDb].[FlowCheck].[FlowUser] 
+    insert into [FlowCheck].[FlowUser] 
         ([Id], [UpdateDate], [CreateDate], [CreateUser], [UpdateUser])
     values 
         (@adminuserid, NULL, sysdatetime(), 'system', NULL);
 
-    insert into [BitFlowDb].[Person].[Person] 
+    insert into [Person].[Person] 
         ([PersonTypeId], [Culture], [Title], [LastName], [FirstName], 
          [VatNumber], [Remarks], [AnnualRevenue], [ApplicationUserId])
     output inserted.personid into @personidTable_admin
@@ -133,7 +133,7 @@ begin
     declare @personid_admin int;
     select @personid_admin = personid from @personidTable_admin;
 
-    insert into [BitFlowDb].[Person].[Email] 
+    insert into [Person].[Email] 
         ([PersonId], [EmailTypeId], [EmailAddress], [SortKey], [Remarks], [IsDefault], [UpdateDate], [CreateDate], [CreateUser], [UpdateUser])
     values 
         (@personid_admin, 1, 'admin@onasoft.ch', NULL, 'fake email', 1, NULL, sysdatetime(), 'system', NULL);
@@ -158,14 +158,14 @@ end
 */
 
 declare @existingmanageruserid uniqueidentifier;
-select @existingmanageruserid = Id from [BitFlowDb].[dbo].[AspNetUsers] where [Email] = 'manager@onasoft.ch';
+select @existingmanageruserid = Id from [dbo].[AspNetUsers] where [Email] = 'manager@onasoft.ch';
 
 if @existingmanageruserid is null
 begin
     declare @manageruserid uniqueidentifier = newid();
     declare @personidTable_manager table (personid int);
 
-    insert into [BitFlowDb].[dbo].[AspNetUsers] 
+    insert into [dbo].[AspNetUsers] 
         ([Id], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], 
          [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], 
          [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount])
@@ -176,12 +176,12 @@ begin
          '5D2CA2I7KB6KLHJECBWF6KPV266DWZ57', newid(), 
          666, 0, 0, NULL, 1, 0);
 
-    insert into [BitFlowDb].[FlowCheck].[FlowUser] 
+    insert into [FlowCheck].[FlowUser] 
         ([Id], [UpdateDate], [CreateDate], [CreateUser], [UpdateUser])
     values 
         (@manageruserid, NULL, sysdatetime(), 'system', NULL);
 
-    insert into [BitFlowDb].[Person].[Person] 
+    insert into [Person].[Person] 
         ([PersonTypeId], [Culture], [Title], [LastName], [FirstName], 
          [VatNumber], [Remarks], [AnnualRevenue], [ApplicationUserId])
     output inserted.personid into @personidTable_manager
@@ -191,7 +191,7 @@ begin
     declare @personid_manager int;
     select @personid_manager = personid from @personidTable_manager;
 
-    insert into [BitFlowDb].[Person].[Email] 
+    insert into [Person].[Email] 
         ([PersonId], [EmailTypeId], [EmailAddress], [SortKey], [Remarks], [IsDefault], [UpdateDate], [CreateDate], [CreateUser], [UpdateUser])
     values 
         (@personid_manager, 1, 'manager@onasoft.ch', NULL, 'fake email', 1, NULL, sysdatetime(), 'system', NULL);
@@ -216,14 +216,14 @@ end
 */
 
 declare @existingvieweruserid uniqueidentifier;
-select @existingvieweruserid = Id from [BitFlowDb].[dbo].[AspNetUsers] where [Email] = 'viewer@onasoft.ch';
+select @existingvieweruserid = Id from [dbo].[AspNetUsers] where [Email] = 'viewer@onasoft.ch';
 
 if @existingvieweruserid is null
 begin
     declare @vieweruserid uniqueidentifier = newid();
     declare @personidTable_viewer table (personid int);
 
-    insert into [BitFlowDb].[dbo].[AspNetUsers] 
+    insert into [dbo].[AspNetUsers] 
         ([Id], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], 
          [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], 
          [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount])
@@ -234,12 +234,12 @@ begin
          '5D2CA2I7KB6KLHJECBWF6KPV266DWZ57', newid(), 
          666, 0, 0, NULL, 1, 0);
 
-    insert into [BitFlowDb].[FlowCheck].[FlowUser] 
+    insert into [FlowCheck].[FlowUser] 
         ([Id], [UpdateDate], [CreateDate], [CreateUser], [UpdateUser])
     values 
         (@vieweruserid, NULL, sysdatetime(), 'system', NULL);
 
-    insert into [BitFlowDb].[Person].[Person] 
+    insert into [Person].[Person] 
         ([PersonTypeId], [Culture], [Title], [LastName], [FirstName], 
          [VatNumber], [Remarks], [AnnualRevenue], [ApplicationUserId])
     output inserted.personid into @personidTable_viewer
@@ -249,7 +249,7 @@ begin
     declare @personid_viewer int;
     select @personid_viewer = personid from @personidTable_viewer;
 
-    insert into [BitFlowDb].[Person].[Email] 
+    insert into [Person].[Email] 
         ([PersonId], [EmailTypeId], [EmailAddress], [SortKey], [Remarks], [IsDefault], [UpdateDate], [CreateDate], [CreateUser], [UpdateUser])
     values 
         (@personid_viewer, 1, 'viewer@onasoft.ch', NULL, 'fake email', 1, NULL, sysdatetime(), 'system', NULL);
@@ -274,14 +274,14 @@ end
 */
 
 declare @existingstandarduserid uniqueidentifier;
-select @existingstandarduserid = Id from [BitFlowDb].[dbo].[AspNetUsers] where [Email] = 'user@onasoft.ch';
+select @existingstandarduserid = Id from [dbo].[AspNetUsers] where [Email] = 'user@onasoft.ch';
 
 if @existingstandarduserid is null
 begin
     declare @standarduserid uniqueidentifier = newid();
     declare @personidTable_standard table (personid int);
 
-    insert into [BitFlowDb].[dbo].[AspNetUsers] 
+    insert into [dbo].[AspNetUsers] 
         ([Id], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], 
          [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], 
          [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount])
@@ -292,12 +292,12 @@ begin
          '5D2CA2I7KB6KLHJECBWF6KPV266DWZ57', newid(), 
          666, 0, 0, NULL, 1, 0);
 
-    insert into [BitFlowDb].[FlowCheck].[FlowUser] 
+    insert into [FlowCheck].[FlowUser] 
         ([Id], [UpdateDate], [CreateDate], [CreateUser], [UpdateUser])
     values 
         (@standarduserid, NULL, sysdatetime(), 'system', NULL);
 
-    insert into [BitFlowDb].[Person].[Person] 
+    insert into [Person].[Person] 
         ([PersonTypeId], [Culture], [Title], [LastName], [FirstName], 
          [VatNumber], [Remarks], [AnnualRevenue], [ApplicationUserId])
     output inserted.personid into @personidTable_standard
@@ -307,7 +307,7 @@ begin
     declare @personid_standard int;
     select @personid_standard = personid from @personidTable_standard;
 
-    insert into [BitFlowDb].[Person].[Email] 
+    insert into [Person].[Email] 
         ([PersonId], [EmailTypeId], [EmailAddress], [SortKey], [Remarks], [IsDefault], [UpdateDate], [CreateDate], [CreateUser], [UpdateUser])
     values 
         (@personid_standard, 1, 'user@onasoft.ch', NULL, 'fake email', 1, NULL, sysdatetime(), 'system', NULL);
