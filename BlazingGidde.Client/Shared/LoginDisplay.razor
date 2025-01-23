@@ -3,22 +3,31 @@
 @inject ThemeService ThemeService
 
 
+
 <AuthorizeView>
 
 	<Authorized>
-		<div class="login-display">
-			<span class="user-greeting">Hello, @context.User.Identity?.Name!</span>
-			<DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
-					Text="Logout" @onclick="Logout"></DxButton>
-			<DxDropDownButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-							  IconCssClass="fa fa-wrench" CssClass="me-1" ItemClick="@OnItemClick">
-				<Items>
-					<DxDropDownButtonItem Text="Blazing Dark"/>
-					<DxDropDownButtonItem Text="Office White"/>
-					<DxDropDownButtonItem Text="Purple"/>
-					<DxDropDownButtonItem Text="Blazing Berry"/>
-				</Items>
-			</DxDropDownButton>
+		<div class="card menu-card-container w-100">
+			<div class="card-body p-0">
+				<DxMenu Title="@Title" ItemsPosition="ItemPosition.End" CollapseItemsToHamburgerMenu="true"
+						Target="_blank" ItemClick="OnItemClick">
+					<Items>
+						<DxMenuItem Text="Title" IconCssClass="fa fa-user"  NavigateUrl= "/myprofile">
+						</DxMenuItem>
+						<DxMenuItem Text="Tema" IconCssClass="fa fa-paint-brush" >
+							<Items>
+								<DxMenuItem Text="Dark"/>
+								<DxMenuItem Text="White" />
+								<DxMenuItem Text="Purple"/>
+								<DxMenuItem Text="Berry"/>
+
+							</Items>
+						</DxMenuItem>
+						<DxMenuItem Text="Logout" IconCssClass="fa fa-sign-out" Click="Logout">
+						</DxMenuItem>
+					</Items>
+				</DxMenu>
+			</div>
 		</div>
 	</Authorized>
 
@@ -27,18 +36,9 @@
 
 			<DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary" 
 			Text="Registrarse" @onclick="NavigateToRegister"></DxButton>
-			
+
 			<DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary" 
 			Text="Conectar" @onclick="NavigateToLogin"></DxButton>
-			<DxDropDownButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-							  IconCssClass="fa fa-wrench" CssClass="me-1" ItemClick="@OnItemClick">
-				<Items>
-					<DxDropDownButtonItem Text="Blazing Dark" />
-					<DxDropDownButtonItem Text="Office White" />
-					<DxDropDownButtonItem Text="Purple" />
-					<DxDropDownButtonItem Text="Blazing Berry" />
-				</Items>
-			</DxDropDownButton>
 		</div>
 	</NotAuthorized>
 
@@ -50,8 +50,12 @@
 
 	private string currentTheme = "blazing-dark.bs5.min.css";
 
+	public string Title { get; set; }
+
 	protected override async Task OnInitializedAsync()
 	{
+		Title = $"Hola,";
+
 		currentTheme = await ThemeService.GetSavedThemeAsync();
 		
 		await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{currentTheme}");
@@ -66,20 +70,20 @@
 
 	IDropDownButtonItemInfo SelectedItem { get; set; }
 
-	private async void OnItemClick(DropDownButtonItemClickEventArgs args)
+	private async void OnItemClick(MenuItemClickEventArgs args)
 	{
 		switch (args.ItemInfo.Text)
 		{
-			case "Blazing Dark":
+			case "Dark":
 				await ChangeTheme("blazing-dark.bs5.min.css");
 				break;
-			case "Office White":
+			case "White":
 				await ChangeTheme("office-white.bs5.min.css");
 				break;
 			case "Purple":
 				await ChangeTheme("purple.bs5.min.css");
 				break;
-			case "Blazing Berry":
+			case "Berry":
 				await ChangeTheme("blazing-berry.bs5.min.css");
 				break;
 		}
