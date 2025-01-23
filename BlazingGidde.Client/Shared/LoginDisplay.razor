@@ -2,118 +2,128 @@
 @inject IJSRuntime JSRuntime
 @inject ThemeService ThemeService
 
-
-
 <AuthorizeView>
+    <Authorized>
+        <div class="card menu-card-container w-100">
+            <div class="card-body p-0">
+                <DxMenu Title="@Title" ItemsPosition="ItemPosition.End" CollapseItemsToHamburgerMenu="true"
+                        Target="_blank" ItemClick="OnItemClick">
+                    <Items>
+                        <DxMenuItem Text="Title" IconCssClass="fa fa-user" NavigateUrl="/myprofile"/>
+                        <DxMenuItem Text="Tema" IconCssClass="fa fa-paint-brush">
+                            <Items>
+                                <DxMenuItem Text="Dark" />
+                                <DxMenuItem Text="White" />
+                                <DxMenuItem Text="Purple" />
+                                <DxMenuItem Text="Berry" />
+                            </Items>
+                            </DxMenuItem >
+                            <DxMenuItem>
+                                <DxComboBox Data="@ThemeOptions"
+                                            @bind-Value="Value"
+                                            TextField="Key"
+                                            ValueField="Value"
+                                            ItemClick="OnThemeChanged"/>
+                            </DxMenuItem>
+                        <DxMenuItem Text="Logout" IconCssClass="fa fa-sign-out" Click="Logout" />
+                    </Items>
+                </DxMenu>
+            </div>
+        </div>
+    </Authorized>
 
-	<Authorized>
-		<div class="card menu-card-container w-100">
-			<div class="card-body p-0">
-				<DxMenu Title="@Title" ItemsPosition="ItemPosition.End" CollapseItemsToHamburgerMenu="true"
-						Target="_blank" ItemClick="OnItemClick">
-					<Items>
-						<DxMenuItem Text="Title" IconCssClass="fa fa-user"  NavigateUrl= "/myprofile">
-						</DxMenuItem>
-						<DxMenuItem Text="Tema" IconCssClass="fa fa-paint-brush" >
-							<Items>
-								<DxMenuItem Text="Dark"/>
-								<DxMenuItem Text="White" />
-								<DxMenuItem Text="Purple"/>
-								<DxMenuItem Text="Berry"/>
-
-							</Items>
-						</DxMenuItem>
-						<DxMenuItem Text="Logout" IconCssClass="fa fa-sign-out" Click="Logout">
-						</DxMenuItem>
-					</Items>
-				</DxMenu>
-			</div>
-		</div>
-	</Authorized>
-
-	<NotAuthorized>
-		<div class="login-display">
-
-			<DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary" 
-			Text="Registrarse" @onclick="NavigateToRegister"></DxButton>
-
-			<DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary" 
-			Text="Conectar" @onclick="NavigateToLogin"></DxButton>
-		</div>
-	</NotAuthorized>
-
+    <NotAuthorized>
+        <div class="login-display">
+            <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary" 
+                      Text="Registrarse" @onclick="NavigateToRegister" />
+            <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary" 
+                      Text="Conectar" @onclick="NavigateToLogin" />
+        </div>
+    </NotAuthorized>
 </AuthorizeView>
 
 @code {
+    [Inject] NavigationManager NavigationManager { get; set; } = null!;
 
-	[Inject] NavigationManager NavigationManager { get; set; } = null!;
+    private string currentTheme = "blazing-dark.bs5.min.css";
 
-	private string currentTheme = "blazing-dark.bs5.min.css";
+    public string Title { get; set; }
 
-	public string Title { get; set; }
+    private IEnumerable<KeyValuePair<string, string>> ThemeOptions => ThemeDictionary.Themes;
 
-	protected override async Task OnInitializedAsync()
-	{
-		Title = $"Hola,";
+    private string Value { get; set; }
 
-		currentTheme = await ThemeService.GetSavedThemeAsync();
-		
-		await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{currentTheme}");
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"Theme options count: {ThemeOptions.Count()}");
+        foreach (var theme in ThemeOptions)
+        {
+            Console.WriteLine($"Key: {theme.Key}, Value: {theme.Value}");
+        }
+        Title = $"Hola,";
+        Value = ThemeDictionary.Themes.FirstOrDefault().Value;
+        currentTheme = await ThemeService.GetSavedThemeAsync();
+        
+        Value = currentTheme;
+        await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{currentTheme}");
+    }
 
-	private async Task ChangeTheme(string themeName)
-	{
-		currentTheme = themeName;
-		await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{currentTheme}");
-		StateHasChanged();
-	}
+    private async Task ChangeTheme(string themeName)
+    {
+        currentTheme = themeName;
+        await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{currentTheme}");
+        StateHasChanged();
+    }
 
-	IDropDownButtonItemInfo SelectedItem { get; set; }
+    private async Task OnThemeChanged(string themeCss)
+    {
+        await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{themeCss}");
+    }
 
-	private async void OnItemClick(MenuItemClickEventArgs args)
-	{
-		switch (args.ItemInfo.Text)
-		{
-			case "Dark":
-				await ChangeTheme("blazing-dark.bs5.min.css");
-				break;
-			case "White":
-				await ChangeTheme("office-white.bs5.min.css");
-				break;
-			case "Purple":
-				await ChangeTheme("purple.bs5.min.css");
-				break;
-			case "Berry":
-				await ChangeTheme("blazing-berry.bs5.min.css");
-				break;
-		}
-	}
+    private async void OnItemClick(MenuItemClickEventArgs args)
+    {
+        switch (args.ItemInfo.Text)
+        {
+            case "Dark":
+                await ChangeTheme("blazing-dark.bs5.min.css");
+                break;
+            case "White":
+                await ChangeTheme("office-white.bs5.min.css");
+                break;
+            case "Purple":
+                await ChangeTheme("purple.bs5.min.css");
+                break;
+            case "Berry":
+                await ChangeTheme("blazing-berry.bs5.min.css");
+                break;
+        }
+    }
 
-	private void Logout()
-	{
-		NavigationManager.NavigateTo("LogOut", forceLoad: true);
-	}
+    private void Logout()
+    {
+        NavigationManager.NavigateTo("LogOut", forceLoad: true);
+    }
 
-	private void NavigateToRegister()
-	{
-		NavigationManager.NavigateTo("Register");
-	}
+    private void NavigateToRegister()
+    {
+        NavigationManager.NavigateTo("Register");
+    }
 
-	private void NavigateToLogin()
-	{
-		NavigationManager.NavigateTo("Login");
-	}
+    private void NavigateToLogin()
+    {
+        NavigationManager.NavigateTo("Login");
+    }
 }
 
 <style>
-	.login-display {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
+    .login-display {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
 
-	.user-greeting {
-		font-size: 1rem;
-		font-weight: bold;
-	}
+    .user-greeting {
+        font-size: 1rem;
+        font-weight: bold;
+    }
 </style>

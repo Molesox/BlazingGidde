@@ -1,11 +1,14 @@
-﻿using Microsoft.JSInterop;
+﻿using BlazingGidde.Shared.Models;
+using Microsoft.JSInterop;
+using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace BlazingGidde.Client.Services
 {
     public class ThemeService
     {
         private readonly IJSRuntime _jsRuntime;
-
+        
         public ThemeService(IJSRuntime jsRuntime)
         {
             _jsRuntime = jsRuntime;
@@ -33,5 +36,7 @@ namespace BlazingGidde.Client.Services
             }
             return theme ?? "_content/DevExpress.Blazor.Themes/blazing-dark.bs5.min.css";
         }
+
+        
     }
 }

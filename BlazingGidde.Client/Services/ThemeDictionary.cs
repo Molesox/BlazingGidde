@@ -10,10 +10,5 @@
             { "Berry", "blazing-berry.bs5.min.css" },
             { "Index", "_content/DevExpress.Blazor.Themes/" }
         };
-
-        public static string ToJson()
-        {
-            return System.Text.Json.JsonSerializer.Serialize(Themes);
-        }
     }
 }
