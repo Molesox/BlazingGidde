@@ -1,0 +1,75 @@
+﻿/* Estilos generales */
+.login-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.menu-card-container {
+    padding: 0.5rem;
+}
+
+.dx-menu {
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+}
+
+.dx-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dx-menu .fa {
+    margin-right: 0.5rem;
+}
+
+.hide-on-mobile {
+    display: none !important;
+}
+
+/* Responsividad */
+@media screen and (max-width: 768px) {
+    .menu-card-container {
+        padding: 0;
+    }
+
+    .hide-on-mobile {
+        display: inline !important;
+    }
+
+    .dx-menu {
+        font-size: 0.2rem; 
+    }
+
+    .dx-menu-item {
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .menu-card-container {
+        padding: 0;
+    }
+    .dxbl-menu.dxbl-menu-horizontal > .dxbl-menu-nav .dxbl-menu-nav-bar > .dxbl-menu-title {
+        font-size: 0.2rem;
+    }
+
+    .dx-menu {
+        font-size: 0.2rem; 
+        flex-direction: column; 
+        align-items: flex-start; 
+    }
+
+    .dx-menu-item {
+        width: 100%;
+        text-align: left;
+        padding: 0.5rem;
+    }
+
+    .dx-menu .fa {
+        margin-right: 0.2rem;
+    }
+}

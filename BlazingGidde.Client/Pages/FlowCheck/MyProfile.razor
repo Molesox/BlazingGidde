@@ -1,7 +1,100 @@
 ﻿@page "/myprofile"
+@using BlazingGidde.Shared.DTOs.FlowCheck
+@using BlazingGidde.Shared.DTOs.Person
+@using BlazingGidde.Shared.Repository
+@using BlazingGidde.Shared.Models.PersonMain
+@using Microsoft.AspNetCore.Components.Authorization
 
-<h3>Mi perfil</h3>
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AspNetUserManager UserManager
+@inject PersonMainManager PersonManager
+
+@inject IJSRuntime JSRuntime
+
+<h3>Mi Perfil</h3>
+
+@if (UserPerson is not null)
+{
+    <EditForm Model="UserPerson">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        
+
+        <div>
+            <label>Correo Electrónico:</label>
+            <p>@FlowUserDto.Email</p>
+        </div>
+
+        <div>
+            <label>Cultura:</label>
+            <p>@UserPerson.Culture</p>
+        </div>
+
+        <div>
+            <label>Título:</label>
+            <p>@UserPerson.Title</p>
+        </div>
+
+        <div>
+            <label>Apellido:</label>
+            <p>@UserPerson.LastName</p>
+        </div>
+
+        <div>
+            <label>Primer Nombre:</label>
+            <p>@UserPerson.FirstName</p>
+        </div>
+    </EditForm>
+}
+else
+{
+    <p>Cargando información del perfil...</p>
+}
 
 @code {
+    private FlowUserDto FlowUserDto { get; set; } = new();
+    private PersonDto UserPerson { get; set; } = new();
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var email = authState.User.Identity?.Name;
+
+        if (email is null) return;
+
+        var filter = new QueryFilter<FlowUser>()
+            {
+                FilterProperties = new List<FilterProperty>()
+            {
+                new()
+                {
+                    Name = nameof(FlowUser.Email),
+                    Value = email,
+                    Operator = QueryFilterOperator.Equals
+                }
+            }
+        };
+        var result = await UserManager.Get(filter);
+        FlowUserDto = result.Items.First();
+
+        if (FlowUserDto is null) return;
+        var personfilter = new QueryFilter<Person>
+            {
+                FilterProperties = new List<FilterProperty>
+            {
+                new()
+                {
+                    Name = nameof(Person.ApplicationUserId),
+                    Value = FlowUserDto.Id,
+                }
+            }
+        };
+        var personResult = await PersonManager.Get(personfilter);
+        UserPerson = personResult.Items.First();
+
+    }
 }

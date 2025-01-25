@@ -1,31 +1,38 @@
-﻿@inject PersonMainManager personManager
+﻿@using BlazingGidde.Shared.DTOs.FlowCheck
+@using BlazingGidde.Shared.DTOs.Person
+@using BlazingGidde.Shared.Repository
+@using BlazingGidde.Shared.Models.PersonMain
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject PersonMainManager personManager
 @inject IJSRuntime JSRuntime
 @inject ThemeService ThemeService
+@inject AspNetUserManager UserManager
+@inject PersonMainManager PersonManager
 
 <AuthorizeView>
     <Authorized>
         <div class="card menu-card-container w-100">
             <div class="card-body p-0">
-                <DxMenu Title="@Title" ItemsPosition="ItemPosition.End" CollapseItemsToHamburgerMenu="true"
-                        Target="_blank" ItemClick="OnItemClick">
+                <DxMenu CollapseItemsToHamburgerMenu="true"
+                        CollapseItemToIconMode="MenuCollapseItemToIconMode.Sequentially"
+                        DisplayMode="MenuDisplayMode.Desktop">
                     <Items>
-                        <DxMenuItem Text="Title" IconCssClass="fa fa-user" NavigateUrl="/myprofile"/>
-                        <DxMenuItem Text="Tema" IconCssClass="fa fa-paint-brush">
+                        <DxMenuItem Text="@Title"  IconCssClass="fa fa">
                             <Items>
-                                <DxMenuItem Text="Dark" />
-                                <DxMenuItem Text="White" />
-                                <DxMenuItem Text="Purple" />
-                                <DxMenuItem Text="Berry" />
+                                <DxMenuItem Text="Mi perfil" IconCssClass="fa fa-user" NavigateUrl="/myprofile" Target="_self" />
+                                <DxMenuItem Text="Tema" IconCssClass="fa fa-paint-brush">
+                                    <Items>
+                                        <DxMenuItem Text="Dark" IconCssClass="fa fa-square" CssClass="menu-dark" />
+                                        <DxMenuItem Text="White" IconCssClass="fa fa-square" CssClass="menu-white" />
+                                        <DxMenuItem Text="Purple" IconCssClass="fa fa-square" CssClass="menu-purple" />
+                                        <DxMenuItem Text="Berry" IconCssClass="fa fa-square" CssClass="menu-berry" />
+                                    </Items>
+                                </DxMenuItem>
+                                <DxMenuItem Text="Logout" IconCssClass="fa fa-sign-out" CssClass="menu-logout" Click="Logout" />
                             </Items>
-                            </DxMenuItem >
-                            <DxMenuItem>
-                                <DxComboBox Data="@ThemeOptions"
-                                            @bind-Value="Value"
-                                            TextField="Key"
-                                            ValueField="Value"
-                                            ItemClick="OnThemeChanged"/>
-                            </DxMenuItem>
-                        <DxMenuItem Text="Logout" IconCssClass="fa fa-sign-out" Click="Logout" />
+                        </DxMenuItem>
+                        
                     </Items>
                 </DxMenu>
             </div>
@@ -34,9 +41,9 @@
 
     <NotAuthorized>
         <div class="login-display">
-            <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary" 
+            <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
                       Text="Registrarse" @onclick="NavigateToRegister" />
-            <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary" 
+            <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
                       Text="Conectar" @onclick="NavigateToLogin" />
         </div>
     </NotAuthorized>
@@ -45,26 +52,53 @@
 @code {
     [Inject] NavigationManager NavigationManager { get; set; } = null!;
 
+    private FlowUserDto FlowUserDto { get; set; } = new();
+    private PersonDto UserPerson { get; set; } = new();
+
     private string currentTheme = "blazing-dark.bs5.min.css";
 
     public string Title { get; set; }
 
-    private IEnumerable<KeyValuePair<string, string>> ThemeOptions => ThemeDictionary.Themes;
-
-    private string Value { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine($"Theme options count: {ThemeOptions.Count()}");
-        foreach (var theme in ThemeOptions)
-        {
-            Console.WriteLine($"Key: {theme.Key}, Value: {theme.Value}");
-        }
-        Title = $"Hola,";
-        Value = ThemeDictionary.Themes.FirstOrDefault().Value;
+        await base.OnInitializedAsync();
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var email = authState.User.Identity?.Name;
+
+        if (email is null) return;
+
+        var filter = new QueryFilter<FlowUser>()
+            {
+                FilterProperties = new List<FilterProperty>()
+            {
+                new()
+                {
+                    Name = nameof(FlowUser.Email),
+                    Value = email,
+                    Operator = QueryFilterOperator.Equals
+                }
+            }
+            };
+        var result = await UserManager.Get(filter);
+        FlowUserDto = result.Items.First();
+
+        if (FlowUserDto is null) return;
+        var personfilter = new QueryFilter<Person>
+            {
+                FilterProperties = new List<FilterProperty>
+            {
+                new()
+                {
+                    Name = nameof(Person.ApplicationUserId),
+                    Value = FlowUserDto.Id,
+                }
+            }
+            };
+        var personResult = await PersonManager.Get(personfilter);
+        UserPerson = personResult.Items.First();
+        Title = $"Hola, {UserPerson.FirstName}";
         currentTheme = await ThemeService.GetSavedThemeAsync();
-        
-        Value = currentTheme;
         await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{currentTheme}");
     }
 
@@ -73,11 +107,6 @@
         currentTheme = themeName;
         await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{currentTheme}");
         StateHasChanged();
-    }
-
-    private async Task OnThemeChanged(string themeCss)
-    {
-        await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{themeCss}");
     }
 
     private async void OnItemClick(MenuItemClickEventArgs args)
@@ -116,14 +145,35 @@
 }
 
 <style>
-    .login-display {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
+    .menu-dark .fa-square {
+        color: black;
+        background-color: black; /* Opcional, si el fondo es oscuro */
+        border: 1px solid #ccc; /* Color para Dark */
     }
 
-    .user-greeting {
-        font-size: 1rem;
-        font-weight: bold;
+    .menu-white .fa-square {
+        color: white; /* Color para White */
+        background-color: black; /* Opcional, si el fondo es oscuro */
+        border: 1px solid #ccc; /* Para mayor visibilidad */
+    }
+
+    .menu-purple .fa-square {
+        color: mediumpurple;
+        background-color: black; /* Opcional, si el fondo es oscuro */
+        border: 1px solid #ccc; /* Color para Purple */
+    }
+
+    .menu-berry .fa-square {
+        color: darkviolet;
+        background-color: black; /* Opcional, si el fondo es oscuro */
+        border: 1px solid #ccc; /* Color para Berry (rojo oscuro) */
+    }
+
+    .menu-logout {
+        color: red; /* Cambia el color del texto a rojo */
+    }
+
+    .menu-logout .fa-sign-out {
+        color: red; /* Cambia el color del ícono a rojo */
     }
 </style>
