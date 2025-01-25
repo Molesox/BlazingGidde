@@ -3,7 +3,7 @@ using BlazingGidde.Shared.Models.Patois;
 
 namespace BlazingGidde.Shared.Mappings;
 
-public static class PatoisMappingExpressions 
+public static class PatoisMappingExpressions
 {
     public static DictionaryEntryDTO MapToDictionaryEntryDTO(this DictionaryEntry entity)
     {

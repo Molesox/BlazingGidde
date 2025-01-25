@@ -1,10 +1,7 @@
-using System;
-
 namespace BlazingGidde.Shared.DTOs;
 
-
 /// <summary>
-/// The default aspnetcore mvc error validation response. It has the same as mvc ValidationProblemDetails class.
+///     The default aspnetcore mvc error validation response. It has the same as mvc ValidationProblemDetails class.
 /// </summary>
 public class ValidationErrorResponse
 {

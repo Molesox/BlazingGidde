@@ -1,5 +1,3 @@
-using System;
-
 namespace BlazingGidde.Shared.Repository;
 
 public interface ISupportType

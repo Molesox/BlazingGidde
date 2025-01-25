@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
 using BlazingGidde.Shared.Models.PersonMain;
 using Microsoft.AspNetCore.Identity;
 
@@ -9,35 +8,29 @@ namespace BlazingGidde.Shared.Models.FlowCheck;
 [Table("FlowUser", Schema = "FlowCheck")]
 public class FlowUser : IdentityUser, IModelBase<string>
 {
-
-	
-	/// <summary>
-	/// The associated templates of the user.
-	/// </summary>
-	public ICollection<Template> Templates { get; set; } = new List<Template>();
+    /// <summary>
+    ///     The associated templates of the user.
+    /// </summary>
+    public ICollection<Template> Templates { get; set; } = new List<Template>();
 
 
-	public virtual ICollection<FlowRole> FlowRoles { get; set; } = new List<FlowRole>();
+    public virtual ICollection<FlowRole> FlowRoles { get; set; } = new List<FlowRole>();
 
-	#region Interface implementation
+    #region Interface implementation
 
-	public Person Person { get; set; }
+    public Person Person { get; set; }
 
-	#region Auditables
+    #region Auditables
 
-	public DateTime? UpdateDate { get; set; }
+    public DateTime? UpdateDate { get; set; }
 
-	[Required]
-	public DateTime CreateDate { get; set; }
+    [Required] public DateTime CreateDate { get; set; }
 
-	[Required]
-	[MaxLength(256)]
-	public string CreateUser { get; set; } = string.Empty;
+    [Required] [MaxLength(256)] public string CreateUser { get; set; } = string.Empty;
 
-	[MaxLength(256)]
-	public string? UpdateUser { get; set; }
+    [MaxLength(256)] public string? UpdateUser { get; set; }
 
-	#endregion
+    #endregion
 
-	#endregion
+    #endregion
 }

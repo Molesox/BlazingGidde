@@ -1,40 +1,39 @@
 ﻿@page "/login"
-
 @using BlazingGidde.Shared.Models.Identity
 @inject IAuthService AuthService
- 
+
 @inject NavigationManager NavigationManager
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
             <div class="card cw-480">
                 <EditForm Model="@_loginModel" OnValidSubmit="@HandleValidSubmit" Context="EditFormContext">
-                    <DataAnnotationsValidator />
+                    <DataAnnotationsValidator/>
                     <div class="card-header text-center py-3">
-                        <img src="OnaSoft-logo.svg" alt="Company Logo" />
+                        <img src="OnaSoft-logo.svg" alt="Company Logo"/>
                     </div>
                     <div class="card-body">
                         <DxFormLayout>
                             <DxFormLayoutItem ColSpanMd="12">
                                 <label for="tbEmail" class="d-none">Email</label>
                                 <DxTextBox @bind-Text="@_loginModel.Email" NullText="Email"
-                                    ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" InputId="tbEmail" />
+                                           ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" InputId="tbEmail"/>
                                 <div class="text-danger">
-                                    <ValidationMessage For="@(() => _loginModel.Email)" />
+                                    <ValidationMessage For="@(() => _loginModel.Email)"/>
                                 </div>
                             </DxFormLayoutItem>
                             <DxFormLayoutItem ColSpanMd="12">
                                 <label for="tbPassword" class="d-none">Password</label>
                                 <DxTextBox @bind-Text="@_loginModel.Password" NullText="Password" Password="true"
-                                    ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
-                                    InputId="tbPassword" />
+                                           ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                           InputId="tbPassword"/>
                                 <div class="text-danger">
-                                    <ValidationMessage For="@(() => _loginModel.Password)" />
+                                    <ValidationMessage For="@(() => _loginModel.Password)"/>
                                 </div>
                             </DxFormLayoutItem>
                             <DxFormLayoutItem ColSpanMd="12">
                                 <DxButton CssClass="w-100" Text="Login" RenderStyle="ButtonRenderStyle.Primary"
-                                    SubmitFormOnClick="true" />
+                                          SubmitFormOnClick="true"/>
                             </DxFormLayoutItem>
                             <DxFormLayoutItem ColSpanMd="12">
                                 <div class="text-center pt-2">
@@ -42,7 +41,7 @@
                                         Do not have an account?
                                     </div>
                                     <DxButton Text="Create an account" RenderStyle="ButtonRenderStyle.Link"
-                                        Click="GotoRegistrationFormClick" />
+                                              Click="GotoRegistrationFormClick"/>
                                 </div>
                             </DxFormLayoutItem>
                         </DxFormLayout>
@@ -59,14 +58,13 @@
     async Task GotoRegistrationFormClick()
     {
         NavigationManager.NavigateTo("/register");
-
     }
+
     async Task HandleValidSubmit()
     {
         var result = await AuthService.Login(_loginModel);
         if (result.Successful)
         {
-            
             NavigationManager.NavigateTo("/", true);
         }
         else
@@ -75,7 +73,7 @@
         }
     }
 
-    private LoginModel _loginModel = new();
+    private readonly LoginModel _loginModel = new();
     private string _error = "";
 
 

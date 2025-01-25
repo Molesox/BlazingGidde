@@ -1,10 +1,5 @@
-﻿
-
+﻿@using BlazingGidde.Client.Services.FlowCheck.TemplateItems
 @using BlazingGidde.Shared.DTOs.FlowCheck
-@using BlazingGidde.Shared.DTOs.FlowCheck.Request
-@using BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems
-@using BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems.Request
-@using BlazingGidde.Client.Services.FlowCheck.TemplateItems
 @using Microsoft.AspNetCore.Components.Rendering
 @inject TemplateKindManager TemplateKindManager
 @inject TemplateTypeManager TemplateTypeManager
@@ -20,7 +15,7 @@
 else
 {
     <EditForm Model="@Template">
-        <DataAnnotationsValidator />
+        <DataAnnotationsValidator/>
         @GetForm()
         <div style="margin-top: 20px;">
             @if (CanGoPrevious)
@@ -42,21 +37,20 @@ else
 }
 
 @code {
-    [Parameter]
-    public string Code { get; set; }
+    [Parameter] public string Code { get; set; }
 
-    [Parameter]
-    public int? Id { get; set; }
+    [Parameter] public int? Id { get; set; }
 
     private TemplateTypeDto TypeInfo { get; set; }
     private TemplateKindDto KindDto { get; set; } = new();
     private TemplateDto Template { get; set; } = new();
     private List<CustomTemplateItemDto> CustomItems { get; set; } = new();
-    private List<string> GasQuestions { get; set; } = new() { "Nivel de O2:", "Nivel de CO2:" };
+    private List<string> GasQuestions { get; } = new() { "Nivel de O2:", "Nivel de CO2:" };
 
-    private int CurrentIndex { get; set; } = 0;
+    private int CurrentIndex { get; set; }
 
     private bool CanGoPrevious => CurrentIndex > 0;
+
     private bool CanGoNext =>
         (TypeInfo?.Code == (int)TemplateCode.GAS && CurrentIndex < GasQuestions.Count - 1) ||
         (TypeInfo?.Code == (int)TemplateCode.BREAKABLE && CurrentIndex < CustomItems.Count - 1);
@@ -73,65 +67,63 @@ else
         {
             KindDto = await TemplateKindManager.GetByID(Id);
             CustomItems = KindDto?.CustomTemplateItems.Map().ToANew<List<CustomTemplateItemDto>>()
-                      ?? new List<CustomTemplateItemDto>();
+                          ?? new List<CustomTemplateItemDto>();
         }
 
         Template = new TemplateDto
-            {
-                TemplateKindId = KindDto.Id,
-                CreateDate = DateTime.Now,
-                CreateUser = "UsuarioActual" // Cambiar por el usuario real conectado
-            };
+        {
+            TemplateKindId = KindDto.Id,
+            CreateDate = DateTime.Now,
+            CreateUser = "UsuarioActual" // Cambiar por el usuario real conectado
+        };
     }
 
-    private RenderFragment GetForm() => TypeInfo?.Code switch
+    private RenderFragment GetForm()
     {
-        (int)TemplateCode.BREAKABLE => __builder =>
+        return TypeInfo?.Code switch
         {
-            __builder.OpenElement(0, "h4");
-            __builder.AddContent(1, "Formulario de Rompibles");
-            __builder.CloseElement();
-
-            if (CustomItems.Count > 0)
+            (int)TemplateCode.BREAKABLE => __builder =>
             {
-                var item = CustomItems[CurrentIndex];
-                RenderItemForm(__builder, item);
-            }
-        }
-        ,
+                __builder.OpenElement(0, "h4");
+                __builder.AddContent(1, "Formulario de Rompibles");
+                __builder.CloseElement();
 
-        (int)TemplateCode.GAS => __builder =>
-        {
-            __builder.OpenElement(0, "h4");
-            __builder.AddContent(1, "Formulario de Gases");
-            __builder.CloseElement();
+                if (CustomItems.Count > 0)
+                {
+                    var item = CustomItems[CurrentIndex];
+                    RenderItemForm(__builder, item);
+                }
+            },
 
-            if (CurrentIndex < GasQuestions.Count)
+            (int)TemplateCode.GAS => __builder =>
             {
-                __builder.OpenElement(2, "div");
-                __builder.AddAttribute(3, "style", "margin-bottom: 20px;");
-
-                // Mostrar la pregunta de gas en función del índice
-                __builder.OpenElement(4, "label");
-                __builder.AddContent(5, GasQuestions[CurrentIndex]);
+                __builder.OpenElement(0, "h4");
+                __builder.AddContent(1, "Formulario de Gases");
                 __builder.CloseElement();
 
-                __builder.OpenElement(6, "input");
-                __builder.AddAttribute(7, "type", "text");
-                __builder.AddAttribute(8, "placeholder", GasQuestions[CurrentIndex]);
-                __builder.AddAttribute(9, "bind-value", "");  // Aquí puedes enlazar con un modelo si es necesario
-                __builder.CloseElement();
+                if (CurrentIndex < GasQuestions.Count)
+                {
+                    __builder.OpenElement(2, "div");
+                    __builder.AddAttribute(3, "style", "margin-bottom: 20px;");
 
-                __builder.CloseElement();
-            }
-        }
-        ,
+                    // Mostrar la pregunta de gas en función del índice
+                    __builder.OpenElement(4, "label");
+                    __builder.AddContent(5, GasQuestions[CurrentIndex]);
+                    __builder.CloseElement();
 
-        _ => __builder =>
-        {
-            __builder.AddContent(0, "Formulario no encontrado para este tipo de plantilla.");
-        }
-    };
+                    __builder.OpenElement(6, "input");
+                    __builder.AddAttribute(7, "type", "text");
+                    __builder.AddAttribute(8, "placeholder", GasQuestions[CurrentIndex]);
+                    __builder.AddAttribute(9, "bind-value", ""); // Aquí puedes enlazar con un modelo si es necesario
+                    __builder.CloseElement();
+
+                    __builder.CloseElement();
+                }
+            },
+
+            _ => __builder => { __builder.AddContent(0, "Formulario no encontrado para este tipo de plantilla."); }
+        };
+    }
 
     private void RenderItemForm(RenderTreeBuilder __builder, CustomTemplateItemDto item)
     {
@@ -161,7 +153,7 @@ else
         __builder.AddAttribute(15, "type", "radio");
         __builder.AddAttribute(16, "name", $"status_{item.Id}");
         __builder.AddAttribute(17, "value", "OK");
-        __builder.AddAttribute(18, "bind-value", "");  // Aquí puedes conectar un modelo si es necesario
+        __builder.AddAttribute(18, "bind-value", ""); // Aquí puedes conectar un modelo si es necesario
         __builder.CloseElement();
 
         __builder.OpenElement(19, "label");
@@ -171,7 +163,7 @@ else
         __builder.AddAttribute(22, "type", "radio");
         __builder.AddAttribute(23, "name", $"status_{item.Id}");
         __builder.AddAttribute(24, "value", "KO");
-        __builder.AddAttribute(25, "bind-value", "");  // Aquí puedes conectar un modelo si es necesario
+        __builder.AddAttribute(25, "bind-value", ""); // Aquí puedes conectar un modelo si es necesario
         __builder.CloseElement();
 
         __builder.CloseElement();
@@ -259,6 +251,5 @@ else
             Value = null; // Inicia sin respuesta
         }
     }
+
 }
-
-

@@ -1,7 +1,6 @@
 ﻿@page "/patois"
 @using BlazingGidde.Shared.Models.Patois
 @using BlazingGidde.Shared.Repository
-@using Microsoft.AspNetCore.Identity
 @inject DictionaryManager dictionaryManager
 
 <PageTitle>Dictionnaire</PageTitle>
@@ -18,115 +17,122 @@
 
 <div class="container my-1">
 
-	<!-- Toggle Switch -->
-	<div class="d-flex justify-content-end mb-3">
-		<div class="form-check form-switch">
-			<input class="form-check-input" type="checkbox" id="swapSwitch" @bind="isSwapped">
-			<label class="form-check-label" for="swapSwitch">Swap Sides</label>
-		</div>
-	</div>
+    <!-- Toggle Switch -->
+    <div class="d-flex justify-content-end mb-3">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="swapSwitch" @bind="isSwapped">
+            <label class="form-check-label" for="swapSwitch">Swap Sides</label>
+        </div>
+    </div>
 
-	<div class="list-group list-group-flush scrollable-container">
-		<Virtualize ItemsProvider="itemsProvider" Context="entry" ItemSize="100" OverscanCount="100">
-			<div class="list-group-item mb-3 shadow-sm" style="background-color: rgb(224, 224, 224);">
-				<div class="row">
-					@if (!isSwapped)
-					{
-						<!-- Left column (French content) -->
-						<div class="col-md-6">
-							<h5 class="mb-2">
-								<span class="badge bg-primary me-2">French Word:</span> @entry.FrenchWord
-							</h5>
-							<p class="mb-1"><strong>Example:</strong> @entry.FrenchExample</p>
-						</div>
-						<!-- Right column (Dialect content) -->
-						<div class="col-md-6">
-							<h5 class="mb-2">
-								<span class="badge bg-success me-2">Dialect Word:</span> @entry.DialectWord
-							</h5>
-							<p class="mb-1"><strong>Example:</strong> @entry.DialectExample</p>
-						</div>
-					}
-					else
-					{
-						<!-- Left column (Dialect content) -->
-						<div class="col-md-6">
-							<h5 class="mb-2">
-								<span class="badge bg-success me-2">Dialect Word:</span> @entry.DialectWord
-							</h5>
-							<p class="mb-1"><strong>Example:</strong> @entry.DialectExample</p>
-						</div>
-						<!-- Right column (French content) -->
-						<div class="col-md-6">
-							<h5 class="mb-2">
-								<span class="badge bg-primary me-2">French Word:</span> @entry.FrenchWord
-							</h5>
-							<p class="mb-1"><strong>Example:</strong> @entry.FrenchExample</p>
-						</div>
-					}
-				</div>
-			</div>
-		</Virtualize>
-	</div>
+    <div class="list-group list-group-flush scrollable-container">
+        <Virtualize ItemsProvider="itemsProvider" Context="entry" ItemSize="100" OverscanCount="100">
+            <div class="list-group-item mb-3 shadow-sm" style="background-color: rgb(224, 224, 224);">
+                <div class="row">
+                    @if (!isSwapped)
+                    {
+                        <!-- Left column (French content) -->
+                        <div class="col-md-6">
+                            <h5 class="mb-2">
+                                <span class="badge bg-primary me-2">French Word:</span> @entry.FrenchWord
+                            </h5>
+                            <p class="mb-1">
+                                <strong>Example:</strong> @entry.FrenchExample
+                            </p>
+                        </div>
+                        <!-- Right column (Dialect content) -->
+                        <div class="col-md-6">
+                            <h5 class="mb-2">
+                                <span class="badge bg-success me-2">Dialect Word:</span> @entry.DialectWord
+                            </h5>
+                            <p class="mb-1">
+                                <strong>Example:</strong> @entry.DialectExample
+                            </p>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Left column (Dialect content) -->
+                        <div class="col-md-6">
+                            <h5 class="mb-2">
+                                <span class="badge bg-success me-2">Dialect Word:</span> @entry.DialectWord
+                            </h5>
+                            <p class="mb-1">
+                                <strong>Example:</strong> @entry.DialectExample
+                            </p>
+                        </div>
+                        <!-- Right column (French content) -->
+                        <div class="col-md-6">
+                            <h5 class="mb-2">
+                                <span class="badge bg-primary me-2">French Word:</span> @entry.FrenchWord
+                            </h5>
+                            <p class="mb-1">
+                                <strong>Example:</strong> @entry.FrenchExample
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </Virtualize>
+    </div>
 </div>
 
 @code {
-	private ItemsProviderDelegate<DictionaryEntry>? itemsProvider;
-	private int? totalItemCountCache;
-	private bool isSwapped = false; // Variable to track the swap state
+    private ItemsProviderDelegate<DictionaryEntry>? itemsProvider;
+    private int? totalItemCountCache;
+    private bool isSwapped; // Variable to track the swap state
 
-	private List<DictionaryEntry> cachedItems = new List<DictionaryEntry>();
-	private bool isFullyLoaded = false;
+    private readonly List<DictionaryEntry> cachedItems = new();
+    private bool isFullyLoaded;
 
-	protected override void OnInitialized()
-	{
-		itemsProvider = LoadDictionaryEntries;
-	}
+    protected override void OnInitialized()
+    {
+        itemsProvider = LoadDictionaryEntries;
+    }
 
-	private async ValueTask<ItemsProviderResult<DictionaryEntry>> LoadDictionaryEntries(ItemsProviderRequest request)
-	{
-		if (isFullyLoaded)
-		{
-			// Return items from the cached collection
-			var items = cachedItems.Skip(request.StartIndex).Take(request.Count).ToList();
-			return new ItemsProviderResult<DictionaryEntry>(items, cachedItems.Count);
-		}
-		else
-		{
-			var queryFilter = new LinqQueryFilter<DictionaryEntry>(
-				)
-				{
-					Skip = request.StartIndex,
-					Take = request.Count,
-				};
-			var items =( await dictionaryManager.Get(queryFilter)).Items;
+    private async ValueTask<ItemsProviderResult<DictionaryEntry>> LoadDictionaryEntries(ItemsProviderRequest request)
+    {
+        if (isFullyLoaded)
+        {
+            // Return items from the cached collection
+            var items = cachedItems.Skip(request.StartIndex).Take(request.Count).ToList();
+            return new ItemsProviderResult<DictionaryEntry>(items, cachedItems.Count);
+        }
+        else
+        {
+            var queryFilter = new LinqQueryFilter<DictionaryEntry>
+            {
+                Skip = request.StartIndex,
+                Take = request.Count
+            };
+            var items = (await dictionaryManager.Get(queryFilter)).Items;
 
-			// Add loaded items to the cached collection
-			if (items != null && items.Any())
-			{
-				foreach (var item in items)
-				{
-					if (!cachedItems.Contains(item))
-					{
-						cachedItems.Add(item);
-					}
-				}
-			}
+            // Add loaded items to the cached collection
+            if (items != null && items.Any())
+            {
+                foreach (var item in items)
+                {
+                    if (!cachedItems.Contains(item))
+                    {
+                        cachedItems.Add(item);
+                    }
+                }
+            }
 
-			// Cache the total item count
-			if (!totalItemCountCache.HasValue)
-			{
-				totalItemCountCache = await dictionaryManager.GetTotalCount(queryFilter);
-			}
+            // Cache the total item count
+            if (!totalItemCountCache.HasValue)
+            {
+                totalItemCountCache = await dictionaryManager.GetTotalCount(queryFilter);
+            }
 
-			// Check if all items are loaded
-			if (cachedItems.Count >= totalItemCountCache.Value)
-			{
-				isFullyLoaded = true;
-			}
+            // Check if all items are loaded
+            if (cachedItems.Count >= totalItemCountCache.Value)
+            {
+                isFullyLoaded = true;
+            }
 
-			return new ItemsProviderResult<DictionaryEntry>(items!, totalItemCountCache.Value);
-		}
-	}
+            return new ItemsProviderResult<DictionaryEntry>(items!, totalItemCountCache.Value);
+        }
+    }
 
 }

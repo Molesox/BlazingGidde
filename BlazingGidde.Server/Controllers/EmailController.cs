@@ -1,53 +1,42 @@
-﻿
+﻿using BlazingGidde.Server.Components;
 using BlazingGidde.Server.Services;
 using BlazingGidde.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
-using BlazingGidde.Server.Components;
 
+namespace BlazingGidde.Server.Controllers;
 
-
-
-namespace BlazingGidde.Server.Controllers
+[Route("api/email")]
+[ApiController]
+public class EmailController : ControllerBase
 {
-    [Route("api/email")]
-    [ApiController]
-    public class EmailController : ControllerBase
+    private readonly TemplateRenderer _templateRenderer;
+
+    public EmailController(TemplateRenderer templateRenderer)
     {
-        private readonly TemplateRenderer _templateRenderer;
+        _templateRenderer = templateRenderer;
+    }
 
-        public EmailController(TemplateRenderer templateRenderer)
+    [HttpPost("send")]
+    public async Task<IActionResult> SendEmail()
+    {
+        var model = new EmailViewModel
         {
-            _templateRenderer = templateRenderer;
-        }
+            Subject = "¡Bienvenido!",
+            Greeting = "Hola,",
+            Body = "Gracias por registrarte.",
+            Signature = "El equipo sin nombre"
+        };
 
-        [HttpPost("send")]
-        public async Task<IActionResult> SendEmail()
-        {
-            var model = new EmailViewModel
-            {
-                Subject = "¡Bienvenido!",
-                Greeting = "Hola,",
-                Body = "Gracias por registrarte.",
-                Signature = "El equipo sin nombre"
-            };
+        //esta line de bajo no la he conseguido arreglar
+        var emailHtml = await _templateRenderer.RenderTemplateAsync<EmailTemplate>(model);
 
-            //esta line de bajo no la he conseguido arreglar
-            string emailHtml = await _templateRenderer.RenderTemplateAsync<EmailTemplate>(model);
+        //await SendEmailAsync("pintajarto@@gmail.com", model.Subject, emailHtml);
 
-            //await SendEmailAsync("pintajarto@@gmail.com", model.Subject, emailHtml);
+        return Ok("¡Correo enviado!");
+    }
 
-            return Ok("¡Correo enviado!");
-        }
-
-        private async Task SendEmailAsync(string toEmailAddress, string subject, string body)
-        {
-            
-
-            await Task.CompletedTask;
-
-        }
+    private async Task SendEmailAsync(string toEmailAddress, string subject, string body)
+    {
+        await Task.CompletedTask;
     }
 }
-
-
-

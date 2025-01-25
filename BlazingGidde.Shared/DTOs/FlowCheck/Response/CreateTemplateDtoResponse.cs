@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace BlazingGidde.Shared.DTOs.FlowCheck.Response;
 
-namespace BlazingGidde.Shared.DTOs.FlowCheck.Response
+public class CreateTemplateDtoResponse : TemplateDto, ICreateDtoResponse
 {
-    public class CreateTemplateDtoResponse : TemplateDto, ICreateDtoResponse
-    {
-    }
 }

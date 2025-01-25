@@ -1,5 +1,4 @@
-﻿
-using BlazingGidde.Shared.Models.FlowCheck;
+﻿using BlazingGidde.Shared.Models.FlowCheck;
 using BlazingGidde.Shared.Models.FlowCheck.TemplateItems;
 using BlazingGidde.Shared.Models.Patois;
 using BlazingGidde.Shared.Models.PersonMain;
@@ -7,100 +6,96 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+namespace BlazingGidde.Server.Data;
 
-namespace BlazingGidde.Server.Data
+public class ApplicationDbContext : IdentityDbContext
 {
-	public partial class ApplicationDbContext : IdentityDbContext
-	{
-		public ApplicationDbContext(DbContextOptions options) : base(options)
-		{
-		}
+    public ApplicationDbContext(DbContextOptions options) : base(options)
+    {
+    }
 
-		#region Identity
+    #region Patois
 
-		public virtual DbSet<FlowUser> FlowUsers { get; set; }
-		public virtual DbSet<FlowRole> FlowRoles { get; set; }
+    public virtual DbSet<DictionaryEntry> DictionaryEntries { get; set; }
 
-		#endregion
+    #endregion
 
-		#region Person Main
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        // optionsBuilder
+        // .LogTo(Console.WriteLine)
+        // .EnableSensitiveDataLogging();
+    }
 
-		public virtual DbSet<Person> Persons { get; set; }
-		public virtual DbSet<Address> Addresses { get; set; }
-		public virtual DbSet<AddressType> AddressTypes { get; set; }
-		public virtual DbSet<Email> Emails { get; set; }
-		public virtual DbSet<EmailType> EmailTypes { get; set; }
-		public virtual DbSet<PersonProfile> PersonProfiles { get; set; }
-		public virtual DbSet<PersonType> PersonTypes { get; set; }
-		public virtual DbSet<Phone> Phones { get; set; }
-		public virtual DbSet<PhoneType> PhoneTypes { get; set; }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
 
-		#endregion
+        modelBuilder.Entity<Template>().UseTpcMappingStrategy();
 
-		#region FlowCheck
+        modelBuilder.Entity<FlowUser>()
+            .HasMany(u => u.FlowRoles)
+            .WithMany(r => r.FlowUsers)
+            .UsingEntity<IdentityUserRole<string>>(
+                joinEntity => joinEntity
+                    .HasOne<FlowRole>()
+                    .WithMany()
+                    .HasForeignKey(ur => ur.RoleId)
+                    .OnDelete(DeleteBehavior.Restrict),
+                joinEntity => joinEntity
+                    .HasOne<FlowUser>()
+                    .WithMany()
+                    .HasForeignKey(ur => ur.UserId)
+                    .OnDelete(DeleteBehavior.Restrict),
+                joinEntity =>
+                {
+                    joinEntity.ToTable("AspNetUserRoles"); // Explicitly use the AspNetUserRoles table
+                });
 
-		public virtual DbSet<CustomTemplateItem> CustomTemplateItems { get; set; }
-		public virtual DbSet<Incidency> Incidencies { get; set; }
-		public virtual DbSet<Template> Templates { get; set; }
-		public virtual DbSet<TemplateItem> TemplateItems { get; set; }
-		public virtual DbSet<BreakeableItem> BreakeableItems { get; set; }
-		public virtual DbSet<GazItem> GazItems { get; set; }
-		public virtual DbSet<TemplateKind> TemplateKinds { get; set; }
-		public virtual DbSet<TemplateType> TemplateTypes { get; set; }
+        modelBuilder.Entity<Person>()
+            .HasOne(p => p.PersonType)
+            .WithMany(t => t.Persons)
+            .HasForeignKey(p => p.PersonTypeId)
+            .IsRequired();
 
-		#endregion
+        modelBuilder.Entity<FlowUser>()
+            .HasOne(fu => fu.Person)
+            .WithOne(p => p.ApplicationUser)
+            .HasForeignKey<Person>(p => p.ApplicationUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
 
-		#region Patois
+    #region Identity
 
-		public virtual DbSet<DictionaryEntry> DictionaryEntries { get; set; }
+    public virtual DbSet<FlowUser> FlowUsers { get; set; }
+    public virtual DbSet<FlowRole> FlowRoles { get; set; }
 
-		#endregion
+    #endregion
 
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-		{
-			// optionsBuilder
-			// .LogTo(Console.WriteLine)
-			// .EnableSensitiveDataLogging();
-		}
+    #region Person Main
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			base.OnModelCreating(modelBuilder);
+    public virtual DbSet<Person> Persons { get; set; }
+    public virtual DbSet<Address> Addresses { get; set; }
+    public virtual DbSet<AddressType> AddressTypes { get; set; }
+    public virtual DbSet<Email> Emails { get; set; }
+    public virtual DbSet<EmailType> EmailTypes { get; set; }
+    public virtual DbSet<PersonProfile> PersonProfiles { get; set; }
+    public virtual DbSet<PersonType> PersonTypes { get; set; }
+    public virtual DbSet<Phone> Phones { get; set; }
+    public virtual DbSet<PhoneType> PhoneTypes { get; set; }
 
-			modelBuilder.Entity<Template>().UseTpcMappingStrategy();
+    #endregion
 
-			modelBuilder.Entity<FlowUser>()
-			.HasMany(u => u.FlowRoles)
-			.WithMany(r => r.FlowUsers)
-			.UsingEntity<IdentityUserRole<string>>(
-				joinEntity => joinEntity
-					.HasOne<FlowRole>()
-					.WithMany()
-					.HasForeignKey(ur => ur.RoleId)
-					.OnDelete(DeleteBehavior.Restrict),
-				joinEntity => joinEntity
-					.HasOne<FlowUser>()
-					.WithMany()
-					.HasForeignKey(ur => ur.UserId)
-					.OnDelete(DeleteBehavior.Restrict),
+    #region FlowCheck
 
-				joinEntity =>
-				{
-					joinEntity.ToTable("AspNetUserRoles"); // Explicitly use the AspNetUserRoles table
-				});
-	
-			modelBuilder.Entity<Person>()
-				.HasOne(p => p.PersonType)
-				.WithMany(t => t.Persons)
-				.HasForeignKey(p => p.PersonTypeId)
-				.IsRequired();
+    public virtual DbSet<CustomTemplateItem> CustomTemplateItems { get; set; }
+    public virtual DbSet<Incidency> Incidencies { get; set; }
+    public virtual DbSet<Template> Templates { get; set; }
+    public virtual DbSet<TemplateItem> TemplateItems { get; set; }
+    public virtual DbSet<BreakeableItem> BreakeableItems { get; set; }
+    public virtual DbSet<GazItem> GazItems { get; set; }
+    public virtual DbSet<TemplateKind> TemplateKinds { get; set; }
+    public virtual DbSet<TemplateType> TemplateTypes { get; set; }
 
-			modelBuilder.Entity<FlowUser>()
-				.HasOne(fu => fu.Person)
-				.WithOne(p => p.ApplicationUser)
-				.HasForeignKey<Person>(p => p.ApplicationUserId)
-				.OnDelete(DeleteBehavior.Cascade);
-
-		}
-	}
+    #endregion
 }

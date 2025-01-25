@@ -42,9 +42,9 @@ builder.Services.AddScoped<TemplateKindManager>();
 builder.Services.AddScoped<TemplateTypeManager>();
 
 Mapper.WhenMapping
-     .From<string>()
-     .To<NameFlowRoleDto>()
-     .Map(ctx => ctx.Source)
-     .To(dto => dto.Name);
+    .From<string>()
+    .To<NameFlowRoleDto>()
+    .Map(ctx => ctx.Source)
+    .To(dto => dto.Name);
 
 await builder.Build().RunAsync();

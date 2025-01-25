@@ -1,6 +1,4 @@
 ﻿@using BlazingGidde.Shared.DTOs.FlowCheck.Request
-@using BlazingGidde.Client.Shared
-
 <div class="container my-4">
     <div class="row">
         @if (Items != null)
@@ -12,14 +10,14 @@
                         <div class="card-body d-flex flex-column">
 
                             <div class="fixed-size-image-wrapper">
-                                <CustomTemplateItemComponent IsReadOnly="IsReadOnly" Id="@item.Id" @bind-Value="@item.ImageUrl" />
+                                <CustomTemplateItemComponent IsReadOnly="IsReadOnly" Id="@item.Id" @bind-Value="@item.ImageUrl"/>
                             </div>
 
                             <div style="margin-top: 3px;" class="d-flex justify-content-between align-items-center">
-                                <DxTextBox ReadOnly="IsReadOnly" @bind-Text="@item.Name" NullText="@($"Nombre{item.Id}")" />
+                                <DxTextBox ReadOnly="IsReadOnly" @bind-Text="@item.Name" NullText="@($"Nombre{item.Id}")"/>
                                 <div class="mt-auto">
                                     <DxButton Enabled="!IsReadOnly" Click="@(() => RemoveItem(item))" IconCssClass="oi oi-trash"
-                                        RenderStyle="ButtonRenderStyle.Danger" />
+                                              RenderStyle="ButtonRenderStyle.Danger"/>
                                 </div>
                             </div>
                         </div>
@@ -30,27 +28,27 @@
     </div>
 </div>
 
-<DxButton Click="AddItem" IconCssClass="oi oi-plus" CssClass="fab-button btn-primary" />
+<DxButton Click="AddItem" IconCssClass="oi oi-plus" CssClass="fab-button btn-primary"/>
 
 @code {
     [Parameter] public List<CreateCustomTemplateItemDto> Items { get; set; } = new();
     [Parameter] public EventCallback<List<CreateCustomTemplateItemDto>> ItemsChanged { get; set; }
     [Parameter] public bool IsReadOnly { get; set; }
+
     protected override void OnInitialized()
     {
         if (Items == null || !Items.Any())
         {
             Items = Enumerable.Range(1, 4)
-            .Select(i => new CreateCustomTemplateItemDto { Id = i })
-            .ToList();
+                .Select(i => new CreateCustomTemplateItemDto { Id = i })
+                .ToList();
             ItemsChanged.InvokeAsync(Items);
-
         }
     }
 
     void AddItem()
     {
-        int newId = Items.Any() ? Items.Max(i => i.Id) + 1 : 1;
+        var newId = Items.Any() ? Items.Max(i => i.Id) + 1 : 1;
         Items.Add(new CreateCustomTemplateItemDto { Id = newId });
         ItemsChanged.InvokeAsync(Items);
     }
@@ -60,6 +58,7 @@
         Items.Remove(item);
         ItemsChanged.InvokeAsync(Items);
     }
+
 }
 
 <style>

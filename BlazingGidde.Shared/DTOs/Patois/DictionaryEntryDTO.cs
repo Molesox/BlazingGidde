@@ -17,5 +17,4 @@ public class DictionaryEntryDTO : ISupportMapping
     public string? DialectExample { get; set; }
 
     public string? AudioId { get; set; }
-
 }

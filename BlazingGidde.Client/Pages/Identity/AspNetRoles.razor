@@ -1,9 +1,5 @@
 ﻿@page "/approles"
-
 @using BlazingGidde.Shared.DTOs.FlowCheck
-@using BlazingGidde.Shared.DTOs.FlowCheck.Request
-@using BlazingGidde.Shared.Models.Identity
-@using Microsoft.AspNetCore.Identity
 
 @inject AspNetRoleManager roleManager
 
@@ -12,7 +8,7 @@
 <PageTitle>Application roles</PageTitle>
 
 <div class="container mt-5">
-    <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" @bind-IsActive="@isXSmallScreen" />
+    <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" @bind-IsActive="@isXSmallScreen"/>
     <div class="h-100 grid-wrapper">
         <DxGrid Data="@Data" @ref="@Grid" EditMode="GridEditMode.PopupEditForm"
                 CustomizeEditModel="Grid_CustomizeEditModel" AllowColumnReorder="true" AllowGroup="true" AllowSort="true"
@@ -35,7 +31,8 @@
                     <CellDisplayTemplate Context="gridcontext">
                         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
                                   RenderStyle="ButtonRenderStyle.Success" IconCssClass="oi oi-pencil"
-                                  Click="@(() => Grid.StartEditDataItemAsync(gridcontext.DataItem))"> </DxButton>
+                                  Click="@(() => Grid.StartEditDataItemAsync(gridcontext.DataItem))">
+                        </DxButton>
                         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
                                   RenderStyle="ButtonRenderStyle.Danger" CssClass="grid-delete-btn" IconCssClass="oi oi-trash"
                                   Click="@(() => DeleteRow(gridcontext.VisibleIndex))">
@@ -67,7 +64,6 @@
 </div>
 
 
-
 @code {
     IGrid Grid { get; set; }
     object Data { get; set; }
@@ -82,7 +78,7 @@
     {
         var editedRole = (FlowRoleDto)e.EditModel;
         var result = e.IsNew == false ? await roleManager.Update(editedRole) : await roleManager.Insert(editedRole);
-        
+
         if (result is not null)
         {
             // Handle errors (e.g., display a notification)
@@ -94,7 +90,7 @@
     {
         var dataItem = (FlowRoleDto)e.DataItem;
         if (dataItem == null)
-            e.EditModel = new FlowRoleDto { };
+            e.EditModel = new FlowRoleDto();
         else
         {
             e.EditModel = dataItem.Map().ToANew<FlowRoleDto>();
@@ -104,7 +100,6 @@
     private void DeleteRow(int visibleIndex)
     {
         Grid?.ShowRowDeleteConfirmation(visibleIndex);
-
     }
 
     async Task Grid_DataItemDeleting(GridDataItemDeletingEventArgs e)
@@ -114,4 +109,5 @@
         await roleManager.Delete(dataItem.Id);
         Grid?.Reload();
     }
+
 }

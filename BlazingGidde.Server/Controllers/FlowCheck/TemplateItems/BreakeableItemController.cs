@@ -6,17 +6,18 @@ using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BlazingGidde.Server.Controllers.FlowCheck
+namespace BlazingGidde.Server.Controllers.FlowCheck;
+
+[ApiController]
+[Route("[controller]")]
+[Authorize]
+public class BreakeableItemController : OnaBaseController<BreakeableItem, int, ApplicationDbContext, BreakableItemDto,
+    CreateBreakableItemDto>
 {
-    [ApiController]
-    [Route("[controller]")]
-    [Authorize]
-    public class BreakeableItemController : OnaBaseController<BreakeableItem, int, ApplicationDbContext, BreakableItemDto, CreateBreakableItemDto>
+    public BreakeableItemController(IRepository<BreakeableItem> repository,
+        ILogger<OnaBaseController<BreakeableItem, int, ApplicationDbContext, BreakableItemDto, CreateBreakableItemDto,
+            CreateBreakableItemDto, BreakableItemDto, BreakableItemDto>> logger)
+        : base(repository, logger)
     {
-        public BreakeableItemController(IRepository<BreakeableItem> repository, 
-            ILogger<OnaBaseController<BreakeableItem, int, ApplicationDbContext, BreakableItemDto, CreateBreakableItemDto, CreateBreakableItemDto, BreakableItemDto, BreakableItemDto>> logger) 
-            : base(repository, logger)
-        {
-        }
     }
 }

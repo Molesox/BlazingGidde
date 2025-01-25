@@ -1,12 +1,8 @@
 ﻿@page "/templates-type"
-@attribute [Authorize(Roles = "admin,manager")]
-
 @using BlazingGidde.Client.Pages.FlowCheck.Grids
 @using BlazingGidde.Shared.DTOs.FlowCheck
 @using BlazingGidde.Shared.DTOs.FlowCheck.Request
-@using BlazingGidde.Shared.Models.FlowCheck
-@using BlazingGidde.Shared.Repository
-@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "admin,manager")]
 
 @inject TemplateTypeManager templateTypeManager
 @inject NavigationManager NavigationManager
@@ -18,11 +14,11 @@
     <!-- Toolbar with toggle view button -->
     <div class="toolbar d-flex justify-content-between align-items-center mb-3">
         <DxSearchBox NullText="Search..." InputDelay="@InputDelay" BindValueMode="@BindValueMode"
-            CssClass="custom-search-box flex-grow-1 me-3" @bind-Text="@SearchText" aria-label="Search">
+                     CssClass="custom-search-box flex-grow-1 me-3" @bind-Text="@SearchText" aria-label="Search">
         </DxSearchBox>
 
         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-            CssClass="flex-shrink-0" Text="@GetToggleViewText()" @onclick="ToggleView">
+                  CssClass="flex-shrink-0" Text="@GetToggleViewText()" @onclick="ToggleView">
         </DxButton>
     </div>
 
@@ -30,7 +26,7 @@
     <div class="row gy-4">
         @if (IsGridView)
         {
-            <TemplateTypeGrid />
+            <TemplateTypeGrid/>
         }
         else
         {
@@ -44,13 +40,13 @@
                             <h5 class="card-title">@template.Name</h5>
                             <div class="d-flex justify-content-center gap-2 mt-3">
                                 <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
-                                    RenderStyle="ButtonRenderStyle.Primary" IconCssClass="oi oi-plus"
-                                    @onclick='()=> CreateNewTemplate(template.Code)'>
+                                          RenderStyle="ButtonRenderStyle.Primary" IconCssClass="oi oi-plus"
+                                          @onclick='() => CreateNewTemplate(template.Code)'>
                                 </DxButton>
 
                                 <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
-                                    RenderStyle="ButtonRenderStyle.Danger" IconCssClass="oi oi-trash"
-                                    @onclick='() => DeleteTemplate(template)'>
+                                          RenderStyle="ButtonRenderStyle.Danger" IconCssClass="oi oi-trash"
+                                          @onclick='() => DeleteTemplate(template)'>
                                 </DxButton>
                             </div>
                         </div>
@@ -60,25 +56,25 @@
         }
     </div>
 </div>
-<DxDialogProvider />
+<DxDialogProvider/>
 
 @code {
     [Inject] IDialogService DialogService { get; set; }
 
     private CreateTemplateTypeDto? selectedItem { get; set; }
 
-    public List<TemplateTypeDto> templateTypedto = new List<TemplateTypeDto>();
+    public List<TemplateTypeDto> templateTypedto = new();
 
     private bool PopupVisible { get; set; }
     private bool? Result { get; set; } = null;
     private string SearchText { get; set; } = string.Empty;
-    private int? InputDelay { get; set; } = 300;
-    private BindValueMode BindValueMode { get; set; } = BindValueMode.OnInput;
+    private int? InputDelay { get; } = 300;
+    private BindValueMode BindValueMode { get; } = BindValueMode.OnInput;
     bool isXSmallScreen;
     IGrid Grid { get; set; }
 
 
-    private bool IsGridView { get; set; } = false;
+    private bool IsGridView { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -86,18 +82,15 @@
     }
 
     private IEnumerable<TemplateTypeDto> filteredTemplates =>
-    string.IsNullOrWhiteSpace(SearchText)
-    ? templateTypedto
-    : templateTypedto.Where(t => t.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+        string.IsNullOrWhiteSpace(SearchText)
+            ? templateTypedto
+            : templateTypedto.Where(t => t.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
 
     private void CreateNewTemplate(int code)
     {
         var param = ((TemplateCode)code).ToString().ToLower();
         NavigationManager.NavigateTo($"/create-template/{param}");
-
-
     }
-
 
 
     private async Task DeleteTemplate(TemplateTypeDto templateType)
@@ -116,15 +109,15 @@
 
     private async Task<bool> OpenConfirmDialogAsync()
     {
-        return await DialogService.ConfirmAsync(new MessageBoxOptions()
-            {
-                Text = "Esta seguro que desea borrar esta plantilla?",
-                OkButtonText = "Yes",
-                CancelButtonText = "No",
-                ShowIcon = false,
-                ShowCloseButton = false,
-                RenderStyle = MessageBoxRenderStyle.Danger,
-            });
+        return await DialogService.ConfirmAsync(new MessageBoxOptions
+        {
+            Text = "Esta seguro que desea borrar esta plantilla?",
+            OkButtonText = "Yes",
+            CancelButtonText = "No",
+            ShowIcon = false,
+            ShowCloseButton = false,
+            RenderStyle = MessageBoxRenderStyle.Danger
+        });
     }
 
     private void CloseModal()
@@ -132,6 +125,7 @@
         PopupVisible = false;
         StateHasChanged();
     }
+
     private async Task SaveModal()
     {
         var updated = await templateTypeManager.Update(selectedItem);
@@ -140,6 +134,7 @@
 
         CloseModal();
     }
+
     private void ToggleView()
     {
         IsGridView = !IsGridView;
@@ -149,4 +144,5 @@
     {
         return IsGridView ? "Tiles View" : "Grid View";
     }
+
 }

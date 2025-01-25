@@ -1,12 +1,6 @@
 ﻿@page "/person"
-@using BlazingGidde.Client.Services
-@using BlazingGidde.Client.Shared
 @using BlazingGidde.Shared.DTOs.Person
 @using BlazingGidde.Shared.DTOs.Person.Request
-@using BlazingGidde.Shared.Models.PersonMain
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.Components.Forms
 
 
 @inject PersonMainManager personManager
@@ -93,17 +87,16 @@
 	object Data { get; set; }
 	bool isXSmallScreen;
 
-	protected override void OnInitialized()
-	{
-		Data = personManager.Get();
-	}
+    protected override void OnInitialized()
+    {
+        Data = personManager.Get();
+    }
 
-	async Task Grid_EditModelSaving(GridEditModelSavingEventArgs e)
-	{
-		var editedProduct = (CreatePersonDto)e.EditModel;
-		var result = e.IsNew == false ? personManager.Update(editedProduct) : personManager.Insert(editedProduct);
-
-	}
+    async Task Grid_EditModelSaving(GridEditModelSavingEventArgs e)
+    {
+        var editedProduct = (CreatePersonDto)e.EditModel;
+        var result = e.IsNew == false ? personManager.Update(editedProduct) : personManager.Insert(editedProduct);
+    }
 
 	async Task Grid_CustomizeEditModel(GridCustomizeEditModelEventArgs e)
 	{

@@ -1,5 +1,4 @@
 ﻿@page "/register"
-
 @using BlazingGidde.Shared.Models.Identity
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
@@ -9,60 +8,60 @@
         <div class="col-md-6 col-lg-5">
             <div class="card">
                 <EditForm Model="@_registerModel" OnValidSubmit="@HandleValidSubmit" Context="EditFormContext">
-                    <DataAnnotationsValidator />
+                    <DataAnnotationsValidator/>
                     <div class="card-header text-center py-3">
-                        <img src="OnaSoft-logo.svg" alt="Company Logo" />
+                        <img src="OnaSoft-logo.svg" alt="Company Logo"/>
                     </div>
                     <div class="card-body">
                         <DxFormLayout>
                             <DxFormLayoutItem ColSpanMd="12">
                                 <label for="tbFirstname" class="d-none">FirstName</label>
                                 <DxTextBox @bind-Text="@_registerModel.FirstName" NullText="First name"
-                                    ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
-                                    InputId="tbFirstname" />
+                                           ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                           InputId="tbFirstname"/>
                                 <div class="text-danger">
-                                    <ValidationMessage For="@(() => _registerModel.FirstName)" />
+                                    <ValidationMessage For="@(() => _registerModel.FirstName)"/>
                                 </div>
                             </DxFormLayoutItem>
                             <DxFormLayoutItem ColSpanMd="12">
                                 <label for="tbLastname" class="d-none">LatName</label>
                                 <DxTextBox @bind-Text="@_registerModel.LastName" NullText="Last name"
-                                    ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
-                                    InputId="tbLastname" />
+                                           ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                           InputId="tbLastname"/>
                                 <div class="text-danger">
-                                    <ValidationMessage For="@(() => _registerModel.LastName)" />
+                                    <ValidationMessage For="@(() => _registerModel.LastName)"/>
                                 </div>
                             </DxFormLayoutItem>
                             <DxFormLayoutItem ColSpanMd="12">
                                 <label for="tbEmail" class="d-none">E-mail</label>
                                 <DxTextBox @bind-Text="@_registerModel.Email" NullText="E-mail"
-                                    ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" InputId="tbEmail" />
+                                           ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" InputId="tbEmail"/>
                                 <div class="text-danger">
-                                    <ValidationMessage For="@(() => _registerModel.Email)" />
+                                    <ValidationMessage For="@(() => _registerModel.Email)"/>
                                 </div>
                             </DxFormLayoutItem>
                             <DxFormLayoutItem ColSpanMd="12">
                                 <label for="tbPassword" class="d-none">Password</label>
                                 <DxTextBox @bind-Text="@_registerModel.Password" NullText="Password" Password="true"
-                                    ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
-                                    InputId="tbPassword" />
+                                           ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                           InputId="tbPassword"/>
                                 <div class="text-danger">
-                                    <ValidationMessage For="@(() => _registerModel.Password)" />
+                                    <ValidationMessage For="@(() => _registerModel.Password)"/>
                                 </div>
                             </DxFormLayoutItem>
                             <DxFormLayoutItem ColSpanMd="12">
                                 <label for="tbConfirmPassword" class="d-none">Confirm Password</label>
                                 <DxTextBox @bind-Text="@_registerModel.ConfirmPassword" NullText="Confirm Password"
-                                    Password="true" ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
-                                    InputId="tbConfirmPassword" />
+                                           Password="true" ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                           InputId="tbConfirmPassword"/>
                                 <div class="text-danger">
-                                    <ValidationMessage For="@(() => _registerModel.ConfirmPassword)" />
+                                    <ValidationMessage For="@(() => _registerModel.ConfirmPassword)"/>
                                 </div>
                             </DxFormLayoutItem>
 
                             <DxFormLayoutItem ColSpanMd="12">
                                 <DxButton CssClass="w-100" RenderStyle="ButtonRenderStyle.Primary"
-                                    SubmitFormOnClick="true" Text="Register" />
+                                          SubmitFormOnClick="true" Text="Register"/>
                             </DxFormLayoutItem>
                             <DxFormLayoutItem ColSpanMd="12">
                                 <div class="text-center pt-2">
@@ -70,7 +69,7 @@
                                         Already have an account?
                                     </div>
                                     <DxButton RenderStyle="ButtonRenderStyle.Link" Text="Login"
-                                        Click="GotoLoginFormClick" />
+                                              Click="GotoLoginFormClick"/>
                                 </div>
                             </DxFormLayoutItem>
                         </DxFormLayout>
@@ -86,12 +85,13 @@
 
     private string _error = "";
 
-    private RegisterModel _registerModel = new();
+    private readonly RegisterModel _registerModel = new();
 
     void GotoLoginFormClick()
     {
         NavigationManager.NavigateTo("/login");
     }
+
     async Task HandleValidSubmit()
     {
         var result = await AuthService.Register(_registerModel);
