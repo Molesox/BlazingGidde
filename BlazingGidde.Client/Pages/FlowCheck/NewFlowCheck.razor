@@ -1,5 +1,6 @@
 ﻿@page "/new-flowcheck/{TemplateKindId:int}"
 @using BlazingGidde.Shared.DTOs.FlowCheck.Request
+@using BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems.Request
 @inject TemplateKindManager TemplateKindManager
 
 <h3>Nuevo flowcheck</h3>
@@ -54,6 +55,10 @@
                                         IsReadOnly="true"
                                         OnRemove="_ => { return; }"/>
                                     }
+                                    else
+                                    {
+                                        <GazItemCard Item="SelectedGazItem"></GazItemCard>
+                                    }
 
                                 </Template>
                             </DxFormLayoutItem>
@@ -95,31 +100,37 @@
                             {
                                 <!-- KO button -->
                                 <DxButton CssClass="full-width-button"
-                                          RenderStyle="ButtonRenderStyle.Danger"
-                                          RenderStyleMode="ButtonRenderStyleMode.Outline"
-                                          Text="KO"
-                                          Click="ShowIncidencia"
-                                          Enabled="!_isIncidenciaVisible" />
+                                RenderStyle="ButtonRenderStyle.Danger"
+                                RenderStyleMode="ButtonRenderStyleMode.Outline"
+                                Text="KO"
+                                Click="ShowIncidencia"
+                                Enabled="!_isIncidenciaVisible" />
 
                                 <!-- Ok button -->
                                 <DxButton CssClass="full-width-button"
-                                          Text="Ok"
-                                          Click="OnOkClicked" />
+                                Text="Ok"
+                                Click="OnOkClicked" />
                             }
                             else
                             {
                                 <!-- Guardar button once we’re done with custom items -->
                                 <DxButton CssClass="full-width-button"
-                                          Text="Guardar"
-                                          Click="OnSaveClicked" />
+                                Text="Guardar"
+                                Click="OnSaveClicked" />
                             }
                         }
                         else
                         {
                             <!-- Fallback for no custom items, show whatever you want -->
                             <DxButton CssClass="full-width-button"
-                                      Text="Guardar"
-                                      Click="OnSaveClicked" />
+                                      RenderStyle="ButtonRenderStyle.Danger"
+                                      RenderStyleMode="ButtonRenderStyleMode.Outline"
+                                      Text="Incidencia"
+                                      Click="ShowIncidencia"
+                                      Enabled="!_isIncidenciaVisible" />
+                            <DxButton CssClass="full-width-button"
+                            Text="Guardar"
+                            Click="OnSaveClicked" />
                         }
                     </div>
 
@@ -133,6 +144,7 @@
     [Parameter] public int? TemplateKindId { get; set; }
     private CreateTemplateKindDto? KindDto { get; set; }
     private CreateCustomTemplateItemDto SelectedCustomItem { get; set; }
+    private CreateGazItemDto SelectedGazItem { get; set; }
     private bool _isIncidenciaVisible = false;
     private bool _hasCustomItems = false;
     private int currentIndex = 0;
@@ -150,6 +162,10 @@
             {
                 _showFooterButtons = false;
                 SelectedCustomItem = KindDto.CustomTemplateItems.ToArray()[currentIndex];
+            }
+            else
+            {
+                SelectedGazItem = new CreateGazItemDto();
             }
         }
     }

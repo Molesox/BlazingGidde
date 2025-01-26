@@ -1,5 +1,44 @@
-﻿<h3>GazItemCard</h3>
+﻿@using BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems.Request
+@using DevExpress.Blazor
+
+<h3>Gaz Item Form</h3>
+
+@if (Item is null)
+{
+    <DxWaitIndicator Visible="true" CssClass="m-auto" AnimationType="WaitIndicatorAnimationType.Pulse"/>
+}
+else
+{
+    <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" IsActive="_isXSmallScreen" IsActiveChanged="IsActiveChanged" />
+
+    <DxFormLayout CaptionPosition="CaptionPosition.Vertical">
+        <DxFormLayoutItem ColSpanXs="6" ColSpanSm="6" ColSpanMd="6" Caption="O2">
+            <DxSpinEdit @bind-Value="Item.O2" />
+        </DxFormLayoutItem>
+        
+        <DxFormLayoutItem ColSpanXs="6" ColSpanSm="6" ColSpanMd="6" Caption="N2">
+            <DxSpinEdit @bind-Value="Item.N2" />
+        </DxFormLayoutItem>
+        
+        <DxFormLayoutItem ColSpanXs="6" ColSpanSm="6" ColSpanMd="6" Caption="CO2">
+            <DxSpinEdit @bind-Value="Item.CO2" />
+        </DxFormLayoutItem>
+        
+        <DxFormLayoutItem ColSpanXs="6" ColSpanSm="6" ColSpanMd="6" Caption="Is Gas OK">
+            <DxCheckBox @bind-Checked="Item.IsGasOk" />
+        </DxFormLayoutItem>
+        
+        <DxFormLayoutItem ColSpanXs="6" ColSpanSm="6" ColSpanMd="6" Caption="Is Sealed OK">
+            <DxCheckBox @bind-Checked="Item.IsSealedOk" />
+        </DxFormLayoutItem>
+    </DxFormLayout>
+}
 
 @code {
-
+    [Parameter] public CreateGazItemDto Item { get; set; } = new CreateGazItemDto();
+    
+    bool _isXSmallScreen;
+    void IsActiveChanged(bool isActive) {
+        _isXSmallScreen = isActive;
+    }
 }
