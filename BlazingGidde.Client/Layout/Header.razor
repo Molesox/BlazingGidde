@@ -1,6 +1,4 @@
-﻿@using BlazingGidde.Client.Shared
-
-<nav class="navbar header-navbar p-0 d-flex justify-content-between align-items-center">
+﻿<nav class="navbar header-navbar p-0 d-flex justify-content-between align-items-center">
 
     <div class="d-flex align-items-center">
         <AuthorizeView>
@@ -11,7 +9,7 @@
             </Authorized>
         </AuthorizeView>
 
-        <img class="icon-logo" src="OnaSoft-logo.svg" />
+        <img class="icon-logo" src="OnaSoft-logo.svg"/>
     </div>
 
     <div class="me-2">
@@ -24,7 +22,10 @@
     [Parameter] public bool ToggleOn { get; set; }
     [Parameter] public EventCallback<bool> ToggleOnChanged { get; set; }
 
-    async Task OnToggleClick() => await Toggle();
+    async Task OnToggleClick()
+    {
+        await Toggle();
+    }
 
     async Task Toggle(bool? value = null)
     {
@@ -35,4 +36,5 @@
             await ToggleOnChanged.InvokeAsync(ToggleOn);
         }
     }
+
 }

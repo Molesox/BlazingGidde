@@ -2,15 +2,15 @@
 
 <PageTitle>Bienvenido</PageTitle>
 
-<div class="welcome-container" @onmouseover="AddRotateClass" @onmouseout="RemoveRotateClass" >
-	<img src="OnaSoft-O.svg" alt="Logo Alpsoft" class="welcome-image @(isRotating ? "rotate" : "")" />
-	<h1 class="welcome-text">Bienvenid@@</h1>
-	<p class="welcome-subtext">Descubre nuestra application </p>
+<div class="welcome-container" @onmouseover="AddRotateClass" @onmouseout="RemoveRotateClass">
+    <img src="OnaSoft-O.svg" alt="Logo Alpsoft" class="welcome-image @(isRotating ? "rotate" : "")"/>
+    <h1 class="welcome-text">Bienvenid@@</h1>
+    <p class="welcome-subtext">Descubre nuestra application </p>
 </div>
 
 
 @code {
-    private bool isRotating = false;
+    private bool isRotating;
 
     private void AddRotateClass()
     {
@@ -21,4 +21,5 @@
     {
         isRotating = false;
     }
+
 }

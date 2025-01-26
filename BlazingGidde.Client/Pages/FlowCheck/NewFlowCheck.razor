@@ -1,0 +1,149 @@
+﻿@page "/new-flowcheck/{TemplateKindId:int}"
+
+@using BlazingGidde.Shared.DTOs.FlowCheck.Request
+
+@inject TemplateKindManager TemplateKindManager
+
+<h3>NewFlowCheck</h3>
+
+
+<style>
+    .full-width-button {
+        width: 100%;
+    }
+
+    .header-spacing {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .delete-incidency-container {
+        margin-left: auto;
+    }
+</style>
+
+<DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" IsActive="_isXSmallScreen" IsActiveChanged="IsActiveChanged"/>
+<div>
+    <DxGridLayout RowSpacing="10px">
+
+        <Rows>
+            <DxGridLayoutRow Areas="templateheader" Height="auto"/>
+            <DxGridLayoutRow Areas="templatecontent" Height="auto"/>
+            <DxGridLayoutRow Areas="templatefooter" Height="auto"/>
+        </Rows>
+
+        <Items>
+            <!-- Header -->
+            <DxGridLayoutItem Area="templateheader">
+                <Template>
+                    <div class="header-spacing">
+                        <TemplateFormComponent KindDto="KindDto" CreateDate="DateTime.Now" IsReadOnly="true"/>
+                    </div>
+                </Template>
+            </DxGridLayoutItem>
+
+            <!-- Main Content -->
+            <DxGridLayoutItem Area="templatecontent">
+                <Template>
+
+                    <DxFormLayout CaptionPosition="CaptionPosition.Vertical">
+                        <DxFormLayoutGroup ColSpanMd="12"
+                                           Caption="Elemento"
+                                           Expanded="@(!_isIncidenciaVisible)"
+                                           ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start"
+                                           AnimationType="LayoutAnimationType.Slide">
+                            <DxFormLayoutItem ColSpanMd="12">
+                                <h2>hola</h2>
+                            </DxFormLayoutItem>
+                        </DxFormLayoutGroup>
+                        <DxFormLayoutGroup Visible="@_isIncidenciaVisible"
+
+                                           ColSpanMd="12"
+                                           aria-labelledby="caption-template"
+                                           ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start"
+                                           AnimationType="LayoutAnimationType.Slide">
+                            <HeaderContentTemplate>
+                                <div id="caption-template">
+                                    Incidencia
+                                </div>
+                                <div class="delete-incidency-container">
+                                    <DxButton RenderStyle="ButtonRenderStyle.Danger"
+                                              RenderStyleMode="ButtonRenderStyleMode.Outline"
+                                              Attributes="@(new Dictionary<string, object> { ["title"] = "Borrar incidencia" })"
+                                              IconCssClass="oi oi-trash"
+                                              Click="DeleteIncidency"/>
+                                </div>
+                            </HeaderContentTemplate>
+                            <Items>
+                                <DxFormLayoutItem ColSpanMd="12">
+                                    <h2>Incidencia</h2>
+                                </DxFormLayoutItem>
+                            </Items>
+
+                        </DxFormLayoutGroup>
+                    </DxFormLayout>
+                </Template>
+            </DxGridLayoutItem>
+
+            <!-- Footer -->
+            <DxGridLayoutItem Area="templatefooter">
+                <Template>
+                    <div class="d-flex flex-column gap-2">
+                        <DxButton CssClass="full-width-button" SizeMode="SizeMode.Large"
+                                  Text="Incidencia" RenderStyle="ButtonRenderStyle.Danger"
+                                  RenderStyleMode="ButtonRenderStyleMode.Outline" Click="ShowIncidencia" Enabled="!_isIncidenciaVisible"/>
+                        <DxButton CssClass="full-width-button" SizeMode="SizeMode.Large" Text="Guardar"/>
+                    </div>
+                </Template>
+            </DxGridLayoutItem>
+        </Items>
+
+    </DxGridLayout>
+</div>
+
+@code {
+
+    [Parameter] public int? TemplateKindId { get; set; }
+
+    private CreateTemplateKindDto? KindDto { get; set; }
+
+    private bool _isIncidenciaVisible = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        if (TemplateKindId.HasValue && TemplateKindId > 0)
+        {
+            KindDto = await TemplateKindManager.GetEditModelByID(TemplateKindId.Value);
+        }
+    }
+
+    bool _isXSmallScreen;
+
+    void IsActiveChanged(bool isActive)
+    {
+        _isXSmallScreen = isActive;
+    }
+
+    void ShowIncidencia()
+    {
+        _isIncidenciaVisible = true;
+    }
+
+    async Task DeleteIncidency()
+    {
+        // Logique pour supprimer l'incidency
+        // Par exemple, appeler un service pour supprimer l'incidency du serveur
+        // await IncidencyService.DeleteIncidency(incidencyId);
+
+        // Masquer l'incidency après suppression
+        _isIncidenciaVisible = false;
+
+        // Optionnel : Afficher un message de confirmation ou de succès
+        // await ShowMessage("Incidency supprimée avec succès.");
+        <!-- Ajoutez l'événement Click au bouton de suppression -->
+    }
+
+}

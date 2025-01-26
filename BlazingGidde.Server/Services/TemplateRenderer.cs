@@ -1,51 +1,41 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components.Rendering;
-using Microsoft.Extensions.Logging.Abstractions;
-using System.Text.Encodings.Web;
-using System.Collections.Generic;
+﻿using BlazingGidde.Shared.Models;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using BlazingGidde.Shared.Models;
+using Microsoft.Extensions.Logging.Abstractions;
 
+namespace BlazingGidde.Server.Services;
 
-namespace BlazingGidde.Server.Services
+public class TemplateRenderer
 {
-    public class TemplateRenderer
+    private readonly IServiceProvider _serviceProvider;
+
+    public TemplateRenderer(IServiceProvider serviceProvider)
     {
-       private readonly IServiceProvider _serviceProvider;
+        _serviceProvider = serviceProvider;
+    }
 
-        public TemplateRenderer(IServiceProvider serviceProvider)
+    public async Task<string> RenderTemplateAsync<TComponent>(EmailViewModel model)
+
+    {
+        var htmlRenderer = new HtmlRenderer(_serviceProvider, NullLoggerFactory.Instance);
+
+        using var stringWriter = new StringWriter();
+
+        var parameters = new Dictionary<string, object>
         {
-            _serviceProvider = serviceProvider;
-        }
+            { "Model", model }
+        };
 
-        public async Task <string> RenderTemplateAsync<TComponent>(EmailViewModel model)
-          
+        var component = typeof(TComponent);
+
+        var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
         {
-            var htmlRenderer = new HtmlRenderer(_serviceProvider, NullLoggerFactory.Instance);
+            var renderTask = htmlRenderer.RenderComponentAsync(component, ParameterView.FromDictionary(parameters));
+            var result = await renderTask;
+            return result.ToString() ?? string.Empty;
+        });
 
-            using var stringWriter = new StringWriter();
-
-            var parameters = new Dictionary<string, object>
-            {
-                { "Model", model }
-            };
-
-            var component = typeof(TComponent);
-
-            var html = await htmlRenderer.Dispatcher.InvokeAsync(async () =>
-            {
-                var renderTask = htmlRenderer.RenderComponentAsync(component, ParameterView.FromDictionary(parameters));
-                var result = await renderTask;
-                return result.ToString() ?? string.Empty;
-            });
-
-            stringWriter.Write(html);
-            return stringWriter.ToString();
-        }
+        stringWriter.Write(html);
+        return stringWriter.ToString();
     }
 }

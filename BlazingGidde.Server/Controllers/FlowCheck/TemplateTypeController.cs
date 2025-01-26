@@ -13,10 +13,10 @@ namespace BlazingGidde.Server.Controllers.FlowCheck;
 [Authorize]
 public class TemplateTypeController : OnaTypeBaseController<TemplateType, TemplateTypeDto, CreateTemplateTypeDto>
 {
-    public TemplateTypeController(ITypeRepositoryEF<TemplateType > repository,
-     ILogger<OnaBaseController<TemplateType,int, ApplicationDbContext, TemplateTypeDto, CreateTemplateTypeDto>> logger)
-     : base(repository, logger)
+    public TemplateTypeController(ITypeRepositoryEF<TemplateType> repository,
+        ILogger<OnaBaseController<TemplateType, int, ApplicationDbContext, TemplateTypeDto, CreateTemplateTypeDto>>
+            logger)
+        : base(repository, logger)
     {
-        
     }
 }

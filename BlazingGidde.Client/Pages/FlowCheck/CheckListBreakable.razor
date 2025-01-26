@@ -1,9 +1,5 @@
-﻿@using BlazingGidde.Shared.DTOs.FlowCheck
-@using BlazingGidde.Shared.DTOs.FlowCheck.Request
-@using BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems
-@using BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems.Request
-@using BlazingGidde.Client.Services.FlowCheck.TemplateItems
-@using Microsoft.AspNetCore.Components.Rendering
+﻿@using BlazingGidde.Client.Services.FlowCheck.TemplateItems
+@using BlazingGidde.Shared.DTOs.FlowCheck
 @inject TemplateKindManager TemplateKindManager
 @inject TemplateTypeManager TemplateTypeManager
 @inject TemplateItemManager TemplateItemManager
@@ -21,7 +17,7 @@
         @if (!string.IsNullOrEmpty(CustomItems[CurrentIndex].ImageUrl))
         {
             <div class="form-group mt-2">
-                <img src="@CustomItems[CurrentIndex].ImageUrl" style="height: 150px; width: auto;" />
+                <img src="@CustomItems[CurrentIndex].ImageUrl" style="height: 150px; width: auto;"/>
             </div>
         }
 
@@ -30,7 +26,7 @@
                 <input type="radio" name="itemState" value="true" @onchange="() => HandleItemStateUpdate(true)"/> OK
             </label>
             <label class="ms-3">
-                <input type="radio" name="itemState" value="false" @onchange="() => HandleItemStateUpdate(false)" /> KO
+                <input type="radio" name="itemState" value="false" @onchange="() => HandleItemStateUpdate(false)"/> KO
             </label>
         </div>
 
@@ -43,26 +39,26 @@
                 {
                     <div>
                         <label>Aviso a mantenimiento?</label>
-                        <label><input type="radio" @bind="currentIncident.IsMaintenancAdvised" /> Sí</label>
-                        <label><input type="radio" @bind="currentIncident.IsMaintenancAdvised" /> No</label>
+                        <label><input type="radio" @bind="currentIncident.IsMaintenancAdvised"/> Sí</label>
+                        <label><input type="radio" @bind="currentIncident.IsMaintenancAdvised"/> No</label>
                     </div>
                 }
                 else if (currentIncidentQuestionIndex == 1)
                 {
                     <div>
                         <label>Aviso a calidad?</label>
-                        <label><input type="radio" @bind="currentIncident.IsQualityAdvised" /> Sí</label>
-                        <label><input type="radio" @bind="currentIncident.IsQualityAdvised" /> No</label>
+                        <label><input type="radio" @bind="currentIncident.IsQualityAdvised"/> Sí</label>
+                        <label><input type="radio" @bind="currentIncident.IsQualityAdvised"/> No</label>
                     </div>
                 }
                 else if (currentIncidentQuestionIndex == 1)
                 {
                     <div>
                         <label>Rellenadas incidencias</label>
-                        
+
                     </div>
                 }
-                
+
 
                 @if (incidentValidationError != null)
                 {
@@ -95,11 +91,9 @@ else
 }
 
 @code {
-    [Parameter]
-    public string Code { get; set; }
+    [Parameter] public string Code { get; set; }
 
-    [Parameter]
-    public int? Id { get; set; }
+    [Parameter] public int? Id { get; set; }
 
     private TemplateTypeDto TypeInfo { get; set; }
     private TemplateKindDto KindDto { get; set; } = new();
@@ -151,16 +145,15 @@ else
     private void HandleItemStateUpdate(bool isOk)
     {
         var item = CustomItems[CurrentIndex];
-
     }
 
     private void NextIncidentQuestion()
     {
-        
-        if (currentIncidentQuestionIndex < 2) 
+        if (currentIncidentQuestionIndex < 2)
         {
             currentIncidentQuestionIndex++;
         }
+
         if (currentIncidentQuestionIndex >= 2)
         {
             isIncidentQuestionVisible = false;
@@ -180,4 +173,5 @@ else
         // Aquí puedes guardar los resultados en la base de datos o realizar otras acciones necesarias
         // Ejemplo: await ChecklistService.SaveCheckListAsync(CustomItems);
     }
+
 }

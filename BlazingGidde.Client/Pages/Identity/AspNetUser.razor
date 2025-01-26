@@ -1,11 +1,6 @@
 ﻿@page "/appusers"
-
-@using BlazingGidde.Shared.Models.Identity
-@using BlazingGidde.Shared.Models.Patois
 @using BlazingGidde.Shared.DTOs.FlowCheck
 @using BlazingGidde.Shared.DTOs.FlowCheck.Request
-@using BlazingGidde.Shared.Models.PersonMain
-@using Microsoft.AspNetCore.Identity
 
 @inject AspNetUserManager UserManager
 @inject AspNetRoleManager RoleManager
@@ -19,30 +14,33 @@
 
 <div class="h-100 grid-wrapper">
     <DxGrid Data="@Users" @ref="Grid" CssClass="grid-style" EditMode="GridEditMode.PopupEditForm"
-        AllowColumnReorder="true" AllowGroup="true" AllowSort="true" ShowGroupPanel="true" ShowFilterRow="true"
-        ShowSearchBox="true" EditModelSaving="Grid_EditModelSaving" DataItemDeleting="Grid_DataItemDeleting"
-        CustomizeEditModel="Grid_CustomizeEditModel">
+            AllowColumnReorder="true" AllowGroup="true" AllowSort="true" ShowGroupPanel="true" ShowFilterRow="true"
+            ShowSearchBox="true" EditModelSaving="Grid_EditModelSaving" DataItemDeleting="Grid_DataItemDeleting"
+            CustomizeEditModel="Grid_CustomizeEditModel">
 
         <Columns>
             <DxGridCommandColumn Width="100px" FixedPosition="GridColumnFixedPosition.Left" NewButtonVisible="true"
-                Caption="Actions" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
+                                 Caption="Actions" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
                 <CellDisplayTemplate Context="gridcontext">
                     <DxButton RenderStyleMode="ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                        IconCssClass="oi oi-eye" Click="@(() => ViewRoles(gridcontext.DataItem))" />
+                              IconCssClass="oi oi-eye" Click="@(() => ViewRoles(gridcontext.DataItem))"/>
                     <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-                        IconCssClass="oi oi-pencil"
-                        Click="@(async() => { if (Grid is not null) await Grid.StartEditDataItemAsync(gridcontext.DataItem); })" />
+                              IconCssClass="oi oi-pencil"
+                              Click="@(async () =>
+                                     {
+                                         if (Grid is not null) await Grid.StartEditDataItemAsync(gridcontext.DataItem);
+                                     })"/>
                     <DxButton RenderStyleMode="ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
-                        IconCssClass="oi oi-trash" Click="@(() => DeleteUser(gridcontext.VisibleIndex))" />
+                              IconCssClass="oi oi-trash" Click="@(() => DeleteUser(gridcontext.VisibleIndex))"/>
                 </CellDisplayTemplate>
             </DxGridCommandColumn>
-            <DxGridDataColumn Caption="First Name" FieldName="PersonFirstName" TextAlignment="GridTextAlignment.Left" />
-            <DxGridDataColumn Caption="Last Name" FieldName="PersonLastName" TextAlignment="GridTextAlignment.Left" />
-            <DxGridDataColumn Caption="Email" FieldName="Email" TextAlignment="GridTextAlignment.Left" />
+            <DxGridDataColumn Caption="First Name" FieldName="PersonFirstName" TextAlignment="GridTextAlignment.Left"/>
+            <DxGridDataColumn Caption="Last Name" FieldName="PersonLastName" TextAlignment="GridTextAlignment.Left"/>
+            <DxGridDataColumn Caption="Email" FieldName="Email" TextAlignment="GridTextAlignment.Left"/>
             <DxGridDataColumn Caption="Phone Number" CaptionAlignment="GridTextAlignment.Center" FieldName="PhoneNumber"
-                TextAlignment="GridTextAlignment.Left" />
+                              TextAlignment="GridTextAlignment.Left"/>
             <DxGridDataColumn Caption="Two-Factor Enabled" FieldName="TwoFactorEnabled"
-                TextAlignment="GridTextAlignment.Center" />
+                              TextAlignment="GridTextAlignment.Center"/>
 
         </Columns>
 
@@ -69,21 +67,22 @@
                 <DxFormLayoutItem Caption="Roles">
 
                     <DxTagBox Data="@Roles" TextFieldName="@nameof(FlowRoleDto.Name)" TData="FlowRoleDto"
-                        TValue="FlowRoleDto" ValueFieldName="@nameof(FlowRoleDto.Name)" @bind-Tags="@Tags"
-                        ListRenderMode="ListRenderMode.Virtual" CssClass="cw-480" InputId="tbTagTemplate">
+                              TValue="FlowRoleDto" ValueFieldName="@nameof(FlowRoleDto.Name)" @bind-Tags="@Tags"
+                              ListRenderMode="ListRenderMode.Virtual" CssClass="cw-480" InputId="tbTagTemplate">
 
                         <TagDisplayTemplate Context="tagContext">
                             @{
-                                var buttonStyleMode = tagContext.IsCustom ? ButtonRenderStyleMode.Contained
-                                : GetModeByID(tagContext.DataItem.Name);
+                                var buttonStyleMode = tagContext.IsCustom
+                                    ? ButtonRenderStyleMode.Contained
+                                    : GetModeByID(tagContext.DataItem.Name);
 
                                 var buttonStyle = tagContext.IsCustom ? ButtonRenderStyle.Dark : ButtonRenderStyle.Primary;
 
                                 <DxButton Context="btnContext" RenderStyle="@buttonStyle" RenderStyleMode="@buttonStyleMode"
-                                    Text="@tagContext.DisplayText" CssStyle="display:inline-block; padding-right: 0">
+                                          Text="@tagContext.DisplayText" CssStyle="display:inline-block; padding-right: 0">
                                     @btnContext
                                     <span @onclick="@tagContext.RemoveTagAction"
-                                        style="display:inline-block; width: 1em; margin-left: 0.5em">
+                                          style="display:inline-block; width: 1em; margin-left: 0.5em">
                                         &times;
                                     </span>
                                 </DxButton>
@@ -104,6 +103,7 @@
 
     IEnumerable<FlowRoleDto> Roles { get; set; }
     IEnumerable<string> Tags { get; set; }
+
     ButtonRenderStyleMode GetModeByID(string cityName)
     {
         switch (cityName)
@@ -150,6 +150,7 @@
 
         Grid?.Reload();
     }
+
     async Task Grid_CustomizeEditModel(GridCustomizeEditModelEventArgs e)
     {
         var user = (FlowUserDto)e.DataItem;
@@ -177,4 +178,5 @@
     {
         Grid?.ShowRowDeleteConfirmation(visibleIndex);
     }
+
 }

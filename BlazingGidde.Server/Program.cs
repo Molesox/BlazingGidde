@@ -1,4 +1,6 @@
 using System.Text;
+using System.Text.Json.Serialization;
+using AgileObjects.AgileMapper;
 using BlazingGidde.Server.Data;
 using BlazingGidde.Server.Data.Repository;
 using BlazingGidde.Server.Services;
@@ -10,17 +12,11 @@ using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Serilog.Templates;
-using Serilog.Templates.Themes;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
-using AgileObjects.AgileMapper;
-using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Builder;
-using BlazingGidde.Shared.Models;
-using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
+using Serilog.Templates;
+using Serilog.Templates.Themes;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -31,25 +27,25 @@ Mapper.WhenMapping.MapEntityKeys();
 // Add services to the container.
 // https://learn.microsoft.com/fr-fr/aspnet/core/web-api/?view=aspnetcore-9.0
 builder.Services.AddControllers()
-.ConfigureApiBehaviorOptions(opt => opt.SuppressModelStateInvalidFilter = true)
-.AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+    .ConfigureApiBehaviorOptions(opt => opt.SuppressModelStateInvalidFilter = true)
+    .AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddRazorPages();
 
 builder.Services.AddSerilog((services, lc) => lc
-      .ReadFrom.Configuration(builder.Configuration)
-      .ReadFrom.Services(services)
-      .Enrich.FromLogContext()
-      .WriteTo.Console(new ExpressionTemplate(
-          "[{@t:HH:mm:ss} {@l:u3}{#if @tr is not null} ({substring(@tr,0,4)}:{substring(@sp,0,4)}){#end}] {@m}\n{@x}",
-          theme: TemplateTheme.Code)));
+    .ReadFrom.Configuration(builder.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext()
+    .WriteTo.Debug(new ExpressionTemplate(
+        "[{@t:HH:mm:ss} {@l:u3}{#if @tr is not null} ({substring(@tr,0,4)}:{substring(@sp,0,4)}){#end}] {@m}\n{@x}",
+        theme: TemplateTheme.Code)));
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services.AddDefaultIdentity<FlowUser>()
     .AddRoles<FlowRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-var entityTypes = new Type[]
+var entityTypes = new[]
 {
     typeof(Person),
     typeof(Email),
@@ -69,12 +65,13 @@ var entityTypes = new Type[]
 foreach (var entityType in entityTypes)
 {
     var repositoryInterface = typeof(IRepository<>).MakeGenericType(entityType);
-    var repositoryImplementation = typeof(RepositoryEF<,,>).MakeGenericType(entityType, typeof(ApplicationDbContext), typeof(int));
+    var repositoryImplementation =
+        typeof(RepositoryEF<,,>).MakeGenericType(entityType, typeof(ApplicationDbContext), typeof(int));
     builder.Services.AddTransient(repositoryInterface, repositoryImplementation);
 }
 
 // Handle FlowUser and FlowRole as string-based repositories
-var stringBasedEntityTypes = new Type[]
+var stringBasedEntityTypes = new[]
 {
     typeof(FlowUser),
     typeof(FlowRole)
@@ -83,7 +80,8 @@ var stringBasedEntityTypes = new Type[]
 foreach (var entityType in stringBasedEntityTypes)
 {
     var repositoryInterface = typeof(IRepository<>).MakeGenericType(entityType);
-    var repositoryImplementation = typeof(RepositoryEF<,,>).MakeGenericType(entityType, typeof(ApplicationDbContext), typeof(string));
+    var repositoryImplementation =
+        typeof(RepositoryEF<,,>).MakeGenericType(entityType, typeof(ApplicationDbContext), typeof(string));
     builder.Services.AddTransient(repositoryInterface, repositoryImplementation);
 }
 
@@ -104,7 +102,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateIssuerSigningKey = true,
         ValidAudience = configuration["JwtAudience"],
         ValidIssuer = configuration["JwtIssuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSecurityKey"]!)),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSecurityKey"]!))
     };
 });
 
@@ -140,9 +138,8 @@ builder.Services.AddSwaggerGen(setup =>
     {
         Version = "v1",
         Title = "Flow",
-        Description = "Flow API",
+        Description = "Flow API"
     });
-
 });
 
 var app = builder.Build();
@@ -170,7 +167,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseWebAssemblyDebugging();
     app.UseDeveloperExceptionPage();
-
 }
 
 

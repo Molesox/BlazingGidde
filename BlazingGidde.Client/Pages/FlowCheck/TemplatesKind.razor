@@ -1,9 +1,6 @@
 ﻿@page "/templates-kind"
-@attribute [Authorize(Roles = "admin,manager")]
-
-
 @using BlazingGidde.Client.Pages.FlowCheck.Grids
-@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "admin,manager")]
 
 @inject TemplateKindManager templateKindManager
 @inject NavigationManager NavigationManager

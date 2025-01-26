@@ -6,5 +6,5 @@ public enum TemplateCode
     GAS = 10,
     MANIPULATORS = 20,
     BREAKABLE = 30,
-    LABELREADER = 40,
+    LABELREADER = 40
 }

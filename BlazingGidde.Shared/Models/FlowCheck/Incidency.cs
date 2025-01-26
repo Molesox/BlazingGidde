@@ -3,13 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlazingGidde.Shared.Models.FlowCheck;
 
-[Table("Incidency", Schema ="FlowCheck")]
+[Table("Incidency", Schema = "FlowCheck")]
 public class Incidency : IModelBase<int>
 {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
-
     public bool? IsQualityAdvised { get; set; }
 
     public bool? IsMaintenancAdvised { get; set; }
@@ -18,9 +14,13 @@ public class Incidency : IModelBase<int>
 
     public string CorrectiveActions { get; set; } = string.Empty;
 
-	/// <summary>
-	/// Gets or set the template parent.
-	/// </summary>
-	[ForeignKey(nameof(TemplateItem.Id))]
+    /// <summary>
+    ///     Gets or set the template parent.
+    /// </summary>
+    [ForeignKey(nameof(TemplateItem.Id))]
     public TemplateItem Template { get; set; }
+
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
 }

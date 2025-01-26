@@ -1,10 +1,9 @@
 ﻿@page "/create-template/{code}"
 @page "/update-template/{id:int}"
 @page "/view-template/{id:int}"
-
+@using System.Security.Claims
 @using BlazingGidde.Shared.DTOs.FlowCheck
 @using BlazingGidde.Shared.DTOs.FlowCheck.Request
-@using System.Security.Claims
 
 @inject NavigationManager NavigationManager
 @inject TemplateKindManager TemplateKindManager
@@ -13,30 +12,14 @@
 <h3>@TypeInfo?.Name</h3>
 
 <DxToastProvider Name="Overview" MaxToastCount="5" AnimationType="ToastAnimationType.Slide"
-                 HorizontalAlignment="HorizontalAlignment.Right"
-                 DisplayTime="TimeSpan.Zero" Width="320px" />
+HorizontalAlignment="HorizontalAlignment.Right"
+DisplayTime="TimeSpan.Zero" Width="320px"/>
 
 <DxStackLayout Orientation="Orientation.Vertical" CssClass="w-100 ch-480">
     <Items>
         <DxStackLayoutItem Length="auto">
             <Template>
-                <DxFormLayout CaptionPosition="CaptionPosition.Vertical">
-                    <DxFormLayoutItem ColSpanMd="6" Caption="Nombre">
-                        <DxTextBox ReadOnly="@IsReadOnly" @bind-Text="KindDto.Name" />
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem ColSpanMd="3" Caption="Versión">
-                        <DxSpinEdit @bind-Value="KindDto.Version" Enabled="false" />
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem ColSpanMd="3" Caption="Fecha">
-                        <DxDateEdit @bind-Date="CreateDate" Enabled="false" />
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem ColSpanMd="6" Caption="Descripción del programa">
-                        <DxTextBox ReadOnly="@IsReadOnly" @bind-Text="KindDto.ProgramDescription" />
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem ColSpanMd="3" Caption="Sección">
-                        <DxTextBox ReadOnly="@IsReadOnly" @bind-Text="KindDto.Section" />
-                    </DxFormLayoutItem>
-                </DxFormLayout>
+                <TemplateFormComponent KindDto="KindDto" CreateDate="CreateDate" IsReadOnly="IsReadOnly" />
             </Template>
         </DxStackLayoutItem>
 
@@ -45,13 +28,13 @@
                 @if (TemplateCode == TemplateCode.BREAKABLE)
                 {
                     <DynamicComponent Type="@typeof(BreakableTemplate)"
-                                     Parameters="@(new Dictionary<string, object>
-                                     {
-                                         [nameof(BreakableTemplate.Items)] = Items,
-                                         [nameof(BreakableTemplate.ItemsChanged)] = 
-                                              EventCallback.Factory.Create<List<CreateCustomTemplateItemDto>>(this, OnItemsChanged),
-                                         [nameof(BreakableTemplate.IsReadOnly)] = IsReadOnly
-                                     })" />
+                    Parameters="@(new Dictionary<string, object>
+                                                  {
+                                                      [nameof(BreakableTemplate.Items)] = Items,
+                                                      [nameof(BreakableTemplate.ItemsChanged)] =
+                                                          EventCallback.Factory.Create<List<CreateCustomTemplateItemDto>>(this, OnItemsChanged),
+                                                      [nameof(BreakableTemplate.IsReadOnly)] = IsReadOnly
+                                                  })"/>
                 }
             </Template>
         </DxStackLayoutItem>
@@ -65,8 +48,8 @@
                     @if (!IsReadOnly)
                     {
                         <DxButton style="margin-left: 4px;"
-                                  RenderStyle="ButtonRenderStyle.Primary"
-                                  Click="Save">
+                        RenderStyle="ButtonRenderStyle.Primary"
+                        Click="Save">
                             Guardar
                         </DxButton>
                     }
@@ -92,13 +75,18 @@
     private CreateTemplateKindDto KindDto { get; set; } = new() { Version = 1 };
     private List<CreateCustomTemplateItemDto> Items { get; set; } = new();
 
-    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; }
+    [CascadingParameter] 
+    private Task<AuthenticationState> AuthState { get; set; }
+
     private ClaimsPrincipal User { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
         try
         {
+ 
             var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
 
             if (uri.AbsolutePath.Contains("view-template"))
@@ -108,8 +96,8 @@
             else if (uri.AbsolutePath.Contains("create-template"))
                 Mode = "add";
 
-            IsReadOnly = (Mode == "readonly");
-            IsAddMode = (Mode == "add");
+            IsReadOnly = Mode == "readonly";
+            IsAddMode = Mode == "add";
 
             if (!string.IsNullOrWhiteSpace(Code)
                 && Enum.TryParse(Code, true, out TemplateCode parsedCode))
@@ -136,8 +124,8 @@
                     TemplateCode = (TemplateCode)TypeInfo?.Code;
 
                     Items = KindDto?.CustomTemplateItems?.Map()
-                                   .ToANew<List<CreateCustomTemplateItemDto>>()
-                            ?? new();
+                                .ToANew<List<CreateCustomTemplateItemDto>>()
+                            ?? new List<CreateCustomTemplateItemDto>();
                 }
             }
         }
@@ -181,4 +169,5 @@
             Console.WriteLine($"Error saving template: {ex.Message}");
         }
     }
+
 }

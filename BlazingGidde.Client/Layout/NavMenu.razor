@@ -6,32 +6,32 @@
 
 <div class="sidebar @StateCssClass">
     <DxAccordion SelectionMode="NavigationSelectionMode.Single" UrlMatchMode="NavigationUrlMatchMode.CurrentPath"
-        CssClass="app-sidebar" @ref="Accordion">
+                 CssClass="app-sidebar" @ref="Accordion">
         <Items>
-            <DxAccordionItem NavigateUrl="./" Text="Panel de control" />
+            <DxAccordionItem NavigateUrl="./" Text="Panel de control"/>
 
             <AuthorizeView Roles="admin, viewer">
                 <DxAccordionItem Text="FlowCheck" AllowSelection="false">
                     <Items>
-                        <DxAccordionItem NavigateUrl="/templates" Text="Nuevo" />
-                        <DxAccordionItem Text="Consultar" />
+                        <DxAccordionItem NavigateUrl="/templates" Text="Nuevo"/>
+                        <DxAccordionItem Text="Consultar"/>
                     </Items>
                 </DxAccordionItem>
             </AuthorizeView>
             <AuthorizeView Roles="admin,manager">
                 <DxAccordionItem Text="Plantillas" AllowSelection="false">
                     <Items>
-                        <DxAccordionItem NavigateUrl="/templates-type" Text="Tipos de plantillas" />
-                        <DxAccordionItem NavigateUrl="/templates-kind" Text="Plantillas" />
+                        <DxAccordionItem NavigateUrl="/templates-type" Text="Tipos de plantillas"/>
+                        <DxAccordionItem NavigateUrl="/templates-kind" Text="Plantillas"/>
                     </Items>
                 </DxAccordionItem>
             </AuthorizeView>
             <AuthorizeView Roles="admin">
                 <DxAccordionItem Text="Admin" AllowSelection="false">
                     <Items>
-                        <DxAccordionItem NavigateUrl="/appusers" Text="Usuarios" />
-                        <DxAccordionItem NavigateUrl="/person" Text="Personas" />
-                        <DxAccordionItem NavigateUrl="/approles" Text="Roles" />
+                        <DxAccordionItem NavigateUrl="/appusers" Text="Usuarios"/>
+                        <DxAccordionItem NavigateUrl="/person" Text="Personas"/>
+                        <DxAccordionItem NavigateUrl="/approles" Text="Roles"/>
                     </Items>
                 </DxAccordionItem>
             </AuthorizeView>
@@ -50,7 +50,6 @@
         if (firstRender)
         {
             Accordion.ExpandAll();
-
         }
     }
 

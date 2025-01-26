@@ -1,5 +1,3 @@
-using System;
-
 namespace BlazingGidde.Shared.DTOs.Common;
 
 public record CountDto

@@ -1,18 +1,18 @@
-﻿
-namespace BlazingGidde.Shared.API;
-	public class APIResponse
-	{
-		#region Properties
+﻿namespace BlazingGidde.Shared.API;
 
-		/// <summary>
-		/// Gets or sets a value indicating whether the API call was successful.
-		/// </summary>
-		public bool Success { get; set; }
+public class APIResponse
+{
+    #region Properties
 
-		/// <summary>
-		/// Gets or sets the error messages, if any, resulting from the API call.
-		/// </summary>
-		public List<string> ErrorMessages { get; set; } = new List<string>();
+    /// <summary>
+    ///     Gets or sets a value indicating whether the API call was successful.
+    /// </summary>
+    public bool Success { get; set; }
 
-		#endregion
-	}
+    /// <summary>
+    ///     Gets or sets the error messages, if any, resulting from the API call.
+    /// </summary>
+    public List<string> ErrorMessages { get; set; } = new();
+
+    #endregion
+}

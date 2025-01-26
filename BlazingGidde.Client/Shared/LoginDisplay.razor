@@ -134,7 +134,7 @@
 
     private void Logout()
     {
-        NavigationManager.NavigateTo("LogOut", forceLoad: true);
+        NavigationManager.NavigateTo("LogOut", true);
     }
 
     private void NavigateToRegister()
@@ -146,6 +146,7 @@
     {
         NavigationManager.NavigateTo("Login");
     }
+
 }
 
 <style>
@@ -177,7 +178,7 @@
         color: red; /* Cambia el color del texto a rojo */
     }
 
-        .menu-logout .fa-sign-out {
-            color: red; /* Cambia el color del ícono a rojo */
-        }
+    .menu-logout .fa-sign-out {
+        color: red; /* Cambia el color del ícono a rojo */
+    }
 </style>

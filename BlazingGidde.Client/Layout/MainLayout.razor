@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 
-<DxLayoutBreakpoint MaxWidth="1200" @bind-IsActive="@IsMobileLayout" />
+<DxLayoutBreakpoint MaxWidth="1200" @bind-IsActive="@IsMobileLayout"/>
 
 <div class="page">
     <DxGridLayout CssClass="page-layout">
@@ -13,12 +13,13 @@
                 {
                     <DxGridLayoutRow Areas="sidebar" Height="auto"></DxGridLayoutRow>
                 }
+
                 <DxGridLayoutRow Areas="content"/>
                 <DxGridLayoutRow Areas="footer" Height="auto"/>
             }
             else
             {
-                <DxGridLayoutRow Areas="header header" Height="auto" />
+                <DxGridLayoutRow Areas="header header" Height="auto"/>
                 <DxGridLayoutRow Areas="@(isAuthorized && IsSidebarExpanded ? "sidebar content" : "content content")"/>
                 <DxGridLayoutRow Areas="footer footer" Height="auto"/>
             }
@@ -26,21 +27,21 @@
         <Columns>
             @if (!IsMobileLayout && isAuthorized)
             {
-                <DxGridLayoutColumn Width="auto" />
-                <DxGridLayoutColumn />
+                <DxGridLayoutColumn Width="auto"/>
+                <DxGridLayoutColumn/>
             }
         </Columns>
         <Items>
             <DxGridLayoutItem Area="header" CssClass="layout-item">
                 <Template>
-                    <Header @bind-ToggleOn="@IsSidebarExpanded" />
+                    <Header @bind-ToggleOn="@IsSidebarExpanded"/>
                 </Template>
             </DxGridLayoutItem>
             @if (isAuthorized)
             {
                 <DxGridLayoutItem Area="sidebar" CssClass="layout-item">
                     <Template>
-                        <NavMenu StateCssClass="@NavMenuCssClass" />
+                        <NavMenu StateCssClass="@NavMenuCssClass"/>
                     </Template>
                 </DxGridLayoutItem>
             }
@@ -49,7 +50,7 @@
                     <div class="content">
                         @Body
                     </div>
-                 
+
                 </Template>
             </DxGridLayoutItem>
             <DxGridLayoutItem Area="footer" CssClass="layout-item">
@@ -67,6 +68,7 @@
 @code {
     string? NavMenuCssClass { get; set; }
     bool _isMobileLayout;
+
     bool IsMobileLayout
     {
         get => _isMobileLayout;
@@ -78,6 +80,7 @@
     }
 
     bool _isSidebarExpanded = true;
+
     bool IsSidebarExpanded
     {
         get => _isSidebarExpanded;
@@ -91,11 +94,10 @@
         }
     }
 
-    bool isAuthorized = false;
+    bool isAuthorized;
 
     // Receive the authentication state via CascadingParameter
-    [CascadingParameter]
-    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
+    [CascadingParameter] private Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
@@ -125,4 +127,5 @@
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
     }
+
 }

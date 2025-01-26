@@ -1,5 +1,3 @@
-using System;
-
 namespace BlazingGidde.Shared.Models.PersonMain;
 
 public enum PersonMainEnum

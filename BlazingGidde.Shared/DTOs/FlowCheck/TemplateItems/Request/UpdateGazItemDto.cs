@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems.Request;
 
-namespace BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems.Request
+public class UpdateGazItemDto : CreateGazItemDto, IUpdateDto<int>
 {
-    public class UpdateGazItemDto : CreateGazItemDto, IUpdateDto<int>
-    {
-    }
 }

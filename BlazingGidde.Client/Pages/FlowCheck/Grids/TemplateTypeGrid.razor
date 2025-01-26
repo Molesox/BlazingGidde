@@ -1,44 +1,44 @@
-﻿@using BlazingGidde.Client.Shared
-@using BlazingGidde.Shared.DTOs.FlowCheck
+﻿@using BlazingGidde.Shared.DTOs.FlowCheck
 @using BlazingGidde.Shared.DTOs.FlowCheck.Request
-@using BlazingGidde.Shared.Models.FlowCheck
-@using BlazingGidde.Shared.Repository
-
 @inject NavigationManager NavigationManager
 @inject TemplateTypeManager templateTypeManager
 
 
 <div class="h-100 grid-wrapper">
-    <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" @bind-IsActive="@isXSmallScreen" />
+    <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" @bind-IsActive="@isXSmallScreen"/>
     <DxGrid Data="@Data" @ref="@Grid" CssClass="grid-style" EditMode="GridEditMode.PopupEditForm"
-        CustomizeEditModel="Grid_CustomizeEditModel" AllowColumnReorder="true" AllowGroup="true" AllowSort="true"
-        ShowGroupPanel="true" ShowGroupedColumns="true" SearchBoxNullText="Buscar..." ShowFilterRow="true"
-        ShowSearchBox="true" DataItemDeleting="Grid_DataItemDeleting" EditModelSaving="Grid_EditModelSaving">
+            CustomizeEditModel="Grid_CustomizeEditModel" AllowColumnReorder="true" AllowGroup="true" AllowSort="true"
+            ShowGroupPanel="true" ShowGroupedColumns="true" SearchBoxNullText="Buscar..." ShowFilterRow="true"
+            ShowSearchBox="true" DataItemDeleting="Grid_DataItemDeleting" EditModelSaving="Grid_EditModelSaving">
         <Columns>
 
             <DxGridDataColumn Caption="Nombre" FieldName="Name" CaptionAlignment="GridTextAlignment.Left"
-                TextAlignment="GridTextAlignment.Left">
+                              TextAlignment="GridTextAlignment.Left">
             </DxGridDataColumn>
 
             <DxGridCommandColumn Width="100px" FixedPosition="GridColumnFixedPosition.Left" NewButtonVisible="false"
-                Caption="Actions" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
+                                 Caption="Actions" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
                 <CellDisplayTemplate Context="gridcontext">
                     <!-- Click="@(async() => { if (Grid is not null) await Grid.StartEditNewRowAsync(); })"> -->
                     <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                        IconCssClass="oi oi-plus" Click="@(async() => { 
-                            var item = (TemplateTypeDto)gridcontext.DataItem;
-                            var param = ((TemplateCode)item.Code).ToString().ToLower();
-                            NavigationManager.NavigateTo($"/create-template/{param}");
-                        })">
+                              IconCssClass="oi oi-plus" Click="@(async () =>
+                                                               {
+                                                                   var item = (TemplateTypeDto)gridcontext.DataItem;
+                                                                   var param = ((TemplateCode)item.Code).ToString().ToLower();
+                                                                   NavigationManager.NavigateTo($"/create-template/{param}");
+                                                               })">
                     </DxButton>
                     <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-                        IconCssClass="oi oi-pencil"
-                        Click="@(async() => { if (Grid is not null) await Grid.StartEditDataItemAsync(gridcontext.DataItem); })">
+                              IconCssClass="oi oi-pencil"
+                              Click="@(async () =>
+                                     {
+                                         if (Grid is not null) await Grid.StartEditDataItemAsync(gridcontext.DataItem);
+                                     })">
                     </DxButton>
                     <AuthorizeView Roles="admin">
                         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
-                            RenderStyle="ButtonRenderStyle.Danger" CssClass="grid-delete-btn" IconCssClass="oi oi-trash"
-                            Click="@(() => DeleteRow(gridcontext.VisibleIndex))">
+                                  RenderStyle="ButtonRenderStyle.Danger" CssClass="grid-delete-btn" IconCssClass="oi oi-trash"
+                                  Click="@(() => DeleteRow(gridcontext.VisibleIndex))">
                         </DxButton>
                     </AuthorizeView>
                 </CellDisplayTemplate>
@@ -54,7 +54,7 @@
                     @EditFormContext.GetEditor("Name")
                 </DxFormLayoutItem>
                 <DxFormLayoutItem>
-                    <CustomTemplateItemComponent Id="@templateType.Id" @bind-Value="@templateType.ImgUrl" />
+                    <CustomTemplateItemComponent Id="@templateType.Id" @bind-Value="@templateType.ImgUrl"/>
 
                 </DxFormLayoutItem>
             </DxFormLayout>
@@ -82,26 +82,25 @@
     private void DeleteRow(int visibleIndex)
     {
         Grid?.ShowRowDeleteConfirmation(visibleIndex);
-
     }
+
     async Task Grid_EditModelSaving(GridEditModelSavingEventArgs e)
     {
         var editedProduct = (CreateTemplateTypeDto)e.EditModel;
-        var result = e.IsNew == false ?
-        await templateTypeManager.Update(editedProduct) : await templateTypeManager.Insert(editedProduct);
-
+        var result = e.IsNew == false ? await templateTypeManager.Update(editedProduct) : await templateTypeManager.Insert(editedProduct);
     }
 
     async Task Grid_CustomizeEditModel(GridCustomizeEditModelEventArgs e)
     {
         var dataItem = (TemplateTypeDto)e.DataItem;
         if (dataItem == null)
-            e.EditModel = new CreateTemplateTypeDto { };
+            e.EditModel = new CreateTemplateTypeDto();
         else
         {
             e.EditModel = await Task.Run(() => dataItem.Map().ToANew<CreateTemplateTypeDto>(cfg => cfg.MapEntityKeys()));
         }
     }
+
     async Task Grid_DataItemDeleting(GridDataItemDeletingEventArgs e)
     {
         var dataItem = (TemplateTypeDto)e.DataItem;

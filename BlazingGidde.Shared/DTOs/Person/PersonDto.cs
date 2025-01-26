@@ -1,6 +1,3 @@
-using System;
-using BlazingGidde.Shared.Models;
-
 namespace BlazingGidde.Shared.DTOs.Person;
 
 public record PersonDto : IReadDto<int>
@@ -22,5 +19,10 @@ public record PersonDto : IReadDto<int>
     public string DefaultAddress { get; set; }
 
     public int DefaultPhone { get; set; }
-    public int Id { get => PersonId; set => PersonId = value; }
+
+    public int Id
+    {
+        get => PersonId;
+        set => PersonId = value;
+    }
 }

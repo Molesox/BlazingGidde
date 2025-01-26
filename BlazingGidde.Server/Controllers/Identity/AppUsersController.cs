@@ -1,6 +1,4 @@
 ﻿using BlazingGidde.Server.Data;
-using BlazingGidde.Server.Data.Repository;
-using BlazingGidde.Shared.API;
 using BlazingGidde.Shared.DTOs.FlowCheck;
 using BlazingGidde.Shared.DTOs.FlowCheck.Request;
 using BlazingGidde.Shared.Models.FlowCheck;
@@ -8,18 +6,18 @@ using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BlazingGidde.Server.Controllers.Identity
-{
+namespace BlazingGidde.Server.Controllers.Identity;
 
-  [ApiController]
-  [Route("[controller]")]
-  [Authorize]
-  public class AppUsersController : OnaBaseController<FlowUser, string, ApplicationDbContext, FlowUserDto, CreateFlowUserDto>
-  {
+[ApiController]
+[Route("[controller]")]
+[Authorize]
+public class
+    AppUsersController : OnaBaseController<FlowUser, string, ApplicationDbContext, FlowUserDto, CreateFlowUserDto>
+{
     public AppUsersController(IUserRepository<FlowUser> repository,
-      ILogger<OnaBaseController<FlowUser, string, ApplicationDbContext, FlowUserDto, CreateFlowUserDto>> logger
+        ILogger<OnaBaseController<FlowUser, string, ApplicationDbContext, FlowUserDto, CreateFlowUserDto>> logger
     )
-      : base(repository, logger)
-    { }
-  }
+        : base(repository, logger)
+    {
+    }
 }

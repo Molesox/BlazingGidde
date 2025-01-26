@@ -1,11 +1,6 @@
 ﻿@page "/create-checklist/{code}/{id:int}"
-
-@using BlazingGidde.Shared.DTOs.FlowCheck
-@using BlazingGidde.Shared.DTOs.FlowCheck.Request
-@using BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems
-@using BlazingGidde.Shared.DTOs.FlowCheck.TemplateItems.Request
 @using BlazingGidde.Client.Services.FlowCheck.TemplateItems
-@using Microsoft.AspNetCore.Components.Rendering
+@using BlazingGidde.Shared.DTOs.FlowCheck
 @inject TemplateKindManager TemplateKindManager
 @inject TemplateTypeManager TemplateTypeManager
 @inject TemplateItemManager TemplateItemManager
@@ -21,17 +16,17 @@ else
 {
     <DxFormLayout CssClass="w-100">
         <DxFormLayoutItem Caption="Nombre de la Plantilla:">
-            <DxTextBox @bind-Text="KindDto.Name" InputId="templateName" ReadOnly />
+            <DxTextBox @bind-Text="KindDto.Name" InputId="templateName" ReadOnly/>
         </DxFormLayoutItem>
         <DxFormLayoutItem Caption="Fecha de Creación:">
-            <DxTextBox Text="@Template.CreateDate.ToShortDateString()" ReadOnly />
+            <DxTextBox Text="@Template.CreateDate.ToShortDateString()" ReadOnly/>
         </DxFormLayoutItem>
     </DxFormLayout>
 
     <div>
         @if (TypeInfo.Code == (int)TemplateCode.BREAKABLE)
         {
-            <CheckListBreakable Id="@Id" />
+            <CheckListBreakable Id="@Id"/>
         }
         else if (TypeInfo.Code == (int)TemplateCode.GAS)
         {
@@ -45,17 +40,15 @@ else
 }
 
 @code {
-    [Parameter]
-    public string Code { get; set; }
+    [Parameter] public string Code { get; set; }
 
-    [Parameter]
-    public int? Id { get; set; }
+    [Parameter] public int? Id { get; set; }
 
     private TemplateTypeDto TypeInfo { get; set; }
     private TemplateKindDto KindDto { get; set; } = new();
     private TemplateDto Template { get; set; } = new();
     private List<CustomTemplateItemDto> CustomItems { get; set; } = new();
-    public FlowUserDto userDto { get; set; } = new FlowUserDto();
+    public FlowUserDto userDto { get; set; } = new();
 
     private int CurrentIndex { get; set; } = 0;
 
@@ -77,11 +70,11 @@ else
         }
 
         Template = new TemplateDto
-            {
-                TemplateKindId = KindDto.Id,
-                CreateDate = DateTime.Now,
-                CreateUser = "UsuarioActual" // Cambiar por el usuario real conectado
-            };
+        {
+            TemplateKindId = KindDto.Id,
+            CreateDate = DateTime.Now,
+            CreateUser = "UsuarioActual" // Cambiar por el usuario real conectado
+        };
     }
 
     private async Task OnSaveChecklist()
@@ -89,4 +82,5 @@ else
         // Lógica de guardar
         Console.WriteLine("Checklist guardado correctamente.");
     }
+
 }

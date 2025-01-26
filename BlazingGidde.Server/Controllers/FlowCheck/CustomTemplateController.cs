@@ -4,21 +4,16 @@ using BlazingGidde.Shared.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+namespace BlazingGidde.Server.Controllers;
 
-
-namespace BlazingGidde.Server.Controllers
+[ApiController]
+[Route("[controller]")]
+[Authorize]
+public class CustomTemplateController : OnaBaseController<CustomTemplateItem, int, ApplicationDbContext>
 {
-
-    [ApiController]
-    [Route("[controller]")]
-    [Authorize]
-    public class CustomTemplateController : OnaBaseController<CustomTemplateItem , int, ApplicationDbContext>
+    public CustomTemplateController(IRepository<CustomTemplateItem> repository,
+        ILogger<OnaBaseController<CustomTemplateItem, int, ApplicationDbContext>> logger)
+        : base(repository, logger)
     {
-
-        public CustomTemplateController(IRepository<CustomTemplateItem> repository,
-            ILogger<OnaBaseController<CustomTemplateItem,int, ApplicationDbContext>> logger)
-            : base(repository, logger) { }
     }
-
 }
-
