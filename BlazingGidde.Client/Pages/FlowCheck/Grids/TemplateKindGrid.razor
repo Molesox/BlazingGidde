@@ -48,7 +48,7 @@
                                   Click="@(async () =>
                                          {
                                              var item = (TemplateKindDto)gridcontext.DataItem;
-                                             NavigationManager.NavigateTo($"/create-checklist/{item.TemplateTypeCode}/{item.Id}");
+                                             NavigationManager.NavigateTo($"/new-flowcheck/{item.Id}");
                                          })">
                         </DxButton>
                     </AuthorizeView>

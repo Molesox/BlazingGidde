@@ -36,7 +36,7 @@ builder.Services.AddSerilog((services, lc) => lc
     .ReadFrom.Configuration(builder.Configuration)
     .ReadFrom.Services(services)
     .Enrich.FromLogContext()
-    .WriteTo.Console(new ExpressionTemplate(
+    .WriteTo.Debug(new ExpressionTemplate(
         "[{@t:HH:mm:ss} {@l:u3}{#if @tr is not null} ({substring(@tr,0,4)}:{substring(@sp,0,4)}){#end}] {@m}\n{@x}",
         theme: TemplateTheme.Code)));
 

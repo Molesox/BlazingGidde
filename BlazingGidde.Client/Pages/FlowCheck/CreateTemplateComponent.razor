@@ -19,23 +19,7 @@ DisplayTime="TimeSpan.Zero" Width="320px"/>
     <Items>
         <DxStackLayoutItem Length="auto">
             <Template>
-                <DxFormLayout CaptionPosition="CaptionPosition.Vertical">
-                    <DxFormLayoutItem ColSpanMd="6" Caption="Nombre">
-                        <DxTextBox ReadOnly="@IsReadOnly" @bind-Text="KindDto.Name"/>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem ColSpanMd="3" Caption="Versión">
-                        <DxSpinEdit @bind-Value="KindDto.Version" Enabled="false"/>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem ColSpanMd="3" Caption="Fecha">
-                        <DxDateEdit @bind-Date="CreateDate" Enabled="false"/>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem ColSpanMd="6" Caption="Descripción del programa">
-                        <DxTextBox ReadOnly="@IsReadOnly" @bind-Text="KindDto.ProgramDescription"/>
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem ColSpanMd="3" Caption="Sección">
-                        <DxTextBox ReadOnly="@IsReadOnly" @bind-Text="KindDto.Section"/>
-                    </DxFormLayoutItem>
-                </DxFormLayout>
+                <TemplateFormComponent KindDto="KindDto" CreateDate="CreateDate" IsReadOnly="IsReadOnly" />
             </Template>
         </DxStackLayoutItem>
 
