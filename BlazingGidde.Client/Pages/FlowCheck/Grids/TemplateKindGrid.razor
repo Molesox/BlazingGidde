@@ -56,7 +56,7 @@
 
                     <AuthorizeView Roles="manager, admin">
                         <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
-                                  RenderStyle="ButtonRenderStyle.Secondary" IconCssClass="oi oi-pencil"
+                                  RenderStyle="ButtonRenderStyle.Success" IconCssClass="oi oi-pencil"
                                   Click="@(async () =>
                                          {
                                              if (Grid is not null) await Grid.StartEditDataItemAsync(gridcontext.DataItem);

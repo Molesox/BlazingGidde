@@ -12,113 +12,88 @@
 
 <h3>Usuarios</h3>
 
-<div class="h-100 grid-wrapper">
-    <DxGrid Data="@Users" @ref="Grid" CssClass="grid-style" EditMode="GridEditMode.PopupEditForm"
-            AllowColumnReorder="true" AllowGroup="true" AllowSort="true" ShowGroupPanel="true" ShowFilterRow="true"
-            ShowSearchBox="true" EditModelSaving="Grid_EditModelSaving" DataItemDeleting="Grid_DataItemDeleting"
-            CustomizeEditModel="Grid_CustomizeEditModel">
+<div class="container mt-5">
+    <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" @bind-IsActive="@isXSmallScreen"/>
+    <div class="h-100 grid-wrapper">
+        <DxGrid Data="@Users" @ref="Grid" CssClass="grid-style" EditMode="GridEditMode.PopupEditForm"
+                AllowColumnReorder="true" AllowGroup="true" AllowSort="true" ShowGroupPanel="true" ShowFilterRow="true"
+                ShowSearchBox="true" EditModelSaving="Grid_EditModelSaving" DataItemDeleting="Grid_DataItemDeleting"
+                CustomizeEditModel="Grid_CustomizeEditModel">
 
-        <Columns>
-            <DxGridCommandColumn Width="100px" FixedPosition="GridColumnFixedPosition.Left" NewButtonVisible="true"
-                                 Caption="Actions" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
-                <CellDisplayTemplate Context="gridcontext">
-                    <DxButton RenderStyleMode="ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
-                              IconCssClass="oi oi-eye" Click="@(() => ViewRoles(gridcontext.DataItem))"/>
-                    <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Secondary"
-                              IconCssClass="oi oi-pencil"
-                              Click="@(async () =>
-                                     {
-                                         if (Grid is not null) await Grid.StartEditDataItemAsync(gridcontext.DataItem);
-                                     })"/>
-                    <DxButton RenderStyleMode="ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
-                              IconCssClass="oi oi-trash" Click="@(() => DeleteUser(gridcontext.VisibleIndex))"/>
-                </CellDisplayTemplate>
-            </DxGridCommandColumn>
-            <DxGridDataColumn Caption="First Name" FieldName="PersonFirstName" TextAlignment="GridTextAlignment.Left"/>
-            <DxGridDataColumn Caption="Last Name" FieldName="PersonLastName" TextAlignment="GridTextAlignment.Left"/>
-            <DxGridDataColumn Caption="Email" FieldName="Email" TextAlignment="GridTextAlignment.Left"/>
-            <DxGridDataColumn Caption="Phone Number" CaptionAlignment="GridTextAlignment.Center" FieldName="PhoneNumber"
-                              TextAlignment="GridTextAlignment.Left"/>
-            <DxGridDataColumn Caption="Two-Factor Enabled" FieldName="TwoFactorEnabled"
-                              TextAlignment="GridTextAlignment.Center"/>
+            <Columns>
+                <DxGridCommandColumn Width="100px" FixedPosition="GridColumnFixedPosition.Left" NewButtonVisible="true"
+                                     Caption="Actions" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
+                    <CellDisplayTemplate Context="gridcontext">
+                        <DxButton RenderStyleMode="ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Primary"
+                                  IconCssClass="oi oi-eye" Click="@(() => ViewRoles(gridcontext.DataItem))" />
+                        <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Success"
+                                  IconCssClass="oi oi-pencil"
+                                  Click="@(async () =>
+                                 {
+                                     if (Grid is not null) await Grid.StartEditDataItemAsync(gridcontext.DataItem);
+                                 })" />
+                        <DxButton RenderStyleMode="ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
+                                  IconCssClass="oi oi-trash" Click="@(() => DeleteUser(gridcontext.VisibleIndex))" />
+                    </CellDisplayTemplate>
+                </DxGridCommandColumn>
+                <AuthorizeView Roles="admin">
+                    <DxGridDataColumn Caption="Id" FieldName="PersonId" TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)" Width="50px" />
+                </AuthorizeView>
+                <DxGridDataColumn Caption="Nombre completo" FieldName="PersonFullName" TextAlignment="GridTextAlignment.Left" />
+                <DxGridDataColumn Caption="Email" FieldName="Email" TextAlignment="GridTextAlignment.Left" Visible="@(!isXSmallScreen)">
+                    <CellDisplayTemplate Context="gridContext">
+                        <a href="mailto:@gridContext.Value" style="color: blue; text-decoration: underline;">
+                            @gridContext.Value
+                        </a>
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Phone Number" CaptionAlignment="GridTextAlignment.Center" FieldName="PhoneNumber"
+                                  TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)" />
+                <DxGridDataColumn Caption="Two-Factor Enabled" FieldName="TwoFactorEnabled"
+                                  TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)" />
 
-        </Columns>
+            </Columns>
 
-        <EditFormTemplate Context="EditFormContext">
-            @{
-                var user = (CreateFlowUserDto)EditFormContext.EditModel;
-            }
-            <DxFormLayout CssClass="w-100">
-                <DxFormLayoutGroup>
-                    <DxFormLayoutItem Caption="First Name">
-                        @EditFormContext.GetEditor("PersonFirstName")
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Last Name">
-                        @EditFormContext.GetEditor("PersonLastName")
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Email">
-                        @EditFormContext.GetEditor("Email")
-                    </DxFormLayoutItem>
-                    <DxFormLayoutItem Caption="Phone Number">
-                        @EditFormContext.GetEditor("PhoneNumber")
-                    </DxFormLayoutItem>
-                </DxFormLayoutGroup>
+            <EditFormTemplate Context="EditFormContext">
+                @{
+                    var user = (CreateFlowUserDto)EditFormContext.EditModel;
+                }
+                <DxFormLayout CssClass="w-100">
+                    <DxFormLayoutGroup>
+                        <DxFormLayoutItem Caption="Id">
+                            @EditFormContext.GetEditor("PersonId")
+                        </DxFormLayoutItem>
+                        <DxFormLayoutItem Caption="Full Name">
+                            @EditFormContext.GetEditor("PersonFullName")
+                        </DxFormLayoutItem>
+                        <DxFormLayoutItem Caption="Email">
+                            @EditFormContext.GetEditor("Email")
+                        </DxFormLayoutItem>
+                        <DxFormLayoutItem Caption="Phone Number">
+                            @EditFormContext.GetEditor("PhoneNumber")
+                        </DxFormLayoutItem>
+                    </DxFormLayoutGroup>
 
-                <DxFormLayoutItem Caption="Roles">
 
-                    <DxTagBox Data="@Roles" TextFieldName="@nameof(FlowRoleDto.Name)" TData="FlowRoleDto"
-                              TValue="FlowRoleDto" ValueFieldName="@nameof(FlowRoleDto.Name)" @bind-Tags="@Tags"
-                              ListRenderMode="ListRenderMode.Virtual" CssClass="cw-480" InputId="tbTagTemplate">
 
-                        <TagDisplayTemplate Context="tagContext">
-                            @{
-                                var buttonStyleMode = tagContext.IsCustom
-                                    ? ButtonRenderStyleMode.Contained
-                                    : GetModeByID(tagContext.DataItem.Name);
-
-                                var buttonStyle = tagContext.IsCustom ? ButtonRenderStyle.Dark : ButtonRenderStyle.Primary;
-
-                                <DxButton Context="btnContext" RenderStyle="@buttonStyle" RenderStyleMode="@buttonStyleMode"
-                                          Text="@tagContext.DisplayText" CssStyle="display:inline-block; padding-right: 0">
-                                    @btnContext
-                                    <span @onclick="@tagContext.RemoveTagAction"
-                                          style="display:inline-block; width: 1em; margin-left: 0.5em">
-                                        &times;
-                                    </span>
-                                </DxButton>
-                            }
-                        </TagDisplayTemplate>
-                    </DxTagBox>
-                </DxFormLayoutItem>
-
-            </DxFormLayout>
-        </EditFormTemplate>
-    </DxGrid>
+                </DxFormLayout>
+            </EditFormTemplate>
+        </DxGrid>
+    </div>
+    
 </div>
 
 @code {
     IGrid? Grid { get; set; }
     object? Users { get; set; }
-
+    bool isXSmallScreen;
 
     IEnumerable<FlowRoleDto> Roles { get; set; }
     IEnumerable<string> Tags { get; set; }
 
-    ButtonRenderStyleMode GetModeByID(string cityName)
-    {
-        switch (cityName)
-        {
-            case "New York":
-                return ButtonRenderStyleMode.Contained;
-            case "Los Angeles":
-                return ButtonRenderStyleMode.Outline;
-            default:
-                return ButtonRenderStyleMode.Text;
-        }
-    }
-
     protected override async Task OnInitializedAsync()
     {
+        base.OnInitialized();
         Users = UserManager.Get();
         Roles = await RoleManager.GetAll();
     }

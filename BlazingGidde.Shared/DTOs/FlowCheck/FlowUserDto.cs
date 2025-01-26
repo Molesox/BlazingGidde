@@ -12,6 +12,8 @@ public record FlowUserDto : IReadDto<string>
 
     public string PersonLastName { get; set; }
 
+    public string PersonFullName => $"{PersonLastName}, {PersonFirstName}";
+
     public string PersonTitle { get; set; }
 
     public string PersonCulture { get; set; }

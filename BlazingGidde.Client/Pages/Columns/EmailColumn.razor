@@ -1,0 +1,22 @@
+﻿<DxGridDataColumn Caption="Email" FieldName="@FieldName" TextAlignment="GridTextAlignment.Left">
+    <CellDisplayTemplate Context="gridContext">
+        <a href="mailto:@gridContext.Value" style="color: blue; text-decoration: underline;">
+            @gridContext.Value
+        </a>
+    </CellDisplayTemplate>
+</DxGridDataColumn>
+@code {
+    [Parameter] public string? FieldName { get; set; }
+    [Parameter] public string? Email { get; set; }
+
+    private string Emails(object dataItem)
+    {
+        if (!string.IsNullOrEmpty(FieldName))
+        {
+            return dataItem?.GetType().GetProperty(FieldName)?.GetValue(dataItem)?.ToString() ?? string.Empty;
+        }
+
+        return Email ?? string.Empty;
+    }
+
+}

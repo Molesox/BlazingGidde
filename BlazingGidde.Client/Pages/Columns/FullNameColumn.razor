@@ -1,0 +1,27 @@
+﻿<DxGridDataColumn Caption="Nombre completo" FieldName="@ResolvedFieldName"
+                  TextAlignment="GridTextAlignment.Left" CaptionAlignment="GridTextAlignment.Left">
+    <CellDisplayTemplate Context="gridContext">
+        @FullNames(gridContext.DataItem)
+    </CellDisplayTemplate>
+</DxGridDataColumn>
+
+@code {
+    [Parameter] public string? FieldName { get; set; }
+    [Parameter] public string? FirstName { get; set; }
+    [Parameter] public string? LastName { get; set; }
+
+    private string ResolvedFieldName => FieldName ?? $"{FirstName} {LastName}";
+
+    private string FullNames(object dataItem)
+    {
+        if (!string.IsNullOrEmpty(FieldName))
+        {
+            return dataItem?.GetType().GetProperty(FieldName)?.GetValue(dataItem)?.ToString() ?? string.Empty;
+        }
+
+        var firstNameValue = dataItem?.GetType().GetProperty(FirstName)?.GetValue(dataItem)?.ToString() ?? string.Empty;
+        var lastNameValue = dataItem?.GetType().GetProperty(LastName)?.GetValue(dataItem)?.ToString() ?? string.Empty;
+
+        return $"{firstNameValue} {lastNameValue}".Trim();
+    }
+}

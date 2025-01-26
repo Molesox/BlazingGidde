@@ -15,16 +15,17 @@
                 ShowGroupPanel="true" ShowGroupedColumns="true" SearchBoxNullText="Buscar..."
                 ShowFilterRow="true" ShowSearchBox="true" DataItemDeleting="Grid_DataItemDeleting" EditModelSaving="Grid_EditModelSaving">
             <Columns>
+                
                 <DxGridDataColumn Caption="Id" FieldName="Id"
                                   TextAlignment="GridTextAlignment.Left" Visible="@(!isXSmallScreen)" CaptionAlignment="GridTextAlignment.Left">
                 </DxGridDataColumn>
-
+                
                 <DxGridDataColumn Caption="Employee Name" FieldName="Name"
                                   TextAlignment="GridTextAlignment.Left" Visible="@(!isXSmallScreen)" CaptionAlignment="GridTextAlignment.Left">
                 </DxGridDataColumn>
 
                 <DxGridDataColumn Caption="Normalized Name" FieldName="NormalizedName"
-                                  TextAlignment="GridTextAlignment.Left" Visible="@(!isXSmallScreen)" CaptionAlignment="GridTextAlignment.Left">
+                                  TextAlignment="GridTextAlignment.Left" CaptionAlignment="GridTextAlignment.Left">
                 </DxGridDataColumn>
                 <DxGridCommandColumn Width="100px" FixedPosition="GridColumnFixedPosition.Left" NewButtonVisible="false"
                                      Caption="Acciones" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">

@@ -26,21 +26,18 @@
 								  IconCssClass="oi oi-trash" Click="@(() => DeleteUser(gridcontext.VisibleIndex))" />
 					</CellDisplayTemplate>
 				</DxGridCommandColumn>
-				<AuthorizeView Roles="admin">
+				
 				<DxGridDataColumn Caption="ID" FieldName="PersonId" 
 								  TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)" CaptionAlignment="GridTextAlignment.Left" Width="30px">
 				</DxGridDataColumn>
-				</AuthorizeView>
-				<DxGridDataColumn Caption="First Name" FieldName="FirstName"
-								  TextAlignment="GridTextAlignment.Left" CaptionAlignment="GridTextAlignment.Left">
-				</DxGridDataColumn>
-
-				<DxGridDataColumn Caption="Last Name" FieldName="LastName"
-								  TextAlignment="GridTextAlignment.Left" CaptionAlignment="GridTextAlignment.Left">
-				</DxGridDataColumn>
+				
 
 				<DxGridDataColumn Caption="Title" FieldName="Title"
-								  TextAlignment="GridTextAlignment.Left" Visible="@(!isXSmallScreen)" CaptionAlignment="GridTextAlignment.Left">
+								  TextAlignment="GridTextAlignment.Left" Visible="@(!isXSmallScreen)" CaptionAlignment="GridTextAlignment.Left" Width="15%">
+				</DxGridDataColumn>
+				
+				<DxGridDataColumn Caption="Nombre completo" FieldName="FullName"
+								  TextAlignment="GridTextAlignment.Left" CaptionAlignment="GridTextAlignment.Left">
 				</DxGridDataColumn>
 
 				<DxGridDataColumn Caption="Culture" FieldName="Culture"
@@ -57,16 +54,12 @@
 						@EditFormContext.GetEditor("PersonId")
 					</DxFormLayoutItem>
 
-					<DxFormLayoutItem Caption="First Name:" ColSpanMd="6">
-						@EditFormContext.GetEditor("FirstName")
-					</DxFormLayoutItem>
-
-					<DxFormLayoutItem Caption="Last Name:" ColSpanMd="6">
-						@EditFormContext.GetEditor("LastName")
-					</DxFormLayoutItem>
-
 					<DxFormLayoutItem Caption="Title:" ColSpanMd="6">
 						@EditFormContext.GetEditor("Title")
+					</DxFormLayoutItem>
+
+					<DxFormLayoutItem Caption="Nombre completo" ColSpanMd="6">
+						@EditFormContext.GetEditor("FullName")
 					</DxFormLayoutItem>
 
 					<DxFormLayoutItem Caption="Culture:" ColSpanMd="6">
@@ -89,6 +82,7 @@
 
     protected override void OnInitialized()
     {
+		base.OnInitialized();
         Data = personManager.Get();
     }
 

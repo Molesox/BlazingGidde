@@ -14,6 +14,8 @@ public record PersonDto : IReadDto<int>
 
     public string FirstName { get; set; }
 
+    public string FullName => $"{LastName}, {FirstName}";
+
     public string DefaultEmail { get; set; }
 
     public string DefaultAddress { get; set; }
