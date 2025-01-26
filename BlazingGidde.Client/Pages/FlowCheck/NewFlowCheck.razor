@@ -9,17 +9,17 @@
 
 <style>
     .full-width-button {
-        width: 100%;
+    width: 100%;
     }
 
     .header-spacing {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     }
 
     .delete-incidency-container {
-        margin-left: auto;
+    margin-left: auto;
     }
 </style>
 
@@ -54,7 +54,12 @@
                                            ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start"
                                            AnimationType="LayoutAnimationType.Slide">
                             <DxFormLayoutItem ColSpanMd="12">
-                                <h2>hola</h2>
+
+                                <Template>
+                                    <TemplateItemCard Item="SelectedCustomItem"
+                                                      IsReadOnly="true"/>
+
+                                </Template>
                             </DxFormLayoutItem>
                         </DxFormLayoutGroup>
                         <DxFormLayoutGroup Visible="@_isIncidenciaVisible"
@@ -90,9 +95,9 @@
                 <Template>
                     <div class="d-flex flex-column gap-2">
                         <DxButton CssClass="full-width-button" SizeMode="SizeMode.Large"
-                                  Text="Incidencia" RenderStyle="ButtonRenderStyle.Danger"
+                                  Text=@(_hasCustomItems ? "KO" : "Incidencia") RenderStyle="ButtonRenderStyle.Danger"
                                   RenderStyleMode="ButtonRenderStyleMode.Outline" Click="ShowIncidencia" Enabled="!_isIncidenciaVisible"/>
-                        <DxButton CssClass="full-width-button" SizeMode="SizeMode.Large" Text="Guardar"/>
+                        <DxButton CssClass="full-width-button" SizeMode="SizeMode.Large" Text=@(_hasCustomItems ? "Ok" : "Guardar") />
                     </div>
                 </Template>
             </DxGridLayoutItem>
@@ -106,8 +111,10 @@
     [Parameter] public int? TemplateKindId { get; set; }
 
     private CreateTemplateKindDto? KindDto { get; set; }
+    private CreateCustomTemplateItemDto SelectedCustomItem { get; set; }
 
     private bool _isIncidenciaVisible = false;
+    private bool _hasCustomItems = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -116,7 +123,9 @@
         if (TemplateKindId.HasValue && TemplateKindId > 0)
         {
             KindDto = await TemplateKindManager.GetEditModelByID(TemplateKindId.Value);
-            // KindDto.CustomTemplateItems.Any()
+            _hasCustomItems = KindDto.CustomTemplateItems.Any();
+
+            if (_hasCustomItems) SelectedCustomItem = KindDto.CustomTemplateItems.First();
         }
     }
 

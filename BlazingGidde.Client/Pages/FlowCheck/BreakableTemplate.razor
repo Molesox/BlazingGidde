@@ -1,4 +1,6 @@
 ﻿@using BlazingGidde.Shared.DTOs.FlowCheck.Request
+@using DevExpress.Blazor
+
 <div class="container my-4">
     <div class="row">
         @if (Items != null)
@@ -6,40 +8,25 @@
             @foreach (var item in Items)
             {
                 <div class="col-lg-3 col-md-6 col-sm-12 mb-4 d-flex">
-                    <div class="card flex-fill">
-                        <div class="card-body">
-                            <CustomTemplateItemComponent IsReadOnly="@IsReadOnly"
-                                                         Id="@item.Id"
-                                                         @bind-Value="@item.ImageUrl" />
-                        </div>
-                        <div class="card-footer d-flex justify-content-between">
-                            <DxTextBox ReadOnly="@IsReadOnly"
-                                       @bind-Text="@item.Name"
-                                       NullText="@($"Nombre {item.Id}")" />
-                            @if (!IsReadOnly)
-                            {
-                                <DxButton Enabled="@(!IsReadOnly)"
-                                          Click="@(() => RemoveItem(item))"
-                                          IconCssClass="oi oi-trash"
-                                          RenderStyleMode="ButtonRenderStyleMode.Outline"
-                                          RenderStyle="ButtonRenderStyle.Danger" />
-                            }
-                        </div>
-                    </div>
+                    <TemplateItemCard Item="item"
+                                      IsReadOnly="IsReadOnly"
+                                      OnRemove="RemoveItem" />
                 </div>
             }
         }
     </div>
 </div>
+
 @if (!IsReadOnly)
 {
-<DxButton Click="AddItem" IconCssClass="oi oi-plus" CssClass="fab-button btn-primary" />
+    <DxButton Click="AddItem" IconCssClass="oi oi-plus" CssClass="fab-button btn-primary" />
 }
+
 @code {
     [Parameter] public List<CreateCustomTemplateItemDto> Items { get; set; } = new();
     [Parameter] public EventCallback<List<CreateCustomTemplateItemDto>> ItemsChanged { get; set; }
     [Parameter] public bool IsReadOnly { get; set; }
- 
+
     protected override void OnInitialized()
     {
         if (Items == null || !Items.Any())
@@ -82,13 +69,13 @@
         padding: 0;
     }
 
-        .fab-button .fas {
-            margin: 0;
-        }
+    .fab-button .fas {
+        margin: 0;
+    }
 
-        .fab-button:hover {
-            background-color: var(--bs-primary);
-        }
+    .fab-button:hover {
+        background-color: var(--bs-primary);
+    }
 
     .fixed-size-image {
         width: 100px;

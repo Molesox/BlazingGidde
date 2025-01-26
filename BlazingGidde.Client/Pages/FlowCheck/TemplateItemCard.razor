@@ -1,0 +1,29 @@
+﻿@using BlazingGidde.Shared.DTOs.FlowCheck.Request
+@using DevExpress.Blazor
+
+<div class="card flex-fill">
+    <div class="card-body">
+        <CustomTemplateItemComponent IsReadOnly="@IsReadOnly"
+                                     Id="@Item.Id"
+                                     @bind-Value="@Item.ImageUrl" />
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+        <DxTextBox ReadOnly="@IsReadOnly"
+                   @bind-Text="@Item.Name"
+                   NullText="@($"Nombre {Item.Id}")" />
+        @if (!IsReadOnly)
+        {
+            <DxButton Enabled="@(!IsReadOnly)"
+                      Click="@(() => OnRemove.InvokeAsync(Item))"
+                      IconCssClass="oi oi-trash"
+                      RenderStyleMode="ButtonRenderStyleMode.Outline"
+                      RenderStyle="ButtonRenderStyle.Danger" />
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public CreateCustomTemplateItemDto Item { get; set; }
+    [Parameter] public bool IsReadOnly { get; set; }
+    [Parameter] public EventCallback<CreateCustomTemplateItemDto> OnRemove { get; set; } = EventCallback<CreateCustomTemplateItemDto>.Empty;
+}
