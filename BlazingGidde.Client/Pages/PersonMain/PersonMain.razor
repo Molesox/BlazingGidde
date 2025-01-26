@@ -14,61 +14,84 @@
 
 <PageTitle>Application Person</PageTitle>
 
-<DxGrid Data="@Data" @ref="@Grid" EditMode="GridEditMode.PopupEditForm" CustomizeEditModel="Grid_CustomizeEditModel"
-	EditModelSaving="Grid_EditModelSaving">
-	<Columns>
-		<DxGridCommandColumn></DxGridCommandColumn>
-		<DxGridDataColumn Caption="Person ID" FieldName="PersonId">
-		</DxGridDataColumn>
+<div class="container mt-5">
+    <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" @bind-IsActive="@isXSmallScreen" />
+    <div class="h-100 grid-wrapper">
+		<DxGrid Data="@Data" @ref="Grid" CssClass="grid-style" EditMode="GridEditMode.PopupEditForm"
+				AllowColumnReorder="true" AllowGroup="true" AllowSort="true" ShowGroupPanel="true" ShowFilterRow="true"
+				ShowSearchBox="true" EditModelSaving="Grid_EditModelSaving" DataItemDeleting="Grid_DataItemDeleting"
+				CustomizeEditModel="Grid_CustomizeEditModel">
+			<Columns>
+				<DxGridCommandColumn Width="100px" FixedPosition="GridColumnFixedPosition.Left" NewButtonVisible="true"
+									 Caption="Actions" TextAlignment="GridTextAlignment.Center" CaptionAlignment="GridTextAlignment.Center">
+					<CellDisplayTemplate Context="gridcontext">
+						<DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Success"
+								  IconCssClass="oi oi-pencil"
+								  Click="@(async() => { if (Grid is not null) await Grid.StartEditDataItemAsync(gridcontext.DataItem); })" />
+						<DxButton RenderStyleMode="ButtonRenderStyleMode.Outline" RenderStyle="ButtonRenderStyle.Danger"
+								  IconCssClass="oi oi-trash" Click="@(() => DeleteUser(gridcontext.VisibleIndex))" />
+					</CellDisplayTemplate>
+				</DxGridCommandColumn>
+				<AuthorizeView Roles="admin">
+				<DxGridDataColumn Caption="ID" FieldName="PersonId" 
+								  TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)" CaptionAlignment="GridTextAlignment.Left" Width="30px">
+				</DxGridDataColumn>
+				</AuthorizeView>
+				<DxGridDataColumn Caption="First Name" FieldName="FirstName"
+								  TextAlignment="GridTextAlignment.Left" CaptionAlignment="GridTextAlignment.Left">
+				</DxGridDataColumn>
 
-		<DxGridDataColumn Caption="First Name" FieldName="FirstName">
-		</DxGridDataColumn>
+				<DxGridDataColumn Caption="Last Name" FieldName="LastName"
+								  TextAlignment="GridTextAlignment.Left" CaptionAlignment="GridTextAlignment.Left">
+				</DxGridDataColumn>
 
-		<DxGridDataColumn Caption="Last Name" FieldName="LastName">
-		</DxGridDataColumn>
+				<DxGridDataColumn Caption="Title" FieldName="Title"
+								  TextAlignment="GridTextAlignment.Left" Visible="@(!isXSmallScreen)" CaptionAlignment="GridTextAlignment.Left">
+				</DxGridDataColumn>
 
-		<DxGridDataColumn Caption="Title" FieldName="Title">
-		</DxGridDataColumn>
+				<DxGridDataColumn Caption="Culture" FieldName="Culture"
+								  TextAlignment="GridTextAlignment.Center" Visible="@(!isXSmallScreen)" CaptionAlignment="GridTextAlignment.Left" Width="100px">
+				</DxGridDataColumn>
+			</Columns>
 
-		<DxGridDataColumn Caption="Culture" FieldName="Culture">
-		</DxGridDataColumn>
-	</Columns>
+			<EditFormTemplate Context="EditFormContext">
+				@{
+					var person = (CreatePersonDto)EditFormContext.EditModel;
+				}
+				<DxFormLayout CssClass="w-100">
+					<DxFormLayoutItem Caption="Id" ColSpanMd="6">
+						@EditFormContext.GetEditor("PersonId")
+					</DxFormLayoutItem>
 
-	<EditFormTemplate Context="EditFormContext">
-		@{
-			var person = (CreatePersonDto)EditFormContext.EditModel;
-		}
-		<DxFormLayout CssClass="w-100">
-			<DxFormLayoutItem Caption="Id" ColSpanMd="6">
-				@EditFormContext.GetEditor("PersonId")
-			</DxFormLayoutItem>
+					<DxFormLayoutItem Caption="First Name:" ColSpanMd="6">
+						@EditFormContext.GetEditor("FirstName")
+					</DxFormLayoutItem>
 
-			<DxFormLayoutItem Caption="First Name:" ColSpanMd="6">
-				@EditFormContext.GetEditor("FirstName")
-			</DxFormLayoutItem>
+					<DxFormLayoutItem Caption="Last Name:" ColSpanMd="6">
+						@EditFormContext.GetEditor("LastName")
+					</DxFormLayoutItem>
 
-			<DxFormLayoutItem Caption="Last Name:" ColSpanMd="6">
-				@EditFormContext.GetEditor("LastName")
-			</DxFormLayoutItem>
+					<DxFormLayoutItem Caption="Title:" ColSpanMd="6">
+						@EditFormContext.GetEditor("Title")
+					</DxFormLayoutItem>
 
-			<DxFormLayoutItem Caption="Title:" ColSpanMd="6">
-				@EditFormContext.GetEditor("Title")
-			</DxFormLayoutItem>
+					<DxFormLayoutItem Caption="Culture:" ColSpanMd="6">
+						@EditFormContext.GetEditor("Culture")
+					</DxFormLayoutItem>
 
-			<DxFormLayoutItem Caption="Culture:" ColSpanMd="6">
-				@EditFormContext.GetEditor("Culture")
-			</DxFormLayoutItem>
-
-			<DxFormLayoutItem Caption="Remarks:" ColSpanMd="6">
-				@EditFormContext.GetEditor("Remarks")
-			</DxFormLayoutItem>
-		</DxFormLayout>
-	</EditFormTemplate>
-</DxGrid>
+					<DxFormLayoutItem Caption="Remarks:" ColSpanMd="6">
+						@EditFormContext.GetEditor("Remarks")
+					</DxFormLayoutItem>
+				</DxFormLayout>
+			</EditFormTemplate>
+		</DxGrid>
+	</div>
+</div>
 
 @code {
 	IGrid Grid { get; set; }
 	object Data { get; set; }
+	bool isXSmallScreen;
 
 	protected override void OnInitialized()
 	{
@@ -91,5 +114,24 @@
 		{
 			e.EditModel = dataItem.Map().ToANew<CreatePersonDto>();
 		}
+	}
+
+	async Task Grid_DataItemDeleting(GridDataItemDeletingEventArgs e)
+	{
+		var user = (PersonDto)e.DataItem;
+		await personManager.Delete(user.Id);
+
+		Grid?.Reload();
+	}
+
+	void ViewRoles(object dataItem)
+	{
+		var user = (PersonDto)dataItem;
+		// Navigate to role management or display roles
+	}
+
+	void DeleteUser(int visibleIndex)
+	{
+		Grid?.ShowRowDeleteConfirmation(visibleIndex);
 	}
 }

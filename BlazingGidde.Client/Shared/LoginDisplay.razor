@@ -97,7 +97,7 @@
             };
         var personResult = await PersonManager.Get(personfilter);
         UserPerson = personResult.Items.First();
-        Title = $"Hola, {UserPerson.FirstName}";
+        Title = $"Hola {UserPerson.FirstName}!";
         currentTheme = await ThemeService.GetSavedThemeAsync();
         await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{currentTheme}");
     }

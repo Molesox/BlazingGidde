@@ -12,41 +12,42 @@
 
 @inject IJSRuntime JSRuntime
 
-<h3>Mi Perfil</h3>
+<h3>Perfil de @UserPerson.FirstName @UserPerson.LastName </h3>
 
-@if (UserPerson is not null)
+@if(UserPerson is not null)
 {
-    <EditForm Model="UserPerson">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-
-        
-
-        <div>
-            <label>Correo Electrónico:</label>
-            <p>@FlowUserDto.Email</p>
-        </div>
-
-        <div>
-            <label>Cultura:</label>
-            <p>@UserPerson.Culture</p>
-        </div>
-
-        <div>
-            <label>Título:</label>
-            <p>@UserPerson.Title</p>
-        </div>
-
-        <div>
-            <label>Apellido:</label>
-            <p>@UserPerson.LastName</p>
-        </div>
-
-        <div>
-            <label>Primer Nombre:</label>
-            <p>@UserPerson.FirstName</p>
-        </div>
-    </EditForm>
+    <DxFormLayout CssClass="w-100">
+        <DxFormLayoutGroup Caption="Información personal" ColSpanMd="6">
+            <DxFormLayoutItem Caption="Nombre" ColSpanMd="12">
+                <DxTextBox @bind-Text="@UserPerson.FirstName" ReadOnly="true" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Apellido" ColSpanMd="12">
+                <DxTextBox @bind-Text="@UserPerson.LastName" ReadOnly="true" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Dirección" ColSpanMd="12">
+                <DxTextBox @bind-Text="@UserPerson.DefaultAddress" ReadOnly="true" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Title" ColSpanMd="12">
+                <DxTextBox @bind-Text="@UserPerson.Title" ReadOnly="true" />
+            </DxFormLayoutItem>
+        </DxFormLayoutGroup>
+        <DxFormLayoutGroup Caption="Información del trabajo" ColSpanMd="6">
+            <DxFormLayoutItem Caption="Telefono" ColSpanMd="12">
+                <DxTextBox @bind-Text="@FlowUserDto.PhoneNumber" ReadOnly="true" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Email" ColSpanMd="12">
+                <DxTextBox @bind-Text="@FlowUserDto.Email" ReadOnly="true" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Culture" ColSpanMd="12">
+                <DxTextBox @bind-Text="@UserPerson.Culture" ReadOnly="true" />
+            </DxFormLayoutItem>
+        </DxFormLayoutGroup>
+        <DxFormLayoutGroup ColSpanMd="12" Caption="Descripción" ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start" AnimationType="LayoutAnimationType.Slide">
+            <DxFormLayoutItem ColSpanMd="12">
+                <DxMemo @bind-Text="Notes" Rows="4" aria-label="User info" />
+            </DxFormLayoutItem>
+        </DxFormLayoutGroup>
+    </DxFormLayout>
 }
 else
 {
@@ -56,6 +57,7 @@ else
 @code {
     private FlowUserDto FlowUserDto { get; set; } = new();
     private PersonDto UserPerson { get; set; } = new();
+    public string Notes { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
