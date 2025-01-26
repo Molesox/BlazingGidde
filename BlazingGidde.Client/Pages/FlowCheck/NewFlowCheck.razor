@@ -58,7 +58,6 @@
                             </DxFormLayoutItem>
                         </DxFormLayoutGroup>
                         <DxFormLayoutGroup Visible="@_isIncidenciaVisible"
-
                                            ColSpanMd="12"
                                            aria-labelledby="caption-template"
                                            ExpandButtonDisplayMode="GroupExpandButtonDisplayMode.Start"
@@ -117,6 +116,7 @@
         if (TemplateKindId.HasValue && TemplateKindId > 0)
         {
             KindDto = await TemplateKindManager.GetEditModelByID(TemplateKindId.Value);
+            // KindDto.CustomTemplateItems.Any()
         }
     }
 
@@ -134,16 +134,7 @@
 
     async Task DeleteIncidency()
     {
-        // Logique pour supprimer l'incidency
-        // Par exemple, appeler un service pour supprimer l'incidency du serveur
-        // await IncidencyService.DeleteIncidency(incidencyId);
-
-        // Masquer l'incidency après suppression
         _isIncidenciaVisible = false;
-
-        // Optionnel : Afficher un message de confirmation ou de succès
-        // await ShowMessage("Incidency supprimée avec succès.");
-        <!-- Ajoutez l'événement Click au bouton de suppression -->
     }
 
 }

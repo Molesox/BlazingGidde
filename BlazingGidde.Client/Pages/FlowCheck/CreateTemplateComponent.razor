@@ -12,14 +12,14 @@
 <h3>@TypeInfo?.Name</h3>
 
 <DxToastProvider Name="Overview" MaxToastCount="5" AnimationType="ToastAnimationType.Slide"
-HorizontalAlignment="HorizontalAlignment.Right"
-DisplayTime="TimeSpan.Zero" Width="320px"/>
+                 HorizontalAlignment="HorizontalAlignment.Right"
+                 DisplayTime="TimeSpan.Zero" Width="320px"/>
 
 <DxStackLayout Orientation="Orientation.Vertical" CssClass="w-100 ch-480">
     <Items>
         <DxStackLayoutItem Length="auto">
             <Template>
-                <TemplateFormComponent KindDto="KindDto" CreateDate="CreateDate" IsReadOnly="IsReadOnly" />
+                <TemplateFormComponent KindDto="KindDto" CreateDate="CreateDate" IsReadOnly="IsReadOnly"/>
             </Template>
         </DxStackLayoutItem>
 
@@ -28,7 +28,7 @@ DisplayTime="TimeSpan.Zero" Width="320px"/>
                 @if (TemplateCode == TemplateCode.BREAKABLE)
                 {
                     <DynamicComponent Type="@typeof(BreakableTemplate)"
-                    Parameters="@(new Dictionary<string, object>
+                                      Parameters="@(new Dictionary<string, object>
                                                   {
                                                       [nameof(BreakableTemplate.Items)] = Items,
                                                       [nameof(BreakableTemplate.ItemsChanged)] =
@@ -48,8 +48,8 @@ DisplayTime="TimeSpan.Zero" Width="320px"/>
                     @if (!IsReadOnly)
                     {
                         <DxButton style="margin-left: 4px;"
-                        RenderStyle="ButtonRenderStyle.Primary"
-                        Click="Save">
+                                  RenderStyle="ButtonRenderStyle.Primary"
+                                  Click="Save">
                             Guardar
                         </DxButton>
                     }
@@ -75,8 +75,7 @@ DisplayTime="TimeSpan.Zero" Width="320px"/>
     private CreateTemplateKindDto KindDto { get; set; } = new() { Version = 1 };
     private List<CreateCustomTemplateItemDto> Items { get; set; } = new();
 
-    [CascadingParameter] 
-    private Task<AuthenticationState> AuthState { get; set; }
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; }
 
     private ClaimsPrincipal User { get; set; }
 
@@ -86,7 +85,6 @@ DisplayTime="TimeSpan.Zero" Width="320px"/>
         await base.OnInitializedAsync();
         try
         {
- 
             var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
 
             if (uri.AbsolutePath.Contains("view-template"))

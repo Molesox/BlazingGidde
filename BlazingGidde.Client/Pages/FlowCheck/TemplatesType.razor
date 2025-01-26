@@ -33,25 +33,34 @@
             <!-- Tiles View -->
             @foreach (var template in filteredTemplates)
             {
-                <div class="col-sm-6 col-md-4 col-lg-3">
+                <div class="col-lg-3 col-md-6 col-sm-12 mb-4 d-flex">
                     <div class="card card-template h-100 text-center">
-                        <img src="@template.ImgUrl" class="card-img-top" alt="@template.Name">
-                        <div class="card-body">
-                            <h5 class="card-title">@template.Name</h5>
-                            <div class="d-flex justify-content-center gap-2 mt-3">
-                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
-                                          RenderStyle="ButtonRenderStyle.Primary" IconCssClass="oi oi-plus"
-                                          @onclick='() => CreateNewTemplate(template.Code)'>
-                                </DxButton>
-
-                                <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
-                                          RenderStyle="ButtonRenderStyle.Danger" IconCssClass="oi oi-trash"
-                                          @onclick='() => DeleteTemplate(template)'>
-                                </DxButton>
+                        
+                        
+                            <div class="card-body">
+                                <CustomTemplateItemComponent IsReadOnly="true"
+                                                             Id="@template.Id"
+                                                             @bind-Value="@template.ImgUrl" />
                             </div>
+                            
+                            <div class="card-footer d-flex justify-content-between">
+                                <DxTextBox ReadOnly="true"
+                                           @bind-Text="@template.Name"
+                                           NullText="@($"Nombre {template.Id}")" />
+                            <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
+                                      RenderStyle="ButtonRenderStyle.Primary" IconCssClass="oi oi-plus"
+                                      @onclick='() => CreateNewTemplate(template.Code)'>
+                            </DxButton>
+
+                            <DxButton RenderStyleMode="@ButtonRenderStyleMode.Outline"
+                                      RenderStyle="ButtonRenderStyle.Danger" IconCssClass="oi oi-trash"
+                                      @onclick='() => DeleteTemplate(template)'>
+                            </DxButton>
+                            </div>
+                            
                         </div>
                     </div>
-                </div>
+            
             }
         }
     </div>

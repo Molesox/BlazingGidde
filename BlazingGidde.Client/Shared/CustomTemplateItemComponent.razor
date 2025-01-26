@@ -1,37 +1,48 @@
 ﻿@inject IJSRuntime JS
+<style>
+    .upload-button {
+        width: 100%;
+        margin-top: 5px;
+        padding:3px;
+    }
+</style>
+
 
 <div id="@Id" class="upload-container">
+   
+        <div id="@($"dropzone-external-{Id}")" class="@((IsReadOnly) ? string.Empty : "dropzone-external")">
 
-    <div id="@($"dropzone-external-{Id}")" class="dropzone-external card flex-box">
-        @if (UploadComplete || IsBase64Image(Value))
-        {
-            <img id="dropzone-image" src="@Value" alt="DxFileInput uploaded image"/>
-        }
-        else if (TotalBytesRead != 0)
-        {
-            <DxProgressBar CssClass="upload-progress" Value="@TotalBytesRead" MaxValue="@FileSize"
-                           Label="@(TotalBytesRead == FileSize ? "Your image is almost ready..." : string.Empty)"/>
-        }
-        else
-        {
-            <div id="dropzone-text" class="flex-box">
-                <span>Arrastra y suelta el archivo deseado</span>
-            </div>
-        }
+            @if (UploadComplete || IsBase64Image(Value))
+            {
+                <img id="dropzone-image" src="@Value" alt="imagen descargada"/>
+            }
+            else if (IsUploading || TotalBytesRead != 0)
+            {
+                <DxWaitIndicator Visible="true"
+                                 CssClass="upload-progress"
+                                 AnimationType="WaitIndicatorAnimationType.Pulse"/>
+            }
+            else
+            {
+                <div id="dropzone-text" class="flex-box h-100">
+                    <span>Arrastra y suelta el archivo deseado</span>
+                </div>
+            }
+        </div>
     </div>
-    @if (!IsReadOnly)
-    {
-        <DxButton id="@($"upload-button-{Id}")" CssClass="m-1" style="max-width: 100%;"
-                  RenderStyle="ButtonRenderStyle.Primary" Text="Subir"/>
-    }
+ 
+@if (!IsReadOnly)
+{
+    <DxButton id="@($"upload-button-{Id}")" CssClass="upload-button"
+              RenderStyle="ButtonRenderStyle.Primary" RenderStyleMode="ButtonRenderStyleMode.Outline" Text="Cambiar"/>
+}
 
 
-    <DxFileInput Visible="false" MaxFileSize="15000000" FilesUploading="@OnFilesUploading" CssClass="dropZone-owner"
-                 ExternalSelectButtonCssSelector="@($"#upload-button-{Id}")"
-                 ExternalDropZoneCssSelector="@($"#dropzone-external-{Id}")" ExternalDropZoneDragOverCssClass="dropzone-hover"
-                 AcceptedFileTypes="@AllowedFileExtensions">
-    </DxFileInput>
-</div>
+<DxFileInput Visible="false" MaxFileSize="15000000" FilesUploading="@OnFilesUploading" CssClass="dropZone-owner"
+             ExternalSelectButtonCssSelector="@($"#upload-button-{Id}")"
+             ExternalDropZoneCssSelector="@($"#dropzone-external-{Id}")" ExternalDropZoneDragOverCssClass="dropzone-hover"
+             AcceptedFileTypes="@AllowedFileExtensions">
+</DxFileInput>
 
 
 @code {
@@ -51,6 +62,7 @@
     private readonly List<string> AllowedFileExtensions = new() { ".jpg", ".jpeg", ".gif", ".png" };
     private int FileSize { get; set; }
     private int TotalBytesRead { get; set; }
+    private bool IsUploading { get; set; } = false;
 
     private bool IsBase64Image(string? data)
     {
@@ -60,6 +72,10 @@
     private async Task OnFilesUploading(FilesUploadingEventArgs args)
     {
         UploadComplete = false;
+        TotalBytesRead = 0;
+        Value = null;
+        IsUploading = true;
+        StateHasChanged();
 
         // For simplicity, handle only the first file
         var file = args.Files[0];
@@ -67,15 +83,14 @@
         FileBytes = new byte[FileSize];
         FileType = file.Type;
 
-        using var stream = file.OpenReadStream(file.Size);
-        TotalBytesRead = 0;
-
+        await using var stream = file.OpenReadStream(file.Size);
         try
         {
             int bytesRead;
             while ((bytesRead = await stream.ReadAsync(FileBytes, TotalBytesRead, FileSize - TotalBytesRead)) != 0)
             {
                 TotalBytesRead += bytesRead;
+                StateHasChanged();
             }
         }
         finally
@@ -95,8 +110,10 @@
 
         // Mark upload as complete
         UploadComplete = true;
-
+        IsUploading = false;
+        StateHasChanged();
         await ValueChanged.InvokeAsync(Value);
     }
+
 
 }

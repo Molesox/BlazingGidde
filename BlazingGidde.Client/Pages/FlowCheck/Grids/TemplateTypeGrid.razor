@@ -3,8 +3,13 @@
 @inject NavigationManager NavigationManager
 @inject TemplateTypeManager templateTypeManager
 
-
+<style>
+    .custom-width{
+        width:100%;
+    }
+</style>
 <div class="h-100 grid-wrapper">
+    
     <DxLayoutBreakpoint DeviceSize="DeviceSize.XSmall" @bind-IsActive="@isXSmallScreen"/>
     <DxGrid Data="@Data" @ref="@Grid" CssClass="grid-style" EditMode="GridEditMode.PopupEditForm"
             CustomizeEditModel="Grid_CustomizeEditModel" AllowColumnReorder="true" AllowGroup="true" AllowSort="true"
@@ -49,11 +54,11 @@
             @{
                 var templateType = (CreateTemplateTypeDto)EditFormContext.EditModel;
             }
-            <DxFormLayout>
+            <DxFormLayout >
                 <DxFormLayoutItem Caption="Name" ColSpanMd="12">
                     @EditFormContext.GetEditor("Name")
                 </DxFormLayoutItem>
-                <DxFormLayoutItem>
+                <DxFormLayoutItem CssClass="custom-width">
                     <CustomTemplateItemComponent Id="@templateType.Id" @bind-Value="@templateType.ImgUrl"/>
 
                 </DxFormLayoutItem>
