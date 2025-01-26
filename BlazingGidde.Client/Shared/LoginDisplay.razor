@@ -14,11 +14,11 @@
     <Authorized>
         <div class="card menu-card-container w-100">
             <div class="card-body p-0">
-                <DxMenu CollapseItemsToHamburgerMenu="true"
+                <DxMenu Title="" CollapseItemsToHamburgerMenu="true"
                         CollapseItemToIconMode="MenuCollapseItemToIconMode.Sequentially"
-                        DisplayMode="MenuDisplayMode.Desktop">
+                        DisplayMode="MenuDisplayMode.Desktop" ItemClick="OnItemClick">
                     <Items>
-                        <DxMenuItem Text="@Title"  IconCssClass="fa fa">
+                        <DxMenuItem Text="@Title" IconCssClass="fa fa">
                             <Items>
                                 <DxMenuItem Text="Mi perfil" IconCssClass="fa fa-user" NavigateUrl="/myprofile" Target="_self" />
                                 <DxMenuItem Text="Tema" IconCssClass="fa fa-paint-brush">
@@ -32,7 +32,7 @@
                                 <DxMenuItem Text="Logout" IconCssClass="fa fa-sign-out" CssClass="menu-logout" Click="Logout" />
                             </Items>
                         </DxMenuItem>
-                        
+
                     </Items>
                 </DxMenu>
             </div>
@@ -58,6 +58,8 @@
     private string currentTheme = "blazing-dark.bs5.min.css";
 
     public string Title { get; set; }
+
+    private string Value { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -98,7 +100,9 @@
         var personResult = await PersonManager.Get(personfilter);
         UserPerson = personResult.Items.First();
         Title = $"Hola {UserPerson.FirstName}!";
+
         currentTheme = await ThemeService.GetSavedThemeAsync();
+        Value = currentTheme;
         await ThemeService.SetThemeAsync($"_content/DevExpress.Blazor.Themes/{currentTheme}");
     }
 
@@ -173,7 +177,7 @@
         color: red; /* Cambia el color del texto a rojo */
     }
 
-    .menu-logout .fa-sign-out {
-        color: red; /* Cambia el color del ícono a rojo */
-    }
+        .menu-logout .fa-sign-out {
+            color: red; /* Cambia el color del ícono a rojo */
+        }
 </style>
